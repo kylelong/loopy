@@ -1,0 +1,42 @@
+FRONTEND
+--------
+/ - landing page (logged out)
+
+/ - home page (logged in)
+    see list of songs people are adding all over
+    filter by genra / platform 
+
+/{username}
+    shows songs
+    favorite song of all time ?
+    favorite song right now ?
+    favorite genre
+    current location? (so ppl know where you are listening from)
+/
+
+supports youtube, spotify, soundclound, apple music
+soundcloud -> enter link and embed with GET call to https://soundcloud.com/oembed more info: https://developers.soundcloud.com/docs/oembed
+
+
+BACKEND
+-------
+users: id, email, username, created_at
+
+songs: id, user_id, created_at, link, src (youtube, soundcloud, etc)
+ get src from parsing host
+
+"songs that you want to hear for the first time again" 
+
+ songs for me
+ e coli 
+ mr t
+ happy house
+ get money
+ yns
+ late
+ z4l
+ chopin largo sonata
+ whats wrong 
+ type money
+ sunday school 
+ come on home

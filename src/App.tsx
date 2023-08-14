@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import logo from "./logo.svg";
 import "./App.css";
 import styled from "styled-components";
 import axios from "axios";
@@ -45,7 +44,7 @@ export const Video = styled.iframe`
 
 function App() {
   const [url, setUrl] = useState<string>("");
-  const [youtubeUrl, setYoutubeUrl] = useState<string>("");
+  const [embededUrl, setEmbededUrl] = useState<string>("");
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
@@ -54,30 +53,51 @@ function App() {
   const processUrl = () => {
     // youtube / spotify /
 
+    const validHostNames = [
+      "www.youtube.com",
+      "youtu.be",
+      "soundcloud.com",
+      "on.soundcloud.com",
+    ];
+
+    // YOUTUBE
+    /*
+     if hostname is youtu.be || www.youtube.com
+    */
+
     // 2 youtube formats : https://youtu.be/hn-9ffDhGAo and classic youtube
     // https://soundcloud.com/ragerthelabel/erykah-badu-kodak-black?si=c86d26e269ea43d1808b280a6e703fe9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
-    const videoCode = url.split("v=")[1].split("&")[0];
-    const embedUrl = `https://www.youtube.com/embed/${videoCode}`;
+    let link = new URL(url);
+    let hostname = link.hostname;
+    console.log(hostname);
+    let youtube = ["youtu.be", "www.youtube.com"];
+    let soundcloud = ["soundcloud.com", "on.soundcloud.com"];
+    let embedUrl = "";
 
-    setYoutubeUrl(embedUrl);
+    if (youtube.includes(hostname)) {
+      let videoCode = "";
+      if (hostname === "www.youtube.com") {
+        videoCode = url.split("v=")[1].split("&")[0];
+        embedUrl = `https://www.youtube.com/embed/${videoCode}`;
+      } else if (hostname === "youtu.be") {
+        videoCode = link.pathname.substring(1);
+        embedUrl = `https://www.youtube.com/embed/${videoCode}`;
+      }
+      setEmbededUrl(embedUrl);
+    }
+    if (soundcloud.includes(hostname)) {
+      axios
+        .get(`https://soundcloud.com/oembed?url=${url}&format=json`)
+        .then((resp) => {
+          let iframe = resp.data.html;
+          let srcIndex = iframe.indexOf("src");
+          let last = iframe.lastIndexOf('"');
+          let soundcloudLink = iframe.substring(srcIndex + 5, last);
+          setEmbededUrl(soundcloudLink);
+        });
+    }
   };
-  useEffect(() => {
-    let link = new URL("https://youtu.be/hn-9ffDhGAo");
-    console.log(link.hostname);
-
-    let soundcloudUrl =
-      "https://soundcloud.com/ragerthelabel/erykah-badu-kodak-black?si=c86d26e269ea43d1808b280a6e703fe9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing";
-    axios
-      .get(`https://soundcloud.com/oembed?url=${soundcloudUrl}&format=json`)
-      .then((resp) => {
-        let iframe = resp.data.html;
-        let srcIndex = iframe.indexOf("src");
-        let last = iframe.lastIndexOf('"');
-        let soundcloudLink = iframe.substring(srcIndex + 5, last);
-        // let link = new URL(soundcloudUrl);
-        // console.log(link.hostname);
-      });
-  }, [youtubeUrl]);
+  useEffect(() => {}, []);
   return (
     <div className="App">
       <SearchContainer>
@@ -87,24 +107,24 @@ function App() {
         />
         <SearchButton onClick={processUrl}>search</SearchButton>
       </SearchContainer>
-      {youtubeUrl && (
+      {embededUrl && (
         <Video
           width="560"
           height="315"
-          src={youtubeUrl}
+          src={embededUrl}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         ></Video>
       )}
-      <Video
+      {/* <Video
         scrolling="no"
         frameBorder="no"
         width="560"
         height="315"
         src="https://www.youtube.com/embed/hn-9ffDhGAo"
-      ></Video>
+      ></Video> */}
     </div>
   );
 }

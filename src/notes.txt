@@ -40,3 +40,5 @@ songs: id, user_id, created_at, link, src (youtube, soundcloud, etc)
  type money
  sunday school 
  come on home
+ then i dip
+ lil got it no help

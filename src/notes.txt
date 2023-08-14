@@ -27,6 +27,9 @@ songs: id, user_id, created_at, link, src (youtube, soundcloud, etc)
 
 "songs that you want to hear for the first time again" 
 
+TODO: 
+soundcloud api 
+
  songs for me
  e coli 
  mr t
@@ -42,3 +45,60 @@ songs: id, user_id, created_at, link, src (youtube, soundcloud, etc)
  come on home
  then i dip
  lil got it no help
+
+documentation / resources: 
+
+https://stackoverflow.com/a/15979390
+
+[
+  "Pop",
+  "Rock",
+  "Hip-Hop",
+  "Electronic",
+  "Jazz",
+  "Blues",
+  "Classical",
+  "Country",
+  "R&B",
+  "Reggae",
+  "Folk",
+  "Metal",
+  "Punk",
+  "Alternative",
+  "Funk",
+  "Soul",
+  "Rap",
+  "Indie",
+  "Techno",
+  "House",spo
+  "Dubstep",
+  "Ska",
+  "Gospel",
+  "Latin",
+  "World Music",
+  "Dancehall",
+  "Grunge",
+  "Ambient",
+  "New Age",
+  "Experimental",
+  "Bollywood",
+  "J-Pop",
+  "K-Pop",
+  "Flamenco",
+  "Salsa",
+  "Bossa Nova",
+  "Hip-Life",
+  "Cumbia",
+  "Tango",
+  "Bhangra",
+  "Reggaeton",
+  "Celtic",
+  "Afrobeat",
+  "Rockabilly",
+  "Bluegrass",
+  "Psychedelic",
+  "Trance",
+  "Sufi Music",
+  "Mariachi",
+  "Hardstyle"
+]

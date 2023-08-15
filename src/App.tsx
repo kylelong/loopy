@@ -2,9 +2,9 @@ import React, {useState, useEffect} from "react";
 import "./App.css";
 import styled from "styled-components";
 import axios from "axios";
-import {GlobeIcon} from "@radix-ui/react-icons";
+import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
 import ReactSearchBox from "react-search-box";
-
+import genres from "./genres";
 export const MusicContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -13,9 +13,12 @@ export const SearchContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin-bottom: 12px;
+  @media (max-width: 500px) {
+    flex-direction: column;
+  }
 `;
 export const SearchBox = styled.input`
-  max-width: 500px;
+  max-width: 360px;
   width: 100%;
   height: 38px;
   font-family: sans-serif;
@@ -25,11 +28,16 @@ export const SearchBox = styled.input`
   border-radius: 4px;
   padding-left: 5px;
   margin-right: 5px;
+  @media (max-width: 500px) {
+    flex-direction: column;
+    margin-bottom: 5px;
+    max-width: 500px;
+  }
 `;
 
 export const SearchButton = styled.button`
-  height: 42px;
-  max-width: 259px;
+  height: 38px;
+  max-width: 194px;
   width: 100%;
   border: 0px;
   border-radius: 4px;
@@ -59,8 +67,8 @@ export const ShareButton = styled.button`
   color: white;
   font-family: sans-serif;
   font-size: 16px;
-  text-align: center;
   margin-top: 10px;
+  text-align: center;
   &:hover {
     cursor: pointer;
   }
@@ -85,11 +93,22 @@ export const SearchBoxContainer = styled.div`
   margin-top: 10px;
 `;
 
+export const AddedContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+`;
+
+export const SongShared = styled.div`
+  position: relative;
+  margin-left: 7px;
+`;
 function App() {
   const [url, setUrl] = useState<string>("");
   const [embededUrl, setEmbededUrl] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
   const [genre, setGenre] = useState<string>("");
+  const [added, setAdded] = useState<boolean>(false);
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(event.target.value);
@@ -101,59 +120,7 @@ function App() {
     }
   };
 
-  let data = [
-    {key: "1", value: "Pop"},
-    {key: "2", value: "Rock"},
-    {key: "3", value: "Hip-Hop"},
-    {key: "4", value: "Electronic"},
-    {key: "5", value: "Jazz"},
-    {key: "6", value: "Blues"},
-    {key: "7", value: "Classical"},
-    {key: "8", value: "Country"},
-    {key: "9", value: "R&B"},
-    {key: "10", value: "Reggae"},
-    {key: "11", value: "Folk"},
-    {key: "12", value: "Metal"},
-    {key: "13", value: "Punk"},
-    {key: "14", value: "Alternative"},
-    {key: "15", value: "Funk"},
-    {key: "16", value: "Soul"},
-    {key: "17", value: "Rap"},
-    {key: "18", value: "Indie"},
-    {key: "19", value: "Techno"},
-    {key: "20", value: "House"},
-    {key: "21", value: "Dubstep"},
-    {key: "22", value: "Ska"},
-    {key: "23", value: "Gospel"},
-    {key: "24", value: "Latin"},
-    {key: "25", value: "World Music"},
-    {key: "26", value: "Dancehall"},
-    {key: "27", value: "Grunge"},
-    {key: "28", value: "Ambient"},
-    {key: "29", value: "New Age"},
-    {key: "30", value: "Experimental"},
-    {key: "31", value: "Bollywood"},
-    {key: "32", value: "J-Pop"},
-    {key: "33", value: "K-Pop"},
-    {key: "34", value: "Flamenco"},
-    {key: "35", value: "Salsa"},
-    {key: "36", value: "Bossa Nova"},
-    {key: "37", value: "Hip-Life"},
-    {key: "38", value: "Cumbia"},
-    {key: "39", value: "Tango"},
-    {key: "40", value: "Bhangra"},
-    {key: "41", value: "Reggaeton"},
-    {key: "42", value: "Celtic"},
-    {key: "43", value: "Afrobeat"},
-    {key: "44", value: "Rockabilly"},
-    {key: "45", value: "Bluegrass"},
-    {key: "46", value: "Psychedelic"},
-    {key: "47", value: "Trance"},
-    {key: "48", value: "Sufi Music"},
-    {key: "49", value: "Mariachi"},
-    {key: "50", value: "Hardstyle"},
-  ];
-  const validGenres = data.map((d) => d.value);
+  const validGenres = genres.map((d) => d.value);
 
   const processUrl = () => {
     // youtube / spotify /
@@ -219,6 +186,14 @@ function App() {
     const {item} = selected;
     setGenre(item.value);
   };
+
+  const handleSharing = () => {
+    setAdded(true);
+  };
+
+  /**
+   *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
+   */
   useEffect(() => {}, []);
   return (
     <div className="App">
@@ -245,14 +220,15 @@ function App() {
             <SearchBoxContainer>
               <ReactSearchBox
                 placeholder="What's the genre?"
-                data={data}
+                data={genres}
                 onSelect={handleSearch}
                 onChange={handleGenreChange}
                 autoFocus
               />
             </SearchBoxContainer>
-            <div>{genre}</div>
+
             <ShareButton
+              onClick={handleSharing}
               disabled={genre === "" || error}
               style={
                 genre === "" || error
@@ -265,6 +241,14 @@ function App() {
                 <GlobeIcon />
               </ShareIcon>
             </ShareButton>
+            {added && (
+              <AddedContainer>
+                <CheckCircledIcon
+                  style={{color: "green", height: "20px", width: "20px"}}
+                />
+                <SongShared>song shared</SongShared>
+              </AddedContainer>
+            )}
           </>
         )}
       </MusicContainer>

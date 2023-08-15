@@ -102,3 +102,5 @@ https://stackoverflow.com/a/15979390
   "Mariachi",
   "Hardstyle"
 ]
+
+put data in types file

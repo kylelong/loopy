@@ -109,15 +109,32 @@ export const SongShared = styled.div`
   position: relative;
   margin-left: 7px;
 `;
+
+interface SongData {
+  title: string;
+  url: string;
+  embededUrl: string;
+  genre: string;
+  spotifyLink: boolean;
+}
 function App() {
-  const [url, setUrl] = useState<string>("");
-  const [embededUrl, setEmbededUrl] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
-  const [genre, setGenre] = useState<string>("");
   const [added, setAdded] = useState<boolean>(false);
+  const [songData, setSongData] = useState<SongData>({
+    title: "",
+    url: "",
+    embededUrl: "",
+    genre: "",
+    spotifyLink: false, // is it a spotify song (diff styling)
+  });
+
+  /**
+   * song data
+   *   {url: '', embededUrl, genre}
+   */
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(event.target.value);
+    setSongData({...songData, url: event.target.value});
   };
 
   const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -144,44 +161,66 @@ function App() {
      if hostname is youtu.be || www.youtube.com
     */
 
-    //
+    // https://on.soundcloud.com/x4uzk
+    // https://www.youtube.com/watch?v=6_mWyjJQxWg&ab_channel=KodakBlack
     // https://soundcloud.com/ragerthelabel/erykah-badu-kodak-black?si=c86d26e269ea43d1808b280a6e703fe9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
-    let link = new URL(url);
+    // https://open.spotify.com/track/5TrkFfJgrGa1PdAkJO5QAs?si=PiAb5HucQxes3ZS2yb6Y7g
+    let link = new URL(songData.url);
     let hostname = link.hostname;
 
     let youtube = ["youtu.be", "www.youtube.com"];
     let soundcloud = ["soundcloud.com", "on.soundcloud.com"];
+    let spotify = "open.spotify.com";
     let embedUrl = "";
 
     if (youtube.includes(hostname)) {
       let videoCode = "";
       if (hostname === "www.youtube.com") {
-        videoCode = url.split("v=")[1].split("&")[0];
+        videoCode = songData.url.split("v=")[1].split("&")[0];
         embedUrl = `https://www.youtube.com/embed/${videoCode}`;
       } else if (hostname === "youtu.be") {
         videoCode = link.pathname.substring(1);
         embedUrl = `https://www.youtube.com/embed/${videoCode}`;
       }
       setError(false);
-      setEmbededUrl(embedUrl);
+      setSongData({...songData, embededUrl: embedUrl});
     } else if (soundcloud.includes(hostname)) {
       axios
-        .get(`https://soundcloud.com/oembed?url=${url}&format=json`)
+        .get(`https://soundcloud.com/oembed?url=${songData.url}&format=json`)
         .then((resp) => {
           let iframe = resp.data.html;
+          let title = resp.data.title;
           let srcIndex = iframe.indexOf("src");
           let last = iframe.lastIndexOf('"');
           let soundcloudLink = iframe.substring(srcIndex + 5, last);
-          setEmbededUrl(soundcloudLink);
+          setSongData({...songData, embededUrl: soundcloudLink, title: title});
+        });
+      setError(false);
+    } else if (hostname === spotify) {
+      axios
+        .get(`https://open.spotify.com/oembed?url=${songData.url}&format=json`)
+        .then((resp) => {
+          let iframe = resp.data.html;
+          let title = resp.data.title;
+
+          let srcIndex = iframe.indexOf("src");
+          let last = iframe.lastIndexOf('"');
+          let spotifyLink = iframe.substring(srcIndex + 5, last);
+          setSongData({
+            ...songData,
+            embededUrl: spotifyLink,
+            spotifyLink: true,
+            title: title,
+          });
         });
       setError(false);
     } else {
       setError(true);
     }
   };
-  // https://www.youtube.com/watch?v=6_mWyjJQxWg&ab_channel=KodakBlack
+
   const handleGenreChange = (value: string) => {
-    setGenre(value);
+    setSongData({...songData, genre: value});
     if (!validGenres.includes(value)) {
       setError(true);
     } else {
@@ -190,7 +229,7 @@ function App() {
   };
   const handleSearch = (selected: any) => {
     const {item} = selected;
-    setGenre(item.value);
+    setSongData({...songData, genre: item.value});
   };
 
   const handleSharing = () => {
@@ -206,32 +245,36 @@ function App() {
       <MusicContainer>
         <SearchContainer>
           <SearchBox
-            placeholder="Enter song link... (youtube, soundcloud)"
+            placeholder="Enter song link... (youtube, spotify, or soundcloud)"
             onChange={handleUrlChange}
             onKeyDown={handleEnterPressed}
           />
           <SearchButton onClick={processUrl}>Search</SearchButton>
         </SearchContainer>
 
-        <Spotify
-          title="Spotify Embed: Murder Czn (feat. Westside Gunn)"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          src="https://open.spotify.com/embed/track/3cCxoOgfi6hgt8MNteuiiD?si=bdecd402659b4f1f&utm_source=oembed"
-        ></Spotify>
-        {embededUrl && (
+        {songData.embededUrl && (
           <>
-            <Video
-              width="560"
-              height="315"
-              src={embededUrl}
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            ></Video>
+            {songData.spotifyLink ? (
+              <Spotify
+                title=""
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                src={songData.embededUrl}
+              ></Spotify>
+            ) : (
+              <Video
+                width="560"
+                height="315"
+                src={songData.embededUrl}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></Video>
+            )}
+
             <SearchBoxContainer>
               <ReactSearchBox
                 placeholder="What's the genre?"
@@ -244,9 +287,9 @@ function App() {
 
             <ShareButton
               onClick={handleSharing}
-              disabled={genre === "" || error}
+              disabled={songData.genre === "" || error}
               style={
-                genre === "" || error
+                songData.genre === "" || error
                   ? {backgroundColor: "lightgrey"}
                   : {backgroundColor: "#6e79d6"}
               }
@@ -262,6 +305,7 @@ function App() {
                   style={{color: "green", height: "20px", width: "20px"}}
                 />
                 <SongShared>song shared</SongShared>
+                <div>{JSON.stringify(songData, null, 2)}</div>
               </AddedContainer>
             )}
           </>

@@ -22,7 +22,7 @@ BACKEND
 -------
 users: id, email, username, created_at
 
-songs: id, user_id, created_at, link, src (youtube, soundcloud, etc)
+songs: id, user_id, created_at, title, genre, songLink, src (youtube, soundcloud, etc), embedUrl
  get src from parsing host
 
 "songs that you want to hear for the first time again" 

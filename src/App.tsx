@@ -81,6 +81,12 @@ export const Video = styled.iframe`
   border: 1px solid rgb(102, 112, 133);
 `;
 
+export const Spotify = styled.iframe`
+  width: 560px;
+  height: 152px;
+  border-radius: 12px;
+`;
+
 export const ShareIcon = styled.div`
   position: relative;
   right: 20px;
@@ -206,6 +212,15 @@ function App() {
           />
           <SearchButton onClick={processUrl}>Search</SearchButton>
         </SearchContainer>
+
+        <Spotify
+          title="Spotify Embed: Murder Czn (feat. Westside Gunn)"
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          src="https://open.spotify.com/embed/track/3cCxoOgfi6hgt8MNteuiiD?si=bdecd402659b4f1f&utm_source=oembed"
+        ></Spotify>
         {embededUrl && (
           <>
             <Video

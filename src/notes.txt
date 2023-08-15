@@ -31,76 +31,29 @@ TODO:
 soundcloud api 
 
  songs for me
- e coli 
- mr t
- happy house
- get money
- yns
- late
- z4l
- chopin largo sonata
+ e coli - soundcloud
+ mr t - youtube 
+ happy house - soundcloud
+ get money - youtube 
+ yns - spotify 
+ late - spotify
+ stars misplace - youtube 
+ z4l - soundcloud
+ chopin largo sonata - spotify
+ stars misplaced - youtube 
  whats wrong 
- type money
- sunday school 
- come on home
- then i dip
- lil got it no help
+ type money - spotify 
+ sunday school - youtube 
+ come on home - spotify 
+ then i dip - soundcloud
+ lil got it no help - soundcloud 
+ don’t i - spotify
+do you love what you feel - spotify 
+just knee deep - 
+
 
 documentation / resources: 
 
 https://stackoverflow.com/a/15979390
 
-[
-  "Pop",
-  "Rock",
-  "Hip-Hop",
-  "Electronic",
-  "Jazz",
-  "Blues",
-  "Classical",
-  "Country",
-  "R&B",
-  "Reggae",
-  "Folk",
-  "Metal",
-  "Punk",
-  "Alternative",
-  "Funk",
-  "Soul",
-  "Rap",
-  "Indie",
-  "Techno",
-  "House",spo
-  "Dubstep",
-  "Ska",
-  "Gospel",
-  "Latin",
-  "World Music",
-  "Dancehall",
-  "Grunge",
-  "Ambient",
-  "New Age",
-  "Experimental",
-  "Bollywood",
-  "J-Pop",
-  "K-Pop",
-  "Flamenco",
-  "Salsa",
-  "Bossa Nova",
-  "Hip-Life",
-  "Cumbia",
-  "Tango",
-  "Bhangra",
-  "Reggaeton",
-  "Celtic",
-  "Afrobeat",
-  "Rockabilly",
-  "Bluegrass",
-  "Psychedelic",
-  "Trance",
-  "Sufi Music",
-  "Mariachi",
-  "Hardstyle"
-]
 
-put data in types file

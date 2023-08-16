@@ -89,8 +89,10 @@ export const Video = styled.iframe`
 `;
 
 export const Spotify = styled.iframe`
-  width: 560px;
-  height: 152px;
+  max-width: 560px;
+  // height: 152px;
+  max-height: 355px;
+  width: 100%;
   border-radius: 12px;
 `;
 
@@ -279,6 +281,8 @@ function Share() {
             {songData.spotifyLink ? (
               <Spotify
                 title=""
+                width="560"
+                height="355"
                 frameBorder="0"
                 allowFullScreen
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -288,7 +292,7 @@ function Share() {
             ) : (
               <Video
                 width="560"
-                height="315"
+                height="355"
                 src={songData.embededUrl}
                 title="YouTube video player"
                 frameBorder="0"

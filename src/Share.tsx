@@ -47,7 +47,8 @@ export const SearchButton = styled.button`
   width: 100%;
   border: 0px;
   border-radius: 4px;
-  background: #6e79d6;
+  //background: #6e79d6;
+  background: rgb(93, 93, 255);
   font-weight: bold;
   color: white;
   font-family: sans-serif;
@@ -68,7 +69,7 @@ export const ShareButton = styled.button`
   width: 100%;
   border: 0px;
   border-radius: 4px;
-  background: #6e79d6;
+  background-color: rgb(93, 93, 255);
   font-weight: bold;
   color: white;
   font-family: sans-serif;
@@ -312,7 +313,7 @@ function Share() {
               style={
                 songData.genre === "" || error
                   ? {backgroundColor: "lightgrey"}
-                  : {backgroundColor: "#6e79d6"}
+                  : {backgroundColor: "rgb(93, 93, 255)"}
               }
             >
               Share{" "}

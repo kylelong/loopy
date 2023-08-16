@@ -29,6 +29,10 @@ songs: id, user_id, created_at, title, genre, songLink, src (youtube, soundcloud
 
 TODO: 
 soundcloud api 
+carousel of default songs 
+    arrow-left-circle
+    arrow-right-circle
+    
 
  songs for me
  e coli - soundcloud
@@ -56,4 +60,34 @@ documentation / resources:
 
 https://stackoverflow.com/a/15979390
 
+
+homepage
+
+(globe-europe-africa) see what people are listening to: 
+happy house (house) soundcloud
+funkadelic (funk) youtube
+z4l hip-homepage soundclound
+chopin - classic spotify 
+truckers atlas - modest mouse (rock) spotify 
+
+spirder cider - the oh sees rock
+sideways here we come - die! die! die! youtube 
+g perico hurricane - https://soundcloud.com/g-perico-1/g-perico-hurricane?si=a9b5daee1a454eeab5dbc45acdb6c505&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing 
+el negro zumbon- https://soundcloud.com/noonej/1-silvana-mangano-anna-el-negro-zumbon
+baby birkin - spotify 
+
+ (arrow-up-tray) share the songs you really love:
+upload a link to your all-time favorite songs
+the kind of songs when you first heard it
+you listened to it on repeat for 3 days straight
+we currently support: soundcloud, youtube, and spotify
+
+
+ (magnifying-glass) explore songs from 50+ genres 
+different genres, all kinds of artist from all over. 
+
+
+(play-circle) find your new favorite songs
+if someone else really loves it, there is a 
+chance you do to (cross fingers emoji)
 

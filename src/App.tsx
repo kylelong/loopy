@@ -2,8 +2,10 @@ import React from "react";
 import "./App.css";
 import styled from "styled-components";
 import music from "./assets/music.svg";
-import Share from "./Share";
-import heart from "./assets/heart.svg";
+// import Share from "./Share";
+// import heart from "./assets/heart.svg";
+import Carousel from "./Carousel";
+
 export const Saying = styled.div`
   font-family: "Helvetica Neue", sans-serif;
   font-size: 42px;
@@ -81,8 +83,9 @@ export const Logo = styled.div`
 
 export const Container = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
-  justify-content: center;
+  align-items: center;
   padding: 10px;
 `;
 
@@ -113,22 +116,14 @@ export const MenuItem = styled.div`
   }
 `;
 
-export const Circle = styled.div`
-  width: 16px;
-  height: 16px;
-  background-color: rgb(93, 93, 255); /* You can change this color */
-  border-radius: 50%; /* Makes the div a circle */
-  margin-left: 5px;
-`;
+// https://soundcloud.com/thewebbyawards/the-juan-maclean-happy-house?si=e558539c189f40b691a6aaca00dd512e&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
+// https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
 
-export const InactiveCircle = styled.div`
-  width: 16px;
-  height: 16px;
-  background-color: rgb(102, 102, 102);
-  border-radius: 50%;
-  margin-left: 5px;
-`;
-
+/**
+ * CAROUSEL
+ * https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
+ * https://youtu.be/uJe-MAqNrmg
+ */
 function App() {
   return (
     <div>
@@ -151,10 +146,10 @@ function App() {
           </Saying>
           <SignUpBtn>Sign up</SignUpBtn>
         </Header>
+        <Carousel />
       </Container>
-      <Share />
-      <Circle></Circle>
-      <InactiveCircle></InactiveCircle>
+
+      {/* <Share /> */}
     </div>
   );
 }

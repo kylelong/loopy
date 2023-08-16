@@ -83,14 +83,14 @@ export const ShareButton = styled.button`
 export const Video = styled.iframe`
   border-radius: 4px;
   max-width: 560px;
-  max-height: 315px;
+  max-height: 355px;
   width: 100%;
   border: 1px solid rgb(102, 112, 133);
+  border-radius: 12px;
 `;
 
 export const Spotify = styled.iframe`
   max-width: 560px;
-  // height: 152px;
   max-height: 355px;
   width: 100%;
   border-radius: 12px;

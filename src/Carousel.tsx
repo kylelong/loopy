@@ -60,7 +60,73 @@ export const CarouselDots = styled.div`
 `;
 
 const Carousel = () => {
-  const songs = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  /**
+   * happy house
+   * i choose you
+   * z4L
+   */
+  const songs = [
+    {
+      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true",
+      genre: "House",
+      user: "Kyle",
+      location: "New York, NY, USA",
+    },
+    {
+      link: "https://www.youtube.com/embed/myEv3Qr3Efo",
+      genre: "Afrobeat",
+      user: "",
+      location: "",
+    },
+    {
+      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F675062333&show_artwork=true",
+      genre: "R&B",
+      user: "Kyle",
+      location: "New York, NY, USA",
+    },
+    {
+      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F526329195&show_artwork=true",
+      genre: "Hip Hop",
+      user: "Kyle",
+      location: "New York, NY, USA",
+    },
+    {
+      link: "https://www.youtube.com/embed/BlzeUi9rv2w",
+      genre: "Classical",
+      user: "Kyle",
+      location: "",
+    },
+    {
+      link: "https://www.youtube.com/embed/0ero1Xexyhs",
+      genre: "Rap",
+      user: "Benny",
+      location: "Buffalo, NY, USA",
+    },
+    {
+      link: "https://open.spotify.com/embed/track/56xZjKy9eGabvEOh5WOM1v?si=dc30a0b74aeb48c0&utm_source=oembed",
+      genre: "Rock",
+      user: "",
+      location: "",
+    },
+    {
+      link: "https://open.spotify.com/embed/track/0vFOzaXqZHahrZp6enQwQb?si=1a3d3f0ae1e84b80&utm_source=oembed",
+      genre: "Rock",
+      user: "",
+      location: "",
+    },
+    {
+      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F1033771624&show_artwork=true",
+      genre: "Rap",
+      user: "",
+      location: "",
+    },
+    {
+      link: "https://open.spotify.com/embed/track/6FjKAch1aGFI9LxJziA2Xe?si=d30d348c6dd14ed7&utm_source=oembed",
+      genre: "Indie",
+      user: "",
+      location: "",
+    },
+  ];
   const [dotIndex, setDotIndex] = useState<number>(0);
 
   const handleLeftClick = () => {
@@ -77,6 +143,8 @@ const Carousel = () => {
       setDotIndex(dotIndex + 1);
     }
   };
+  // happy house
+  // https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
 
   useEffect(() => {}, []);
   return (
@@ -91,7 +159,7 @@ const Carousel = () => {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy"
           style={{borderRadius: "12px"}}
-          src="https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true"
+          src={songs[dotIndex].link}
         ></SongContainer>
       </CarouselContainer>
       <CarouselDots>

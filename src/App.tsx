@@ -41,7 +41,6 @@ export const SignUpBtn = styled.button`
   max-width: 130px;
   width: 100%;
   background-color: rgb(93, 93, 255);
-  // background-color: #6e79d6;
   color: white;
   font-size: 1rem;
   height: 50px;

@@ -12,7 +12,7 @@ export const Saying = styled.div`
   font-weight: bold;
   letter-spacing: -1px;
   color: rgb(17, 17, 17);
-  max-width: 463px;
+  max-width: 800px;
   width: 100%;
 `;
 export const Header = styled.div`

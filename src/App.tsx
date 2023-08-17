@@ -4,6 +4,7 @@ import styled from "styled-components";
 import music from "./assets/music.svg";
 import heart from "./assets/heart.svg";
 import globe from "./assets/globeEuropeAfrica.svg";
+import arrowLongRight from "./assets/arrowLongRight.svg";
 // import Share from "./Share";
 import magnifyingGlass from "./assets/magnifyingGlass.svg";
 import play from "./assets/play.svg";
@@ -135,7 +136,10 @@ export const Section = styled.div`
   max-width: 560px;
   width: 100%;
   border-radius: 0.75rem;
-
+  background-color: #f8fafc;
+  box-shadow: 0 10px 15px -3px rgb(203, 213, 225),
+    0 4px 6px -4px rgb(203, 213, 225);
+  padding: 12px;
   margin: 24px;
   position: relative;
   left: 14px;
@@ -147,6 +151,7 @@ export const Section = styled.div`
 export const SectionHeader = styled.div`
   display: flex;
   flex-direction: row;
+  margin-bottom: 8px;
 `;
 
 export const SectionHeaderText = styled.div`
@@ -172,6 +177,13 @@ export const Globe = styled.img`
   top: 9px;
 `;
 
+export const ArrowLongRight = styled.img`
+  width: 1.7rem;
+  margin-right: 12px;
+  position: relative;
+  top: 9px;
+`;
+
 export const MagnifyingGlass = styled.img`
   width: 1.7rem;
   margin-right: 12px;
@@ -190,6 +202,29 @@ export const Description = styled.div`
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 380;
   margin-bottom: 6px;
+  font-size: 18px;
+`;
+
+export const Discover = styled.button`
+  display: flex;
+  flex-direction: row;
+  max-width: 250px;
+  align-items: center;
+
+  width: 100%;
+  background-color: rgb(93, 93, 255);
+  color: white;
+  font-size: 1rem;
+  height: 50px;
+  border-color: transparent;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0, 0, 0, 0.05);
+  margin-top: 8px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
 `;
 // https://soundcloud.com/thewebbyawards/the-juan-maclean-happy-house?si=e558539c189f40b691a6aaca00dd512e&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
 // https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
@@ -220,14 +255,15 @@ function App() {
             Discover songs you love from people that already love them.
           </Saying>
           <SignUpBtn>Sign up</SignUpBtn>
-          <div style={{display: "flex", flexDirection: "row"}}>
+          <div
+            style={{display: "flex", flexDirection: "row", marginTop: "32px"}}
+          >
             <Globe src={globe} />
             <Listening>
               What are people listening to around the world?
             </Listening>
           </div>
         </Header>
-
         <Carousel />
         <Section>
           <SectionHeader>
@@ -248,7 +284,6 @@ function App() {
             repeat for 3 days straight.
           </Description>
         </Section>
-
         <Section>
           <SectionHeader>
             <MagnifyingGlass src={magnifyingGlass} />
@@ -259,19 +294,28 @@ function App() {
             different genres from all kinds of artist, from all around the
             world.
           </Description>
-          <Description>from house to rap, we got range covered</Description>
+          <Description>from house to rap, we got range covered.</Description>
         </Section>
-
         <Section>
           <SectionHeader>
             <Play src={play} />
             <SectionHeaderText>find your new favorite songs</SectionHeaderText>
           </SectionHeader>
           <Description>
-            if someone else really loves a song, there is a chance you do to{" "}
-            <span>🤞🏾</span>
+            there are so many beautiful songs in the world we may never hear.{" "}
           </Description>
-        </Section>
+          <Description>
+            if someone else really loves a song, maybe you will too{" "}
+            <span>🤞🏾</span>.
+          </Description>
+        </Section>{" "}
+        <Discover>
+          <div style={{marginLeft: "27px"}}>Discover new music </div>
+          <ArrowLongRight
+            src={arrowLongRight}
+            style={{marginBottom: "17px", marginLeft: "10px"}}
+          />{" "}
+        </Discover>
       </Container>
 
       {/* <Share /> */}

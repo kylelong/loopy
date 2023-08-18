@@ -24,7 +24,7 @@ export const InputBox = styled.input`
   }
 `;
 
-export const SignUpBottom = styled.button`
+export const SignUpButton = styled.button`
   height: 45px;
   width: 259px;
   border: 0px;
@@ -36,8 +36,10 @@ export const SignUpBottom = styled.button`
   font-weight: bold;
   margin-bottom: 15px;
   text-align: center;
+  opacity: 0.8;
   &:hover {
     cursor: pointer;
+    opacity: 1;
   }
 `;
 
@@ -47,7 +49,7 @@ const SignUp = () => {
       <InputBox placeholder="Email" />
 
       <InputBox placeholder="Password" />
-      <SignUpBottom>Sign Up</SignUpBottom>
+      <SignUpButton>Sign Up</SignUpButton>
     </SignUpForm>
   );
 };

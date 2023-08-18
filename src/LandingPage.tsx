@@ -269,7 +269,9 @@ function LandingPage() {
           <Saying>
             Discover songs you love from people that already love them.
           </Saying>
-          <SignUpBtn>Sign up</SignUpBtn>
+          <Link to="/signup" style={linkStyle}>
+            <SignUpBtn>Sign up</SignUpBtn>
+          </Link>
           <div
             style={{display: "flex", flexDirection: "row", marginTop: "32px"}}
           >
@@ -335,7 +337,11 @@ function LandingPage() {
           </Description>
         </Section>{" "}
         <Discover>
-          <div style={{marginLeft: "27px"}}>Discover new music </div>
+          <Link to="signup" style={linkStyle}>
+            <div style={{marginLeft: "27px", color: "white"}}>
+              Discover new music{" "}
+            </div>
+          </Link>
           <ArrowLongRight
             src={arrowLongRight}
             style={{marginBottom: "17px", marginLeft: "10px"}}

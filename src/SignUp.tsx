@@ -10,7 +10,8 @@ export const SignUpForm = styled.form`
 
 export const InputBox = styled.input`
   margin-bottom: 10px;
-  width: 256px;
+  max-width: 256px;
+  width: 100%;
   height: 40px;
   font-family: sans-serif;
   font-size: 14px;
@@ -26,7 +27,8 @@ export const InputBox = styled.input`
 
 export const SignUpButton = styled.button`
   height: 45px;
-  width: 259px;
+  max-width: 259px;
+  width: 100%;
   border: 0px;
   border-radius: 3px;
   background: rgb(93, 93, 255);

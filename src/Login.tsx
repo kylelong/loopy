@@ -15,7 +15,6 @@ export const LoginForm = styled.form`
   flex-direction: column;
   max-width: 400px;
   width: 100%;
-  height: 430px;
   border-radius: 0.75rem;
   background-color: #f8fafc;
   box-shadow: 0 10px 15px -3px rgb(203, 213, 225),

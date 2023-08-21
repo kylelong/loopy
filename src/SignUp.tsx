@@ -13,8 +13,9 @@ export const Container = styled.div`
 export const SignupForm = styled.form`
   display: flex;
   flex-direction: column;
-  max-width: 400px;
+  max-width: 500px;
   width: 100%;
+  align-items: center;
   border-radius: 0.75rem;
   background-color: #f8fafc;
   box-shadow: 0 10px 15px -3px rgb(203, 213, 225),
@@ -29,9 +30,7 @@ export const HeaderText = styled.div`
   font-weight: bold;
   letter-spacing: -1px;
   color: rgb(17, 17, 17);
-  max-width: 800px;
-  width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
 `;
 
 export const InputBox = styled.input`
@@ -86,6 +85,8 @@ export const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
+  max-width: 256px;
+  width: 100%;
 `;
 export const linkStyle = {
   textDecoration: "none",

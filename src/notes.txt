@@ -97,3 +97,13 @@ different genres, all kinds of artist from all over.
 if someone else really loves it, there is a 
 chance you do to (cross fingers emoji)
 
+LOGIN / SIGNUP:
+
+LOGIN:
+email: blank, does not exists 
+password: blank, is wrong 
+
+SIGNUP:
+email: blank, already exists
+password: blank, not strong enough
+

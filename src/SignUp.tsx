@@ -1,5 +1,7 @@
 import React, {useState} from "react";
+
 import {Link} from "react-router-dom";
+import {createClient} from "@supabase/supabase-js";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
 
@@ -97,6 +99,13 @@ const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  // Create a single supabase client for interacting with your database
+
+  const SUPABASE_URL: string = process.env.REACT_APP_SUPABASE_URL || "";
+  const PUBLIC_KEY: string = process.env.REACT_APP_PUBLIC_ANON_KEY || "";
+
+  const supabase = createClient(SUPABASE_URL, PUBLIC_KEY);
+
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
@@ -105,9 +114,15 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
-  const register = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(email, password);
+    if (email && password) {
+      const {data, error} = await supabase.auth.signUp({
+        email: email,
+        password: password,
+      });
+      console.log(data, error);
+    }
   };
   return (
     <Container>

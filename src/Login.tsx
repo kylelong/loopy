@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
@@ -98,6 +98,21 @@ export const linkStyle = {
   color: "rgb(93, 93, 255)",
 };
 const Login = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
+  const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  };
+
+  const login = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    console.log(email, password);
+  };
   return (
     <Container>
       <LoginForm>
@@ -107,15 +122,15 @@ const Login = () => {
         <HeaderText>Sign in to Loopy</HeaderText>
         <InputContainer>
           <Label>Email</Label>
-          <InputBox />
+          <InputBox onChange={handleEmail} />
         </InputContainer>
 
         <InputContainer>
           <Label>Password</Label>
-          <InputBox type="password" />
+          <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
         <InputContainer>
-          <LoginButton>Login</LoginButton>
+          <LoginButton onClick={login}>Login</LoginButton>
         </InputContainer>
         <NoAccount>
           Don't have an account?{" "}

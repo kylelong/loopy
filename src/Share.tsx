@@ -1,9 +1,12 @@
 import React, {useState, useEffect} from "react";
 import "./App.css";
+import "./share.css";
 import styled from "styled-components";
 import axios from "axios";
 import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
 import ReactSearchBox from "react-search-box";
+import * as Dialog from "@radix-ui/react-dialog";
+import {Cross2Icon} from "@radix-ui/react-icons";
 import genres from "./genres";
 // eslint-disable-next-line
 import soundcloud from "./assets/soundcloud.jpeg";
@@ -14,6 +17,7 @@ import spotify from "./assets/spotify.png";
 export const MusicContainer = styled.div`
   display: flex;
   flex-direction: column;
+  margin-top: 24px;
 `;
 export const SearchContainer = styled.div`
   display: flex;
@@ -249,7 +253,7 @@ function Share() {
 
   const handleSharing = () => {
     setAdded(true);
-    // setError(false);
+    setError(false);
     // setSongData({
     //   title: "",
     //   url: "",
@@ -266,89 +270,124 @@ function Share() {
   return (
     // TODO: change this className
     <div className="App">
-      <MusicContainer>
-        <SearchContainer>
-          <SearchBox
-            placeholder="Enter song link... (youtube, spotify, or soundcloud)"
-            onChange={handleUrlChange}
-            onKeyDown={handleEnterPressed}
-          />
-          <SearchButton onClick={processUrl}>Search</SearchButton>
-        </SearchContainer>
+      <Dialog.Root>
+        <Dialog.Trigger asChild>
+          <button
+            className="Button violet"
+            onClick={() => {
+              setAdded(false);
+              setSongData({
+                title: "",
+                url: "",
+                embededUrl: "",
+                genre: "",
+                spotifyLink: false,
+              });
+            }}
+          >
+            Share
+          </button>
+        </Dialog.Trigger>
+        <Dialog.Portal>
+          <Dialog.Overlay className="DialogOverlay" />
+          <Dialog.Content className="DialogContent">
+            <MusicContainer>
+              <SearchContainer>
+                <SearchBox
+                  placeholder="Enter song link... (youtube, spotify, or soundcloud)"
+                  onChange={handleUrlChange}
+                  onKeyDown={handleEnterPressed}
+                />
+                <SearchButton onClick={processUrl}>Search</SearchButton>
+              </SearchContainer>
 
-        {songData.embededUrl && (
-          <>
-            {songData.spotifyLink ? (
-              <Spotify
-                title=""
-                width="560"
-                height="355"
-                frameBorder="0"
-                allowFullScreen
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                loading="lazy"
-                src={songData.embededUrl}
-              ></Spotify>
-            ) : (
-              <Video
-                width="560"
-                height="355"
-                src={songData.embededUrl}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></Video>
-            )}
+              {songData.embededUrl && (
+                <>
+                  {songData.spotifyLink ? (
+                    <Spotify
+                      title=""
+                      width="560"
+                      height="355"
+                      frameBorder="0"
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      loading="lazy"
+                      src={songData.embededUrl}
+                    ></Spotify>
+                  ) : (
+                    <Video
+                      width="560"
+                      height="355"
+                      src={songData.embededUrl}
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></Video>
+                  )}
 
-            <SearchBoxContainer>
-              <ReactSearchBox
-                placeholder="What's the genre?"
-                data={genres}
-                onSelect={handleSearch}
-                onChange={handleGenreChange}
-                autoFocus
-              />
-            </SearchBoxContainer>
+                  <SearchBoxContainer>
+                    <ReactSearchBox
+                      placeholder="What's the genre?"
+                      data={genres}
+                      onSelect={handleSearch}
+                      onChange={handleGenreChange}
+                      autoFocus
+                    />
+                  </SearchBoxContainer>
 
-            <ShareButton
-              onClick={handleSharing}
-              disabled={songData.genre === "" || error}
-              style={
-                songData.genre === "" || error
-                  ? {backgroundColor: "lightgrey"}
-                  : {backgroundColor: "rgb(93, 93, 255)"}
-              }
-            >
-              Share{" "}
-              <ShareIcon>
-                <GlobeIcon />
-              </ShareIcon>
-            </ShareButton>
-            {/* <SourceImageContainer>
+                  <Dialog.Close asChild>
+                    <ShareButton
+                      onClick={handleSharing}
+                      disabled={songData.genre === "" || error}
+                      style={
+                        songData.genre === "" || error
+                          ? {backgroundColor: "lightgrey"}
+                          : {backgroundColor: "rgb(93, 93, 255)"}
+                      }
+                    >
+                      Share{" "}
+                      <ShareIcon>
+                        <GlobeIcon />
+                      </ShareIcon>
+                    </ShareButton>
+                  </Dialog.Close>
+
+                  {/* <SourceImageContainer>
                    <SourceImage src={soundcloud} alt="Soundcloud logo" />
             <SourceImage src={youtube} alt="Youtube logo" />
             <SourceImage src={spotify} alt="Spotify logo" />
             </SourceImageContainer> */}
-
-            {added && (
-              <>
-                <AddedContainer>
-                  <CheckCircledIcon
-                    style={{color: "green", height: "20px", width: "20px"}}
-                  />
-                  <SongShared>song shared</SongShared>
-                </AddedContainer>
-                <div>{JSON.stringify(songData, null, 2)}</div>
-              </>
-            )}
-          </>
-        )}
-      </MusicContainer>
-
-      {/* {error && <div>error loading song.</div>} */}
+                </>
+              )}
+            </MusicContainer>
+            <Dialog.Close asChild>
+              <button className="IconButton" aria-label="Close">
+                <Cross2Icon />
+              </button>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+      {added && (
+        <>
+          <AddedContainer>
+            <CheckCircledIcon
+              style={{color: "green", height: "20px", width: "20px"}}
+            />
+            <SongShared>song shared</SongShared>
+          </AddedContainer>
+          <div>{JSON.stringify(songData, null, 2)}</div>
+        </>
+      )}
     </div>
   );
+
+  //   <div className="App">
+
+  //     {/* {error && <div>error loading song.</div>} */}
+  //   </div>
+  // );
 }
 
 export default Share;

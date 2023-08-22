@@ -32,7 +32,7 @@ export const HeaderText = styled.div`
   color: rgb(17, 17, 17);
   max-width: 800px;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 24px;
   max-width: 256px;
   width: 100%;
 `;

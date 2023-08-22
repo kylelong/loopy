@@ -126,9 +126,7 @@ export const MenuItem = styled.div`
   font-family: "Helvetica Neue", sans-serif;
   color: #9ca3af;
   font-weight: bold;
-  position: relative;
   font-size: 18px;
-  left: 138px;
 
   &:hover {
     color: rgb(93, 93, 255);

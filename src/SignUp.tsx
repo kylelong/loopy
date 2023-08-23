@@ -114,15 +114,45 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
+  const hasUser = async (email: string) => {
+    console.log("has user....");
+    const {data, error} = await supabase
+      .from("users")
+      .select()
+      .eq("email", email);
+    if (error) {
+      console.log(error);
+    }
+    if (data && data.length > 0) {
+      console.log("USER EXISTS");
+    } else {
+      console.log("USER DOES NOT EXISTS");
+    }
+  };
+
+  const insertUser = async (email: string) => {
+    const {error} = await supabase.from("users").insert({email: email});
+    if (error) {
+      console.log(error);
+    }
+    /**
+     * {code: '23505', details: 'Key (username)=() already exists.', hint: null, message: 'duplicate key value violates unique constraint "users_username_key"'}
+     */
+  };
+
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (email && password) {
-      const {data, error} = await supabase.auth.signUp({
-        email: email,
-        password: password,
-      });
-      console.log(data, error);
-    }
+    hasUser(email);
+    // if (email && password) {
+    //   console.log("create user");
+    //   const {data, error} = await supabase.auth.signUp({
+    //     email: email,
+    //     password: password,
+    //   });
+    //   console.log(data, error); // data.role === authenticated
+    //   insertUser(email);
+
+    // }
   };
   return (
     <Container>

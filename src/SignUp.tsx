@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 import {Link} from "react-router-dom";
 import {createClient} from "@supabase/supabase-js";
@@ -33,6 +33,13 @@ export const HeaderText = styled.div`
   letter-spacing: -1px;
   color: rgb(17, 17, 17);
   margin-bottom: 24px;
+`;
+
+export const UserExistsError = styled.div`
+  margin-top: 8px;
+  margin-bottom: 12px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 14px;
 `;
 
 export const InputBox = styled.input`
@@ -95,9 +102,23 @@ export const linkStyle = {
   fontFamily: "Helvetica Neue, sans-serif",
   color: "rgb(93, 93, 255)",
 };
+
+interface Error {
+  userExists: boolean;
+  invalidEmail: boolean;
+  emptyEmail: boolean;
+  emptyPassword: boolean;
+}
+
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errors, setErrors] = useState<Error>({
+    userExists: false,
+    invalidEmail: false,
+    emptyEmail: false,
+    emptyPassword: false,
+  });
 
   // Create a single supabase client for interacting with your database
 
@@ -114,8 +135,11 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
+  const validEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const hasUser = async (email: string) => {
-    console.log("has user....");
     const {data, error} = await supabase
       .from("users")
       .select()
@@ -124,17 +148,20 @@ const SignUp = () => {
       console.log(error);
     }
     if (data && data.length > 0) {
-      console.log("USER EXISTS");
-    } else {
-      console.log("USER DOES NOT EXISTS");
+      setErrors({...errors, userExists: true});
     }
+    return data && data.length > 0;
   };
 
   const insertUser = async (email: string) => {
     const {error} = await supabase.from("users").insert({email: email});
     if (error) {
-      console.log(error);
+      console.log("Insert error", error);
+      if (error.code === "23505") {
+        setErrors({...errors, userExists: true});
+      }
     }
+
     /**
      * {code: '23505', details: 'Key (username)=() already exists.', hint: null, message: 'duplicate key value violates unique constraint "users_username_key"'}
      */
@@ -142,18 +169,20 @@ const SignUp = () => {
 
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    hasUser(email);
-    // if (email && password) {
-    //   console.log("create user");
-    //   const {data, error} = await supabase.auth.signUp({
-    //     email: email,
-    //     password: password,
-    //   });
-    //   console.log(data, error); // data.role === authenticated
-    //   insertUser(email);
 
-    // }
+    if (email && password) {
+      const userExists = await hasUser(email);
+      if (!userExists) {
+        insertUser(email);
+        const {data, error} = await supabase.auth.signUp({
+          email: email,
+          password: password,
+        });
+        console.log(data, error); // data.role === authenticated
+      }
+    }
   };
+
   return (
     <Container>
       <SignupForm>
@@ -170,9 +199,15 @@ const SignUp = () => {
           <Label>Password</Label>
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
+        {errors.userExists && (
+          <UserExistsError>
+            An account with this email already exists. Please log in.{" "}
+          </UserExistsError>
+        )}
         <InputContainer>
           <SignupButton onClick={register}>Sign up</SignupButton>
         </InputContainer>
+
         <NoAccount>
           Already have an account?{" "}
           <Link to="/login" style={linkStyle}>

@@ -35,7 +35,7 @@ export const HeaderText = styled.div`
   margin-bottom: 24px;
 `;
 
-export const UserExistsError = styled.div`
+export const FormError = styled.div`
   margin-top: 8px;
   margin-bottom: 12px;
   font-family: "Helvetica Neue", sans-serif;
@@ -170,6 +170,16 @@ const SignUp = () => {
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    if (email.length === 0) {
+      setErrors({...errors, emptyEmail: true});
+    }
+    if (password.length === 0) {
+      setErrors({...errors, emptyPassword: true});
+    }
+    if (email && email.length > 0 && !validEmail(email)) {
+      setErrors({...errors, invalidEmail: true});
+    }
+
     if (email && password) {
       const userExists = await hasUser(email);
       if (!userExists) {
@@ -200,9 +210,16 @@ const SignUp = () => {
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
         {errors.userExists && (
-          <UserExistsError>
+          <FormError>
             An account with this email already exists. Please log in.{" "}
-          </UserExistsError>
+          </FormError>
+        )}
+        {errors.emptyEmail && <FormError>Please enter an email. </FormError>}
+        {errors.emptyPassword && (
+          <FormError>Please enter a password. </FormError>
+        )}
+        {errors.invalidEmail && (
+          <FormError>Please enter a valid email. </FormError>
         )}
         <InputContainer>
           <SignupButton onClick={register}>Sign up</SignupButton>

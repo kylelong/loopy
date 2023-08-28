@@ -36,7 +36,7 @@ export const HeaderText = styled.div`
 `;
 
 export const FormError = styled.div`
-  margin-top: 8px;
+  margin-top: 4px;
   margin-bottom: 12px;
   font-family: "Helvetica Neue", sans-serif;
   font-size: 14px;
@@ -148,7 +148,10 @@ const SignUp = () => {
       console.log(error);
     }
     if (data && data.length > 0) {
-      setErrors({...errors, userExists: true});
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        userExists: true,
+      }));
     }
     return data && data.length > 0;
   };
@@ -156,9 +159,11 @@ const SignUp = () => {
   const insertUser = async (email: string) => {
     const {error} = await supabase.from("users").insert({email: email});
     if (error) {
-      console.log("Insert error", error);
       if (error.code === "23505") {
-        setErrors({...errors, userExists: true});
+        setErrors((prevErrors) => ({
+          ...errors,
+          userExists: true,
+        }));
       }
     }
 
@@ -167,20 +172,51 @@ const SignUp = () => {
      */
   };
 
+  const noErrors = () => {
+    return Object.values(errors).every((el) => el === false);
+  };
+
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
+    await hasUser(email);
     if (email.length === 0) {
-      setErrors({...errors, emptyEmail: true});
-    }
-    if (password.length === 0) {
-      setErrors({...errors, emptyPassword: true});
-    }
-    if (email && email.length > 0 && !validEmail(email)) {
-      setErrors({...errors, invalidEmail: true});
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyEmail: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyEmail: false,
+      }));
     }
 
-    if (email && password) {
+    if (password.length === 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyPassword: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyPassword: false,
+      }));
+    }
+    if (email.length > 0 && !validEmail(email)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        invalidEmail: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        invalidEmail: false,
+      }));
+    }
+
+    const hasNoErrors = noErrors();
+
+    if (hasNoErrors && email && password) {
       const userExists = await hasUser(email);
       if (!userExists) {
         insertUser(email);
@@ -192,6 +228,8 @@ const SignUp = () => {
       }
     }
   };
+
+  useEffect(() => {}, []);
 
   return (
     <Container>
@@ -215,12 +253,13 @@ const SignUp = () => {
           </FormError>
         )}
         {errors.emptyEmail && <FormError>Please enter an email. </FormError>}
-        {errors.emptyPassword && (
-          <FormError>Please enter a password. </FormError>
-        )}
         {errors.invalidEmail && (
           <FormError>Please enter a valid email. </FormError>
         )}
+        {errors.emptyPassword && (
+          <FormError>Please enter a password. </FormError>
+        )}
+
         <InputContainer>
           <SignupButton onClick={register}>Sign up</SignupButton>
         </InputContainer>

@@ -133,21 +133,23 @@ const Login = () => {
     if (error) {
       console.log(error);
     }
-    if (email && password && !errors.invalidEmail) {
-      if (data && data.length === 0) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          accountNotFound: true,
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          accountNotFound: false,
-        }));
+    if (validEmail(email)) {
+      if (email && password) {
+        if (data && data.length === 0) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            accountNotFound: true,
+          }));
+        } else {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            accountNotFound: false,
+          }));
+        }
       }
     }
 
-    return !data || data.length === 0;
+    return data && data.length === 0;
   };
 
   const noErrors = () => {
@@ -237,17 +239,18 @@ const Login = () => {
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
 
-        {errors.accountNotFound && (
-          <FormError>
-            An account with this email does not exist. Please sign up.{" "}
-          </FormError>
-        )}
         {errors.emptyEmail && <FormError>Please enter an email. </FormError>}
         {errors.invalidEmail && (
           <FormError>Please enter a valid email. </FormError>
         )}
         {errors.emptyPassword && (
           <FormError>Please enter a password. </FormError>
+        )}
+
+        {errors.accountNotFound && (
+          <FormError>
+            An account with this email does not exist. Please sign up.{" "}
+          </FormError>
         )}
 
         <InputContainer>

@@ -20,7 +20,7 @@ soundcloud -> enter link and embed with GET call to https://soundcloud.com/oembe
 
 BACKEND
 -------
-users: id, email, username, created_at
+users: uid, email, username, created_at, favorite_artist, favorite_genre, favorite_song, location, current_favorite_song
 
 songs: id, user_id, created_at, title, genre, songLink, src (youtube, soundcloud, etc), embedUrl
  get src from parsing host

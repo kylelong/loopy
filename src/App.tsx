@@ -7,8 +7,8 @@ import Share from "./Share";
 import Profile from "./Profile";
 import AuthRoute from "./util/AuthRoute";
 import AuthRouteLoggedOut from "./util/AuthRouteLoggedOut";
+
 function App() {
-  // TODO: conditional rednering for / Route
   return (
     <div>
       <Router>

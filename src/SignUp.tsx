@@ -4,14 +4,20 @@ import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
 import {validEmail} from "./functions";
-import {SignUpErrors} from "./types/errors";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   User,
   UserCredential,
 } from "firebase/auth";
-import {auth} from "./firebase-config";
+import {auth, app} from "./firebase-config";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {
+  getFirestore,
+  serverTimestamp,
+  addDoc,
+  collection,
+} from "firebase/firestore";
 
 export const Container = styled.div`
   display: flex;
@@ -111,15 +117,19 @@ export const linkStyle = {
   color: "rgb(93, 93, 255)",
 };
 
+export const ErrorList = styled.ul`
+  text-align: left;
+  font-family: "Helvetica Neue", sans-serif;
+  margin-top: 12px;
+  margin-bottom: 12px;
+`;
+
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [errors, setErrors] = useState<SignUpErrors>({
-    userExists: false,
-    invalidEmail: false,
-    emptyEmail: false,
-    emptyPassword: false,
-  });
+  const [errors, setErrors] = useState<string[]>([]);
+  const [user] = useAuthState(auth);
+  const db = getFirestore(app);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -129,10 +139,21 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
-  const insertUser = async (email: string) => {};
-
-  const noErrors = () => {
-    return Object.values(errors).every((el) => el === false);
+  const insertUser = async () => {
+    try {
+    } catch (err) {
+      await addDoc(collection(db, "users"), {
+        uid: user?.uid,
+        createdAt: serverTimestamp(),
+        email: email,
+        username: "",
+        location: "",
+        favoriteArtist: "",
+        favoriteSong: "",
+        favoriteGenre: "",
+        currentFavoriteSong: "",
+      });
+    }
   };
 
   const sendConfirmationEmail = async (user: User) => {
@@ -150,47 +171,44 @@ const SignUp = () => {
 
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    setErrors([]);
 
-    await createUserWithEmailAndPassword(auth, email, password).then(
-      (userCredential) => {
-        console.log(userCredential);
+    await createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        insertUser();
         sendConfirmationEmail(userCredential.user);
-      }
-    );
-
-    if (email.length === 0) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyEmail: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyEmail: false,
-      }));
-    }
-
+      })
+      .catch((error) => {
+        const ERRORS = [
+          [
+            "auth/email-already-in-use",
+            "Email is alreay in use. Please log in.",
+          ],
+          ["auth/invalid-email", "Invalid email, please try again"],
+          [
+            "auth/operation-not-allowed",
+            "Operation not allowed, double check and try again",
+          ],
+          [
+            "auth/weak-password",
+            "Password is too weak, please add more complexity",
+          ],
+        ];
+        const ERROR_CODES = ERRORS.map((item) => item[0]);
+        const errorCode = error.code;
+        if (ERROR_CODES.includes(errorCode)) {
+          let error_array: string[][] = ERRORS.filter(
+            (item) => item[0] === errorCode
+          );
+          let error_message: string = error_array[0][1];
+          setErrors((errors) => [...errors, error_message]);
+        }
+      });
     if (password.length === 0) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyPassword: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyPassword: false,
-      }));
+      setErrors((errors) => [...errors, "Please enter a password."]);
     }
     if (email.length > 0 && !validEmail(email)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        invalidEmail: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        invalidEmail: false,
-      }));
+      setErrors((errors) => [...errors, "Please enter a valid email"]);
     }
   };
 
@@ -212,18 +230,16 @@ const SignUp = () => {
           <Label>Password</Label>
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
-        {errors.userExists && (
-          <FormError>
-            An account with this email already exists. Please log in.{" "}
-          </FormError>
-        )}
-        {errors.emptyEmail && <FormError>Please enter an email. </FormError>}
-        {errors.invalidEmail && (
-          <FormError>Please enter a valid email. </FormError>
-        )}
-        {errors.emptyPassword && (
-          <FormError>Please enter a password. </FormError>
-        )}
+
+        {
+          <ErrorList>
+            {" "}
+            {errors &&
+              errors.map((error, item) => {
+                return <li key={item}>{error}</li>;
+              })}
+          </ErrorList>
+        }
 
         <InputContainer>
           <SignupButton onClick={register}>Sign up</SignupButton>

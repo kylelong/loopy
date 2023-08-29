@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
-import {LoginErrors} from "./types/errors";
 import {validEmail} from "./functions";
 import {signInWithEmailAndPassword} from "firebase/auth";
 import {auth} from "./firebase-config";
@@ -108,16 +107,18 @@ export const FormError = styled.div`
   font-family: "Helvetica Neue", sans-serif;
   font-size: 14px;
 `;
+
+export const ErrorList = styled.ul`
+  text-align: left;
+  font-family: "Helvetica Neue", sans-serif;
+  margin-top: 12px;
+  margin-bottom: 12px;
+`;
+
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [errors, setErrors] = useState<LoginErrors>({
-    invalidEmail: false,
-    emptyEmail: false,
-    emptyPassword: false,
-    accountNotFound: false,
-    invalidLogin: false,
-  });
+  const [errors, setErrors] = useState<string[]>([]);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -127,65 +128,51 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
-  const noErrors = () => {
-    return Object.values(errors).every((el) => el === false);
-  };
-
   const signInWithEmail = async () => {
+    setErrors([]);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // SIGNED IN
         console.log("signed in");
       })
       .catch((error) => {
-        console.log(error);
+        const ERRORS = [
+          ["auth/wrong-password", "Wrong password, please try again"],
+          ["auth/user-not-found", "Invalid credentials, please try again"],
+          ["auth/invalid-email", "Invalid email, please try again"],
+          [
+            "auth/user-disabled",
+            "The account you are trying to update has been disabled",
+          ],
+          [
+            "too-many-requests",
+            "Too many failed attempts, try again later or reset your password",
+          ],
+        ];
+        const ERROR_CODES = ERRORS.map((item) => item[0]);
+        const errorCode = error.code;
+        if (ERROR_CODES.includes(errorCode)) {
+          let error_array: string[][] = ERRORS.filter(
+            (item) => item[0] === errorCode
+          );
+          let error_message: string = error_array[0][1];
+          setErrors((errors) => [...errors, error_message]);
+        }
       });
+
+    if (password.length === 0) {
+      setErrors((errors) => [...errors, "Please enter a password."]);
+    }
+
+    if (email.length > 0 && !validEmail(email)) {
+      setErrors((errors) => [...errors, "Please enter a valid email"]);
+    }
   };
 
   const login = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (email.length === 0) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyEmail: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyEmail: false,
-      }));
-    }
-
-    if (password.length === 0) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyPassword: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        emptyPassword: false,
-      }));
-    }
-
-    if (email.length > 0 && !validEmail(email)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        invalidEmail: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        invalidEmail: false,
-      }));
-    }
-
-    const hasNoErrors = noErrors();
-
-    if (hasNoErrors && email && password) {
-      signInWithEmail();
-    }
+    signInWithEmail();
   };
   return (
     <Container>
@@ -204,19 +191,15 @@ const Login = () => {
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
 
-        {errors.emptyEmail && <FormError>Please enter an email. </FormError>}
-        {errors.invalidEmail && (
-          <FormError>Please enter a valid email. </FormError>
-        )}
-        {errors.emptyPassword && (
-          <FormError>Please enter a password. </FormError>
-        )}
-
-        {errors.accountNotFound && (
-          <FormError>
-            An account with this email does not exist. Please sign up.{" "}
-          </FormError>
-        )}
+        {
+          <ErrorList>
+            {" "}
+            {errors &&
+              errors.map((error, item) => {
+                return <li key={item}>{error}</li>;
+              })}
+          </ErrorList>
+        }
 
         <InputContainer>
           <LoginButton onClick={login}>Login</LoginButton>

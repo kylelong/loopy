@@ -10,6 +10,7 @@ import ReactSearchBox from "react-search-box";
 import * as Dialog from "@radix-ui/react-dialog";
 import {Cross2Icon} from "@radix-ui/react-icons";
 import genres from "./genres";
+import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
 
 export const ShareContainer = styled.div``;
@@ -28,8 +29,6 @@ export const MenuHeader = styled.div`
 export const MenuItems = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  // width: 200px;
   margin: 24px;
   position: relative;
   top: 5px;
@@ -199,6 +198,8 @@ function Share() {
     spotifyLink: false, // is it a spotify song (diff styling)
   });
 
+  const [user] = useAuthState(auth);
+
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSongData({...songData, url: event.target.value});
   };
@@ -333,6 +334,8 @@ function Share() {
           <MenuItem onClick={logout}>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>
+      <div>{user?.email}</div>
+      <div>email verified: {user?.emailVerified.toString()}</div>
 
       <ModalContainer>
         <Dialog.Root>
@@ -356,6 +359,7 @@ function Share() {
           <Dialog.Portal>
             <Dialog.Overlay className="DialogOverlay" />
             <Dialog.Content className="DialogContent">
+              <Dialog.Title className="DialogTitle">Share a song</Dialog.Title>
               <MusicContainer>
                 <SearchContainer>
                   <SearchBox

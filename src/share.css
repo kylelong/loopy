@@ -41,6 +41,7 @@ input {
 .DialogTitle {
   margin: 0;
   font-weight: 500;
+  font-family: "Helvetica Neue", sans-serif;
   color: var(--mauve-12);
   font-size: 17px;
 }

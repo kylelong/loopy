@@ -5,16 +5,24 @@ import Login from "./Login";
 import SignUp from "./SignUp";
 import Share from "./Share";
 import Profile from "./Profile";
+import AuthRoute from "./util/AuthRoute";
+import AuthRouteLoggedOut from "./util/AuthRouteLoggedOut";
 function App() {
+  // TODO: conditional rednering for / Route
   return (
     <div>
       <Router>
         <Routes>
-          <Route path="/" element={<LandingPage />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/signup" element={<SignUp />}></Route>
-          <Route path="/share" element={<Share />}></Route>
-          <Route path="/:username" element={<Profile />}></Route>
+          <Route element={<AuthRoute />}>
+            <Route path="/" element={<LandingPage />}></Route>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="/signup" element={<SignUp />}></Route>
+          </Route>
+
+          <Route element={<AuthRouteLoggedOut />}>
+            <Route path="/share" element={<Share />}></Route>
+            <Route path="/:username" element={<Profile />}></Route>
+          </Route>
         </Routes>
       </Router>
     </div>

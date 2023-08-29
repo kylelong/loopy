@@ -1,11 +1,17 @@
 import React, {useEffect, useState} from "react";
 
 import {Link} from "react-router-dom";
-import {SUPABASE} from "./constants";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
 import {validEmail} from "./functions";
 import {SignUpErrors} from "./types/errors";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  User,
+  UserCredential,
+} from "firebase/auth";
+import {auth} from "./firebase-config";
 
 export const Container = styled.div`
   display: flex;
@@ -115,8 +121,6 @@ const SignUp = () => {
     emptyPassword: false,
   });
 
-  // Create a single supabase client for interacting with your database
-
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
@@ -125,50 +129,35 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
-  const hasUser = async (email: string) => {
-    const {data, error} = await SUPABASE.from("users")
-      .select()
-      .eq("email", email);
-    if (error) {
-      console.log(error);
-    }
-    if (data && data.length > 0) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        userExists: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        userExists: false,
-      }));
-    }
-    return data && data.length > 0;
-  };
-
-  const insertUser = async (email: string) => {
-    const {error} = await SUPABASE.from("users").insert({email: email});
-    if (error) {
-      if (error.code === "23505") {
-        setErrors((prevErrors) => ({
-          ...errors,
-          userExists: true,
-        }));
-      }
-    }
-
-    /**
-     * {code: '23505', details: 'Key (username)=() already exists.', hint: null, message: 'duplicate key value violates unique constraint "users_username_key"'}
-     */
-  };
+  const insertUser = async (email: string) => {};
 
   const noErrors = () => {
     return Object.values(errors).every((el) => el === false);
   };
 
+  const sendConfirmationEmail = async (user: User) => {
+    if (user) {
+      // let actionCodeSettings = {
+      //     url: "http://localhost:3000/confirm_email?email="+ user.email
+      // }
+      try {
+        await sendEmailVerification(user);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    await hasUser(email);
+
+    await createUserWithEmailAndPassword(auth, email, password).then(
+      (userCredential) => {
+        console.log(userCredential);
+        sendConfirmationEmail(userCredential.user);
+      }
+    );
+
     if (email.length === 0) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -202,20 +191,6 @@ const SignUp = () => {
         ...prevErrors,
         invalidEmail: false,
       }));
-    }
-
-    const hasNoErrors = noErrors();
-
-    if (hasNoErrors && email && password) {
-      const userExists = await hasUser(email);
-      if (!userExists) {
-        insertUser(email);
-        const {data, error} = await SUPABASE.auth.signUp({
-          email: email,
-          password: password,
-        });
-        console.log(data, error); // data.role === authenticated
-      }
     }
   };
 

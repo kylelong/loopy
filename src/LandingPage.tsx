@@ -110,7 +110,6 @@ export const MenuItems = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 200px;
   margin: 24px;
   position: relative;
   top: 5px;

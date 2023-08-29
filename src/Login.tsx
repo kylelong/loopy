@@ -2,9 +2,10 @@ import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
-import {SUPABASE} from "./constants";
 import {LoginErrors} from "./types/errors";
 import {validEmail} from "./functions";
+import {signInWithEmailAndPassword} from "firebase/auth";
+import {auth} from "./firebase-config";
 
 export const Container = styled.div`
   display: flex;
@@ -126,53 +127,19 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
-  const userNotFound = async (email: string) => {
-    const {data, error} = await SUPABASE.from("users")
-      .select()
-      .eq("email", email);
-    if (error) {
-      console.log(error);
-    }
-    if (validEmail(email)) {
-      if (email && password) {
-        if (data && data.length === 0) {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            accountNotFound: true,
-          }));
-        } else {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            accountNotFound: false,
-          }));
-        }
-      }
-    }
-
-    return data && data.length === 0;
-  };
-
   const noErrors = () => {
     return Object.values(errors).every((el) => el === false);
   };
 
   const signInWithEmail = async () => {
-    const {data, error} = await SUPABASE.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
-    console.log(error);
-    if (data && data.session === null && data.user === null) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        invalidLogin: true,
-      }));
-    } else if (data && data.session != null && data.user != null) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        invalidLogin: false,
-      }));
-    }
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // SIGNED IN
+        console.log("signed in");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const login = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -216,9 +183,7 @@ const Login = () => {
 
     const hasNoErrors = noErrors();
 
-    const emailNotFound = await userNotFound(email);
-
-    if (hasNoErrors && !emailNotFound && email && password) {
+    if (hasNoErrors && email && password) {
       signInWithEmail();
     }
   };

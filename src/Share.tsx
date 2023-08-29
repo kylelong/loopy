@@ -10,6 +10,7 @@ import ReactSearchBox from "react-search-box";
 import * as Dialog from "@radix-ui/react-dialog";
 import {Cross2Icon} from "@radix-ui/react-icons";
 import genres from "./genres";
+import {auth} from "./firebase-config";
 
 export const ShareContainer = styled.div``;
 
@@ -311,11 +312,9 @@ function Share() {
     // });
   };
 
-  /**
-   * async function signOut() {
-  const { error } = await supabase.auth.signOut()
-}
-   */
+  const logout = () => {
+    auth.signOut();
+  };
 
   /**
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
@@ -331,7 +330,7 @@ function Share() {
             <MenuItem>Account</MenuItem>
           </Link>
 
-          <MenuItem>Logout</MenuItem>
+          <MenuItem onClick={logout}>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>
 

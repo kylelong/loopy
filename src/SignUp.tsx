@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from "react";
 
 import {Link} from "react-router-dom";
-import {createClient} from "@supabase/supabase-js";
+import {SUPABASE} from "./constants";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
+import {validEmail} from "./functions";
+import {SignUpErrors} from "./types/errors";
 
 export const Container = styled.div`
   display: flex;
@@ -103,17 +105,10 @@ export const linkStyle = {
   color: "rgb(93, 93, 255)",
 };
 
-interface Error {
-  userExists: boolean;
-  invalidEmail: boolean;
-  emptyEmail: boolean;
-  emptyPassword: boolean;
-}
-
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [errors, setErrors] = useState<Error>({
+  const [errors, setErrors] = useState<SignUpErrors>({
     userExists: false,
     invalidEmail: false,
     emptyEmail: false,
@@ -121,11 +116,6 @@ const SignUp = () => {
   });
 
   // Create a single supabase client for interacting with your database
-
-  const SUPABASE_URL: string = process.env.REACT_APP_SUPABASE_URL || "";
-  const PUBLIC_KEY: string = process.env.REACT_APP_PUBLIC_ANON_KEY || "";
-
-  const supabase = createClient(SUPABASE_URL, PUBLIC_KEY);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -135,13 +125,8 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
-  const validEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-
   const hasUser = async (email: string) => {
-    const {data, error} = await supabase
-      .from("users")
+    const {data, error} = await SUPABASE.from("users")
       .select()
       .eq("email", email);
     if (error) {
@@ -152,12 +137,17 @@ const SignUp = () => {
         ...prevErrors,
         userExists: true,
       }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        userExists: false,
+      }));
     }
     return data && data.length > 0;
   };
 
   const insertUser = async (email: string) => {
-    const {error} = await supabase.from("users").insert({email: email});
+    const {error} = await SUPABASE.from("users").insert({email: email});
     if (error) {
       if (error.code === "23505") {
         setErrors((prevErrors) => ({
@@ -220,7 +210,7 @@ const SignUp = () => {
       const userExists = await hasUser(email);
       if (!userExists) {
         insertUser(email);
-        const {data, error} = await supabase.auth.signUp({
+        const {data, error} = await SUPABASE.auth.signUp({
           email: email,
           password: password,
         });

@@ -2,6 +2,9 @@ import React, {useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
+import {SUPABASE} from "./constants";
+import {LoginErrors} from "./types/errors";
+import {validEmail} from "./functions";
 
 export const Container = styled.div`
   display: flex;
@@ -100,6 +103,12 @@ export const linkStyle = {
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [errors, setErrors] = useState<LoginErrors>({
+    invalidEmail: false,
+    emptyEmail: false,
+    emptyPassword: false,
+    accountNotFound: false,
+  });
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -109,9 +118,89 @@ const Login = () => {
     setPassword(event.target.value);
   };
 
-  const login = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const userNotFound = async (email: string) => {
+    const {data, error} = await SUPABASE.from("users")
+      .select()
+      .eq("email", email);
+    if (error) {
+      console.log(error);
+    }
+    if (data && data.length === 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        accountNotFound: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        accountNotFound: false,
+      }));
+    }
+    return !data || data.length === 0;
+  };
+
+  const noErrors = () => {
+    return Object.values(errors).every((el) => el === false);
+  };
+
+  const signInWithEmail = async () => {
+    const {data, error} = await SUPABASE.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+    console.log("LOGIN");
+    console.log(data);
+    console.log(error);
+  };
+
+  const login = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(email, password);
+
+    if (email.length === 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyEmail: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyEmail: false,
+      }));
+    }
+
+    if (password.length === 0) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyPassword: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        emptyPassword: false,
+      }));
+    }
+
+    if (email.length > 0 && !validEmail(email)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        invalidEmail: true,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        invalidEmail: false,
+      }));
+    }
+
+    const hasNoErrors = noErrors();
+
+    const emailNotFound = await userNotFound(email);
+    console.log("emailNotFound: ", emailNotFound);
+
+    if (hasNoErrors && !emailNotFound && email && password) {
+      console.log("LOGGING YOU IN");
+      signInWithEmail();
+    }
   };
   return (
     <Container>

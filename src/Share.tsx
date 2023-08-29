@@ -312,6 +312,12 @@ function Share() {
   };
 
   /**
+   * async function signOut() {
+  const { error } = await supabase.auth.signOut()
+}
+   */
+
+  /**
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
   useEffect(() => {}, []);
@@ -324,9 +330,8 @@ function Share() {
           <Link to="/account" style={linkStyle}>
             <MenuItem>Account</MenuItem>
           </Link>
-          <Link to="/logout" style={linkStyle}>
-            <MenuItem>Logout</MenuItem>
-          </Link>
+
+          <MenuItem>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>
 

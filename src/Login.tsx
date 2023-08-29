@@ -100,6 +100,13 @@ export const linkStyle = {
   fontFamily: "Helvetica Neue, sans-serif",
   color: "rgb(93, 93, 255)",
 };
+
+export const FormError = styled.div`
+  margin-top: 4px;
+  margin-bottom: 12px;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 14px;
+`;
 const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -108,6 +115,7 @@ const Login = () => {
     emptyEmail: false,
     emptyPassword: false,
     accountNotFound: false,
+    invalidLogin: false,
   });
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,17 +133,20 @@ const Login = () => {
     if (error) {
       console.log(error);
     }
-    if (data && data.length === 0) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        accountNotFound: true,
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        accountNotFound: false,
-      }));
+    if (email && password && !errors.invalidEmail) {
+      if (data && data.length === 0) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          accountNotFound: true,
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          accountNotFound: false,
+        }));
+      }
     }
+
     return !data || data.length === 0;
   };
 
@@ -148,9 +159,18 @@ const Login = () => {
       email: email,
       password: password,
     });
-    console.log("LOGIN");
-    console.log(data);
     console.log(error);
+    if (data && data.session === null && data.user === null) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        invalidLogin: true,
+      }));
+    } else if (data && data.session != null && data.user != null) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        invalidLogin: false,
+      }));
+    }
   };
 
   const login = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -195,10 +215,8 @@ const Login = () => {
     const hasNoErrors = noErrors();
 
     const emailNotFound = await userNotFound(email);
-    console.log("emailNotFound: ", emailNotFound);
 
     if (hasNoErrors && !emailNotFound && email && password) {
-      console.log("LOGGING YOU IN");
       signInWithEmail();
     }
   };
@@ -218,6 +236,20 @@ const Login = () => {
           <Label>Password</Label>
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
+
+        {errors.accountNotFound && (
+          <FormError>
+            An account with this email does not exist. Please sign up.{" "}
+          </FormError>
+        )}
+        {errors.emptyEmail && <FormError>Please enter an email. </FormError>}
+        {errors.invalidEmail && (
+          <FormError>Please enter a valid email. </FormError>
+        )}
+        {errors.emptyPassword && (
+          <FormError>Please enter a password. </FormError>
+        )}
+
         <InputContainer>
           <LoginButton onClick={login}>Login</LoginButton>
         </InputContainer>

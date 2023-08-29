@@ -10,4 +10,5 @@ export interface LoginErrors {
   emptyEmail: boolean;
   emptyPassword: boolean;
   accountNotFound: boolean;
+  invalidLogin: boolean;
 }

@@ -1,5 +1,6 @@
-import React from "react";
-import {doc, updateDoc, getFirestore} from "firebase/firestore";
+import React, {useState, useEffect} from "react";
+import {doc, updateDoc, getFirestore, getDoc} from "firebase/firestore";
+import Autocomplete from "react-google-autocomplete";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth, app} from "./firebase-config";
 import LoopyLogo from "./LoopyLogo";
@@ -51,10 +52,19 @@ export const InputContainer = styled.div`
   width: 100%;
 `;
 
+export const Header = styled.div`
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: bold;
+  margin-bottom: 12px;
+  font-size: 22px;
+`;
+
 export const Label = styled.label`
   font-family: "Helvetica Neue", sans-serif;
-  font-size: 14px;
   margin-bottom: 6px;
+  color: #9ca3af;
+  font-weight: bold;
+  font-size: 16px;
 `;
 
 export const InputBox = styled.input`
@@ -73,13 +83,98 @@ export const InputBox = styled.input`
   }
 `;
 
+export const StyledAutoComplete = styled(Autocomplete)`
+  max-width: 256px;
+  width: 100%;
+  height: 40px;
+  font-family: sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1.5px solid #d1d5db;
+  border-radius: 3px;
+  padding-left: 1rem;
+  &:focus {
+    outline: none;
+    border-color: rgb(93, 93, 255);
+  }
+`;
+export const AccountContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const SaveButton = styled.button`
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-evenly;
+  height: 42px;
+  max-width: 120px;
+  width: 100%;
+  border: 0px;
+  border-radius: 4px;
+  background-color: rgb(93, 93, 255);
+  font-weight: bold;
+  color: white;
+  font-family: sans-serif;
+  font-size: 16px;
+  text-align: center;
+  opacity: 0.8;
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+  }
+  margin-top: 22px;
+`;
+
 export const linkStyle = {
   textDecoration: "none",
 };
 
+interface User {
+  currentFavoriteSong: string;
+  email: string;
+  favoriteArtist: string;
+  favoriteGenre: string;
+  favoriteSong: string;
+  location: string;
+  uid: string;
+  username: string;
+}
+
 const Account = () => {
   const [user] = useAuthState(auth);
   const db = getFirestore(app);
+  const [userData, setUserData] = useState<User>({
+    currentFavoriteSong: "",
+    email: "",
+    favoriteArtist: "",
+    favoriteGenre: "",
+    favoriteSong: "",
+    location: "",
+    uid: "",
+    username: "",
+  });
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    if (user) {
+      const docRef = doc(db, "users", user?.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data() as User;
+        setUserData(data);
+      } else {
+        // docSnap.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    }
+  };
 
   const logout = () => {
     auth.signOut();
@@ -175,37 +270,41 @@ const Account = () => {
           <MenuItem onClick={logout}>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>
-      <div>Edit Profile</div>
+      <AccountContainer>
+        <Header>Edit Profile</Header>
+        <InputContainer>
+          <Label>Username</Label>
+          <InputBox type="text" placeholder={userData.username} />
+        </InputContainer>
+        <InputContainer>
+          <Label>Location</Label>
+          <StyledAutoComplete
+            apiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
+            placeholder={userData.location}
+            onPlaceSelected={(place: string) => {
+              console.log(place);
+            }}
+          />
+        </InputContainer>
 
-      <InputContainer>
-        <Label>Username</Label>
-        <InputBox type="text" />
-      </InputContainer>
-
-      <InputContainer>
-        <Label>Location</Label>
-        <InputBox type="text" />
-      </InputContainer>
-
-      <InputContainer>
-        <Label>Favorite Genre</Label>
-        <InputBox type="text" />
-      </InputContainer>
-
-      <InputContainer>
-        <Label>Favorite Artist</Label>
-        <InputBox type="text" />
-      </InputContainer>
-
-      <InputContainer>
-        <Label>Favorite Song</Label>
-        <InputBox type="text" />
-      </InputContainer>
-
-      <InputContainer>
-        <Label>Favorite Current Song</Label>
-        <InputBox type="text" />
-      </InputContainer>
+        <InputContainer>
+          <Label>Favorite Genre</Label>
+          <InputBox type="text" placeholder={userData.favoriteGenre} />
+        </InputContainer>
+        <InputContainer>
+          <Label>Favorite Artist</Label>
+          <InputBox type="text" placeholder={userData.favoriteArtist} />
+        </InputContainer>
+        <InputContainer>
+          <Label>Favorite Song</Label>
+          <InputBox type="text" placeholder={userData.favoriteSong} />
+        </InputContainer>
+        <InputContainer>
+          <Label>Favorite Current Song</Label>
+          <InputBox type="text" placeholder={userData.currentFavoriteSong} />
+        </InputContainer>
+        <SaveButton>Save</SaveButton>
+      </AccountContainer>
     </div>
   );
 };

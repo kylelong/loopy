@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 import LandingPage from "./LandingPage";
 import Login from "./Login";
 import SignUp from "./SignUp";
+import Account from "./Account";
 import Share from "./Share";
 import Profile from "./Profile";
 import AuthRoute from "./util/AuthRoute";
@@ -21,6 +22,7 @@ function App() {
 
           <Route element={<AuthRouteLoggedOut />}>
             <Route path="/share" element={<Share />}></Route>
+            <Route path="/account" element={<Account />}></Route>
             <Route path="/:username" element={<Profile />}></Route>
           </Route>
         </Routes>

@@ -4,6 +4,7 @@ import {useParams} from "react-router-dom";
 const Profile = () => {
   const params = useParams();
   console.log(params.username);
+
   // TODO: make sure username exists
   return (
     <>

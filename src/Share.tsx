@@ -5,6 +5,7 @@ import "./share.css";
 import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
+import refresh from "./assets/refresh.svg";
 import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
 import ReactSearchBox from "react-search-box";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -176,6 +177,64 @@ export const SourceImage = styled.img`
   width: 52px;
 `;
 
+export const VerifyEmailContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
+export const NoticeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: 35px;
+  margin: 7px;
+  @media (min-width: 767px) {
+    margin: 0 auto;
+  }
+`;
+
+export const VerifyEmail = styled.div`
+    display: flex;
+    flex-direction: column;
+    font-family: "Helvetica Neue", sans-serif;
+    background-color: #f9fafb;
+    border: 2px solid rgb(93, 93, 255);
+    max-width: 500px;
+    width: 100%;
+    padding: 24px;
+    margin-bottom: 24px;
+    border-radius: 4px;
+}
+`;
+
+export const RefreshIcon = styled.img`
+  width: 17px;
+`;
+
+export const RefreshButton = styled.button`
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-evenly;
+  height: 42px;
+  max-width: 120px;
+  width: 100%;
+  border: 0px;
+  border-radius: 4px;
+  background-color: rgb(93, 93, 255);
+  font-weight: bold;
+  color: white;
+  font-family: sans-serif;
+  font-size: 16px;
+  text-align: center;
+  opacity: 0.8;
+  &:hover {
+    cursor: pointer;
+    opacity: 1;
+  }
+`;
+
 export const linkStyle = {
   textDecoration: "none",
 };
@@ -321,6 +380,38 @@ function Share() {
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
   useEffect(() => {}, []);
+  if (!user?.emailVerified) {
+    return (
+      <VerifyEmailContainer>
+        <MenuHeader>
+          <LoopyLogo />
+          <MenuItems>
+            <Link to="/account" style={linkStyle}>
+              <MenuItem>Account</MenuItem>
+            </Link>
+
+            <MenuItem onClick={logout}>Logout</MenuItem>
+          </MenuItems>
+        </MenuHeader>
+
+        <NoticeContainer>
+          <VerifyEmail>
+            Please check your email to verify your account to use Loopy.
+          </VerifyEmail>
+          <Link to="/" style={linkStyle}>
+            <RefreshButton
+              onClick={() => {
+                user?.reload();
+              }}
+            >
+              <RefreshIcon src={refresh} />
+              Refresh
+            </RefreshButton>
+          </Link>
+        </NoticeContainer>
+      </VerifyEmailContainer>
+    );
+  }
   return (
     // TODO: change this className
     <div>
@@ -334,8 +425,6 @@ function Share() {
           <MenuItem onClick={logout}>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>
-      <div>{user?.email}</div>
-      <div>email verified: {user?.emailVerified.toString()}</div>
 
       <ModalContainer>
         <Dialog.Root>

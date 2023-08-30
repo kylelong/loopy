@@ -85,7 +85,7 @@ export const Label = styled.label`
 
 export const NoAccount = styled.div`
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 15px;
 `;
 
 export const InputContainer = styled.div`
@@ -191,7 +191,7 @@ const Login = () => {
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
 
-        {
+        {errors.length > 0 && (
           <ErrorList>
             {" "}
             {errors &&
@@ -199,7 +199,7 @@ const Login = () => {
                 return <li key={item}>{error}</li>;
               })}
           </ErrorList>
-        }
+        )}
 
         <InputContainer>
           <LoginButton onClick={login}>Login</LoginButton>

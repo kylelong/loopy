@@ -11,13 +11,7 @@ import {
   UserCredential,
 } from "firebase/auth";
 import {auth, app} from "./firebase-config";
-import {useAuthState} from "react-firebase-hooks/auth";
-import {
-  getFirestore,
-  serverTimestamp,
-  addDoc,
-  collection,
-} from "firebase/firestore";
+import {getFirestore, serverTimestamp, setDoc, doc} from "firebase/firestore";
 
 export const Container = styled.div`
   display: flex;
@@ -101,7 +95,7 @@ export const Label = styled.label`
 
 export const NoAccount = styled.div`
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 15px;
 `;
 
 export const InputContainer = styled.div`
@@ -128,7 +122,6 @@ const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
-  const [user] = useAuthState(auth);
   const db = getFirestore(app);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,11 +132,11 @@ const SignUp = () => {
     setPassword(event.target.value);
   };
 
-  const insertUser = async () => {
+  const insertUser = async (userCredential: UserCredential) => {
     try {
-    } catch (err) {
-      await addDoc(collection(db, "users"), {
-        uid: user?.uid,
+      const uid = userCredential.user.uid;
+      await setDoc(doc(db, "users", uid), {
+        uid: uid,
         createdAt: serverTimestamp(),
         email: email,
         username: "",
@@ -153,6 +146,8 @@ const SignUp = () => {
         favoriteGenre: "",
         currentFavoriteSong: "",
       });
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -175,7 +170,7 @@ const SignUp = () => {
 
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        insertUser();
+        insertUser(userCredential);
         sendConfirmationEmail(userCredential.user);
       })
       .catch((error) => {
@@ -231,7 +226,7 @@ const SignUp = () => {
           <InputBox type="password" onChange={handlePassword} />
         </InputContainer>
 
-        {
+        {errors.length > 0 && (
           <ErrorList>
             {" "}
             {errors &&
@@ -239,7 +234,7 @@ const SignUp = () => {
                 return <li key={item}>{error}</li>;
               })}
           </ErrorList>
-        }
+        )}
 
         <InputContainer>
           <SignupButton onClick={register}>Sign up</SignupButton>

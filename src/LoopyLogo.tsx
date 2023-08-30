@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import music from "./assets/music.svg";
+import {Link} from "react-router-dom";
 
 export const LogoHeader = styled.div`
   display: flex;
@@ -26,13 +27,19 @@ export const Music = styled.img`
   right: 19px;
 `;
 
+export const linkStyle = {
+  textDecoration: "none",
+};
+
 const LoopyLogo = () => {
   return (
     <>
-      <LogoHeader>
-        <Logo>loopy</Logo>
-        <Music src={music} />
-      </LogoHeader>
+      <Link to="/" style={linkStyle}>
+        <LogoHeader>
+          <Logo>loopy</Logo>
+          <Music src={music} />
+        </LogoHeader>
+      </Link>
     </>
   );
 };

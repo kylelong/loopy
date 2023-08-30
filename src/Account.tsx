@@ -1,9 +1,11 @@
 import React, {useState, useEffect} from "react";
 import {doc, updateDoc, getFirestore, getDoc} from "firebase/firestore";
 import Autocomplete from "react-google-autocomplete";
+import ReactSearchBox from "react-search-box";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth, app} from "./firebase-config";
 import LoopyLogo from "./LoopyLogo";
+import genres from "./genres";
 import styled from "styled-components";
 
 export const MenuHeader = styled.div`
@@ -69,6 +71,31 @@ export const Label = styled.label`
 
 export const InputBox = styled.input`
   max-width: 256px;
+  //   width: 100%;
+  //   height: 40px;
+  //   font-family: sans-serif;
+  //   font-size: 14px;
+  //   font-weight: 400;
+  //   border: 1.5px solid #d1d5db;
+  //   border-radius: 3px;
+  padding-left: 1rem;
+  &:focus {
+    outline: none;
+    border-color: rgb(93, 93, 255);
+  }
+
+  font-size: 14px;
+  padding: 10px 20px;
+  height: 40px;
+  border: 1px solid #cacaca96;
+  border-radius: 5px;
+  color: #000;
+  background-color: #fff;
+  width: 100%;
+`;
+
+export const StyledAutoComplete = styled(Autocomplete)`
+  max-width: 256px;
   width: 100%;
   height: 40px;
   font-family: sans-serif;
@@ -83,11 +110,11 @@ export const InputBox = styled.input`
   }
 `;
 
-export const StyledAutoComplete = styled(Autocomplete)`
+export const StyledSearchBox = styled(ReactSearchBox)`
   max-width: 256px;
   width: 100%;
   height: 40px;
-  font-family: sans-serif;
+  font-family: "Helvetica Neue", sans-serif;
   font-size: 14px;
   font-weight: 400;
   border: 1.5px solid #d1d5db;
@@ -146,6 +173,7 @@ interface User {
 const Account = () => {
   const [user] = useAuthState(auth);
   const db = getFirestore(app);
+  const validGenres = genres.map((d) => d.value);
   const [userData, setUserData] = useState<User>({
     currentFavoriteSong: "",
     email: "",
@@ -262,6 +290,22 @@ const Account = () => {
     }
   };
 
+  const handleGenreChange = (value: string) => {
+    console.log(value);
+    // setSongData({...songData, genre: value});
+    if (!validGenres.includes(value)) {
+      //   setError(true);
+    } else {
+      //   setError(false);
+    }
+  };
+
+  const handleSearch = (selected: any) => {
+    const {item} = selected;
+    console.log(item.value);
+    // setSongData({...songData, genre: item.value});
+  };
+
   return (
     <div>
       <MenuHeader>
@@ -289,8 +333,24 @@ const Account = () => {
 
         <InputContainer>
           <Label>Favorite Genre</Label>
-          <InputBox type="text" placeholder={userData.favoriteGenre} />
+          {/* <InputBox type="text" placeholder={userData.favoriteGenre} /> */}
+          <StyledSearchBox
+            placeholder={userData.favoriteGenre}
+            data={genres}
+            onSelect={handleSearch}
+            onChange={handleGenreChange}
+            autoFocus
+          />
         </InputContainer>
+
+        {/* <StyledSearchBox
+          placeholder={userData.favoriteGenre}
+          data={genres}
+          onSelect={handleSearch}
+          onChange={handleGenreChange}
+          autoFocus
+        /> */}
+
         <InputContainer>
           <Label>Favorite Artist</Label>
           <InputBox type="text" placeholder={userData.favoriteArtist} />

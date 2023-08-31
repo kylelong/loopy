@@ -8,8 +8,11 @@ import {SERVER_ENDPOINT} from "./constants";
 import LoopyLogo from "./LoopyLogo";
 import genres from "./genres";
 import styled from "styled-components";
-import {updateProfile} from "firebase/auth";
-import {error} from "console";
+import {
+  validSoundCloudLink,
+  validSpotifyLink,
+  validYoutubeLink,
+} from "./functions";
 
 export const MenuHeader = styled.div`
   display: flex;
@@ -231,7 +234,7 @@ const Account = () => {
     };
     fetchUserData();
     isUsernameNull();
-  }, []);
+  }, [uid, user]);
 
   /**
    * REGEX
@@ -241,33 +244,8 @@ const Account = () => {
     return regex.test(username);
   };
 
-  //TODO: put these in functions.ts for share page
-
-  const validSpotifyLink = (link: string) => {
-    const regex = /https:\/\/open\.spotify\.com\/track\/.*\?si=.+/;
-    return regex.test(link);
-  };
-
-  const validSoundCloundLink = (link: string) => {
-    const regexOne = /https:\/\/on\.soundcloud\.com\/.+/;
-    const regexTwo = /https:\/\/soundcloud\.com\/.+/;
-
-    return regexOne.test(link) || regexTwo.test(link);
-  };
-
-  const validYoutubeLink = (link: string) => {
-    /**
-     * https://youtu.be/QlJ3s9TNcuM?si=LudEkdLK59oeAK2J
-     * https://www.youtube.com/watch?v=QlJ3s9TNcuM&list=WL&index=6
-     * https://youtu.be/yEMZCwftYXM?si=9U9Ces-HxQYh96nQ
-     */
-    const regexOne = /https:\/\/youtu\.be\/.+\?si=.+/;
-    const regexTwo = /https:\/\/www.youtube\.com\/watch\?v=.+/;
-    return regexOne.test(link) || regexTwo.test(link);
-  };
-
   /**
-   * TODO: check if it does not exists
+   * TODO: check if username does not exists
    * must be at least 2 characters
    */
   const updateUsername = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -275,9 +253,9 @@ const Account = () => {
     setUserData({...userData, username: event.target.value.toLowerCase()});
   };
 
-  const updateLocation = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const updateLocation = async (location: any) => {
     setHasTyped(true);
-    setUserData({...userData, location: event.target.value});
+    setUserData({...userData, location: location});
   };
 
   const updateArtist = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,7 +275,6 @@ const Account = () => {
     setUserData({...userData, current_favorite_song: event.target.value});
   };
 
-  // TODO: make sure genre is right
   const handleGenreChange = (value: string) => {
     setHasTyped(true);
     setUserData({...userData, favorite_genre: value});
@@ -309,23 +286,21 @@ const Account = () => {
     setUserData({...userData, favorite_genre: item.value});
   };
 
-  const updateProfile = () => {
+  const updateProfile = async () => {
     setErrors([]);
     let hasErrors = false;
     // username
     const {
       username,
-      location,
       current_favorite_song,
-      favorite_artist,
       favorite_genre,
       favorite_song,
+      location,
+      favorite_artist,
     } = userData;
+
+    // username
     if (username) {
-      console.log(
-        username,
-        username.length > 0 && validUsername(username) === false
-      );
       if (
         (username.length > 0 && validUsername(username) === false) ||
         (!hasNullUsername && username.length === 0)
@@ -335,49 +310,102 @@ const Account = () => {
           ...errors,
           "Username must be between 2 and 30 letters long",
         ]);
+      } else {
+        const response = await axios.put(`${SERVER_ENDPOINT}/update_username`, {
+          username: username,
+        });
+        console.log(response.data);
       }
     }
 
-    if (
-      favorite_genre &&
-      favorite_genre.length > 0 &&
-      !validGenres.includes(favorite_genre)
-    ) {
-      hasErrors = true;
-      setErrors((errors) => [
-        ...errors,
-        "Pleae select a genre from the dropdown list",
-      ]);
+    // location
+    if (location) {
+      const response = await axios.put(`${SERVER_ENDPOINT}/update_location`, {
+        location: location,
+      });
+      console.log(response.data);
     }
 
-    //genre
+    // genre
+    if (favorite_genre) {
+      if (favorite_genre.length > 0 && !validGenres.includes(favorite_genre)) {
+        hasErrors = true;
+        setErrors((errors) => [
+          ...errors,
+          "Pleae select a genre from the dropdown list",
+        ]);
+      } else {
+        const response = await axios.put(
+          `${SERVER_ENDPOINT}/update_favorite_genre`,
+          {
+            favorite_genre: favorite_genre,
+          }
+        );
+        console.log(response.data);
+      }
+    }
+
+    // artist
+    if (favorite_artist) {
+      const response = await axios.put(
+        `${SERVER_ENDPOINT}/update_favorite_artist`,
+        {
+          favorite_artist: favorite_artist,
+        }
+      );
+      console.log(response.data);
+    }
+
+    //songs
+    const validCurrentFavoriteSong =
+      validSoundCloudLink(current_favorite_song) ||
+      validSpotifyLink(current_favorite_song) ||
+      validYoutubeLink(current_favorite_song);
+
+    const validFavoriteSong =
+      validSoundCloudLink(favorite_song) ||
+      validSpotifyLink(favorite_song) ||
+      validYoutubeLink(favorite_song);
+
+    if (current_favorite_song) {
+      if (current_favorite_song.length > 0 && !validCurrentFavoriteSong) {
+        hasErrors = true;
+        setErrors((errors) => [
+          ...errors,
+          "Current favorite song must be a valid link from youtube,soundcloud, or spotify.",
+        ]);
+      } else {
+        const response = await axios.put(
+          `${SERVER_ENDPOINT}/update_current_favorite_song`,
+          {
+            current_favorite_song: current_favorite_song,
+          }
+        );
+        console.log(response.data);
+      }
+    }
+    if (favorite_song) {
+      if (favorite_song.length > 0 && !validFavoriteSong) {
+        hasErrors = true;
+        setErrors((errors) => [
+          ...errors,
+          "Favorite song must be a valid link from youtube,soundcloud, or spotify.",
+        ]);
+      } else {
+        const response = await axios.put(
+          `${SERVER_ENDPOINT}/update_favorite_song`,
+          {
+            favorite_song: favorite_song,
+          }
+        );
+        console.log(response.data);
+      }
+    }
 
     /**
      *
      * USERNAME: if username in db is null then it can stay blank
      *            but once a user has a username or tries to set one initially it must be >= len(2) (error)
-     * GENRE: must be a valid genre (error)
-     * (CURRENT) FAVORITE SONG: must be a link (song from youtube, soundcloud, spotify)
-     * FORMATS
-     *
-     * youtube
-     *
-     * https://youtu.be/QlJ3s9TNcuM?si=LudEkdLK59oeAK2J
-     * https://www.youtube.com/watch?v=QlJ3s9TNcuM&list=WL&index=6
-     * https://youtu.be/yEMZCwftYXM?si=9U9Ces-HxQYh96nQ
-     *
-     * https://open.spotify.com/track/7IKjVU6N4gATDekKY6itMO?si=b91a17f998c046c2
-     * https://open.spotify.com/track/0wshkEEcJUQU33RSRBb5dv?si=adac0ab467eb4fec
-     * https://open.spotify.com/track/4CajAqrgmTEYZBsM0GzWFh?si=XHdYUkCmRYWpczUiHowsaw&context=spotify%3Aalbum%3A5OsHMGOg6lRV9REoVxbcWA
-     *
-     * soundcloud
-     * https://soundcloud.com/soundalivestudios/choppas-on-deck-asap-ferg?si=5a93b52ec1674fc683cf52ef641d4ac3&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
-     * https://on.soundcloud.com/SFnKf
-     *
-     * https://soundcloud.com/thewebbyawards/the-juan-maclean-happy-house?si=863ef469d091496fa1b97a8999f7a1cb&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
-     * https://on.soundcloud.com/rnvcZ
-     *
-     * https://soundcloud.com/[a-z]+/[a-z]+?si=[a-z0-9]&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
      */
 
     if (!hasErrors) {
@@ -402,7 +430,7 @@ const Account = () => {
           <Label>Username</Label>
           <InputBox
             type="text"
-            value={userData.username}
+            value={userData.username === null ? "" : userData.username}
             onChange={updateUsername}
           />
         </InputContainer>
@@ -411,11 +439,10 @@ const Account = () => {
           <Label>Location</Label>
           <StyledAutoComplete
             apiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
-            defaultValue={userData.location}
-            onPlaceSelected={(place: string) => {
-              console.log(place);
+            defaultValue={userData.location === null ? "" : userData.location}
+            onPlaceSelected={(place: any) => {
+              updateLocation(place.formatted_address);
             }}
-            onChange={updateLocation}
           />
         </InputContainer>
 
@@ -435,7 +462,9 @@ const Account = () => {
           <Label>Favorite Artist</Label>
           <InputBox
             type="text"
-            value={userData.favorite_artist}
+            value={
+              userData.favorite_artist === null ? "" : userData.favorite_artist
+            }
             onChange={updateArtist}
           />
         </InputContainer>
@@ -444,7 +473,9 @@ const Account = () => {
           <Label>Favorite Song</Label>
           <InputBox
             type="text"
-            value={userData.favorite_song}
+            value={
+              userData.favorite_song === null ? "" : userData.favorite_song
+            }
             onChange={updateSong}
           />
         </InputContainer>
@@ -452,7 +483,11 @@ const Account = () => {
           <Label>Favorite Current Song</Label>
           <InputBox
             type="text"
-            value={userData.current_favorite_song}
+            value={
+              userData.current_favorite_song === null
+                ? ""
+                : userData.current_favorite_song
+            }
             onChange={updateCurrentFavoriteSong}
           />
         </InputContainer>

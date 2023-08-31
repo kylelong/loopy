@@ -8,7 +8,7 @@ CREATE TABLE users (
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     username VARCHAR(255) UNIQUE NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    location VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NULL,
     favorite_artist VARCHAR(255) NULL,
     favorite_song VARCHAR(255) NULL,
     favorite_genre VARCHAR(255) NULL,

@@ -63,6 +63,19 @@ app.get("/is_username_null/:uid", async (req, res) => {
   }
 });
 
+app.get("/username_exist/:username", async (req, res) => {
+  try {
+    const {username} = req.params;
+    const response = await pool.query(
+      "SELECT COUNT(*) FROM users WHERE username = $1",
+      [username]
+    );
+    res.json(response.rows[0]).count;
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.put("/update_username", async (req, res) => {
   try {
     const {username} = req.body;

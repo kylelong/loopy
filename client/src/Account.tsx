@@ -213,8 +213,6 @@ const Account = () => {
     auth.signOut();
   };
 
-  // fetchUserData();
-  // isUsernameNull();
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
@@ -244,10 +242,14 @@ const Account = () => {
     return regex.test(username);
   };
 
-  /**
-   * TODO: check if username does not exists
-   * must be at least 2 characters
-   */
+  const userExists = async (username: string) => {
+    const response = await axios.get(
+      `${SERVER_ENDPOINT}/username_exist/${username}`
+    );
+    const count = parseInt(response.data.count);
+    return count === 1;
+  };
+
   const updateUsername = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setHasTyped(true);
     setUserData({...userData, username: event.target.value.toLowerCase()});
@@ -301,6 +303,22 @@ const Account = () => {
 
     // username
     if (username) {
+      userExists(username)
+        .then((exists) => {
+          if (exists) {
+            // TODO: add not equal to this current username
+            console.log("username exists");
+          } else {
+            hasErrors = true;
+            setErrors((errors) => [
+              ...errors,
+              "This username is already taken.",
+            ]);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
       if (
         (username.length > 0 && validUsername(username) === false) ||
         (!hasNullUsername && username.length === 0)
@@ -311,6 +329,8 @@ const Account = () => {
           "Username must be between 2 and 30 letters long",
         ]);
       } else {
+        if (hasErrors === false) {
+        }
         const response = await axios.put(`${SERVER_ENDPOINT}/update_username`, {
           username: username,
         });

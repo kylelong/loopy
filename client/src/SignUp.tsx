@@ -4,14 +4,15 @@ import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
 import {validEmail} from "./functions";
+import {SERVER_ENDPOINT} from "./constants";
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
   User,
   UserCredential,
 } from "firebase/auth";
-import {auth, app} from "./firebase-config";
-import {getFirestore, serverTimestamp, setDoc, doc} from "firebase/firestore";
+import {auth} from "./firebase-config";
+import axios from "axios";
 
 export const Container = styled.div`
   display: flex;
@@ -122,7 +123,6 @@ const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
-  const db = getFirestore(app);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -135,16 +135,9 @@ const SignUp = () => {
   const insertUser = async (userCredential: UserCredential) => {
     try {
       const uid = userCredential.user.uid;
-      await setDoc(doc(db, "users", uid), {
-        uid: uid,
-        createdAt: serverTimestamp(),
+      await axios.post(`${SERVER_ENDPOINT}/register`, {
         email: email,
-        username: "",
-        location: "",
-        favoriteArtist: "",
-        favoriteSong: "",
-        favoriteGenre: "",
-        currentFavoriteSong: "",
+        uid: uid,
       });
     } catch (err) {
       console.log(err);

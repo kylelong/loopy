@@ -165,6 +165,9 @@ scripts in package.json in client/src
   
   base .gitignore file 
 
+client:
+  npm install axios styled-components radix-ui
+server:
   npm install express pg dotenv body-parser cors nodemon
 
   RUNNING:

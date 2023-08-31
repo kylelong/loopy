@@ -12,6 +12,8 @@ import {
   validSoundCloudLink,
   validSpotifyLink,
   validYoutubeLink,
+  validUsername,
+  userExists,
 } from "./functions";
 
 export const MenuHeader = styled.div`
@@ -196,6 +198,7 @@ const Account = () => {
   const validGenres = genres.map((d) => d.value);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
   const [location, setLocation] = useState<string>("");
+  const [currentUsername, setCurrentUsername] = useState<string>("");
   const [hasNullUsername, setHasNullUsername] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [userData, setUserData] = useState<User>({
@@ -216,8 +219,9 @@ const Account = () => {
     const fetchUserData = async () => {
       if (user) {
         const response = await axios.get(`${SERVER_ENDPOINT}/user_data/${uid}`);
-        const {location} = response.data;
+        const {location, username} = response.data;
         setLocation(location);
+        setCurrentUsername(username);
         setUserData(response.data);
       }
     };
@@ -237,18 +241,6 @@ const Account = () => {
   /**
    * REGEX
    */
-  const validUsername = (username: string) => {
-    const regex = /^[a-z]{2,30}$/;
-    return regex.test(username);
-  };
-
-  const userExists = async (username: string) => {
-    const response = await axios.get(
-      `${SERVER_ENDPOINT}/username_exist/${username}`
-    );
-    const count = parseInt(response.data.count);
-    return count === 1;
-  };
 
   const updateUsername = async (event: React.ChangeEvent<HTMLInputElement>) => {
     setHasTyped(true);
@@ -312,10 +304,7 @@ const Account = () => {
     if (username) {
       userExists(username)
         .then((exists) => {
-          if (exists) {
-            // TODO: add not equal to this current username
-            console.log("username exists");
-          } else {
+          if (username !== currentUsername && exists) {
             hasErrors = true;
             setErrors((errors) => [
               ...errors,
@@ -333,26 +322,33 @@ const Account = () => {
         hasErrors = true;
         setErrors((errors) => [
           ...errors,
-          "Username must be between 2 and 30 letters long",
+          "Username must be between 2 and 30 lowercase letters long.",
         ]);
       } else {
         if (hasErrors === false) {
         }
-        const response = await axios.put(`${SERVER_ENDPOINT}/update_username`, {
-          username: username,
-          uid: uid,
-        });
-        console.log(response.data);
+        try {
+          await axios.put(`${SERVER_ENDPOINT}/update_username`, {
+            username: username,
+            uid: uid,
+          });
+          setCurrentUsername(username);
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
 
     // location
     if (location) {
-      const response = await axios.put(`${SERVER_ENDPOINT}/update_location`, {
-        location: location,
-        uid: uid,
-      });
-      console.log(response.data);
+      try {
+        await axios.put(`${SERVER_ENDPOINT}/update_location`, {
+          location: location,
+          uid: uid,
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     // genre
@@ -361,30 +357,30 @@ const Account = () => {
         hasErrors = true;
         setErrors((errors) => [
           ...errors,
-          "Pleae select a genre from the dropdown list",
+          "Pleae select a genre from the dropdown list.",
         ]);
       } else {
-        const response = await axios.put(
-          `${SERVER_ENDPOINT}/update_favorite_genre`,
-          {
+        try {
+          await axios.put(`${SERVER_ENDPOINT}/update_favorite_genre`, {
             favorite_genre: favorite_genre,
             uid: uid,
-          }
-        );
-        console.log(response.data);
+          });
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
 
     // artist
     if (favorite_artist) {
-      const response = await axios.put(
-        `${SERVER_ENDPOINT}/update_favorite_artist`,
-        {
+      try {
+        await axios.put(`${SERVER_ENDPOINT}/update_favorite_artist`, {
           favorite_artist: favorite_artist,
           uid: uid,
-        }
-      );
-      console.log(response.data);
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     //songs
@@ -406,14 +402,14 @@ const Account = () => {
           "Current favorite song must be a valid link from youtube,soundcloud, or spotify.",
         ]);
       } else {
-        const response = await axios.put(
-          `${SERVER_ENDPOINT}/update_current_favorite_song`,
-          {
+        try {
+          await axios.put(`${SERVER_ENDPOINT}/update_current_favorite_song`, {
             current_favorite_song: current_favorite_song,
             uid: uid,
-          }
-        );
-        console.log(response.data);
+          });
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
     if (favorite_song) {
@@ -424,14 +420,14 @@ const Account = () => {
           "Favorite song must be a valid link from youtube,soundcloud, or spotify.",
         ]);
       } else {
-        const response = await axios.put(
-          `${SERVER_ENDPOINT}/update_favorite_song`,
-          {
+        try {
+          await axios.put(`${SERVER_ENDPOINT}/update_favorite_song`, {
             favorite_song: favorite_song,
             uid: uid,
-          }
-        );
-        console.log(response.data);
+          });
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
   };

@@ -1,5 +1,20 @@
+import axios from "axios";
+import {SERVER_ENDPOINT} from "./constants";
+
 export const validEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+export const validUsername = (username: string) => {
+  const regex = /^[a-z]{2,30}$/;
+  return regex.test(username);
+};
+
+export const userExists = async (username: string) => {
+  const response = await axios.get(
+    `${SERVER_ENDPOINT}/username_exist/${username}`
+  );
+  const count = parseInt(response.data.count);
+  return count === 1;
 };
 
 export const validSpotifyLink = (link: string) => {

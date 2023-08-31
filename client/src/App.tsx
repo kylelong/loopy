@@ -23,8 +23,8 @@ function App() {
           <Route element={<AuthRouteLoggedOut />}>
             <Route path="/share" element={<Share />}></Route>
             <Route path="/account" element={<Account />}></Route>
-            <Route path="/:username" element={<Profile />}></Route>
           </Route>
+          <Route path="/:username" element={<Profile />}></Route>
         </Routes>
       </Router>
     </div>

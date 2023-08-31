@@ -78,23 +78,10 @@ app.get("/username_exist/:username", async (req, res) => {
 
 app.put("/update_username", async (req, res) => {
   try {
-    const {username} = req.body;
+    const {username, uid} = req.body;
     const response = await pool.query(
-      "UPDATE users SET username = $1 RETURNING username",
-      [username]
-    );
-    res.json(response.rows[0].username);
-  } catch (err) {
-    console.error(err);
-  }
-});
-
-app.put("/update_username", async (req, res) => {
-  try {
-    const {username} = req.body;
-    const response = await pool.query(
-      "UPDATE users SET username = $1 RETURNING username",
-      [username]
+      "UPDATE users SET username = $1 WHERE uid = $2 RETURNING username",
+      [username, uid]
     );
     res.json(response.rows[0].username);
   } catch (err) {
@@ -104,10 +91,10 @@ app.put("/update_username", async (req, res) => {
 
 app.put("/update_location", async (req, res) => {
   try {
-    const {location} = req.body;
+    const {location, uid} = req.body;
     const response = await pool.query(
-      "UPDATE users SET location = $1 RETURNING location",
-      [location]
+      "UPDATE users SET location = $1 WHERE uid = $2 RETURNING location",
+      [location, uid]
     );
     res.json(response.rows[0].location);
   } catch (err) {
@@ -117,10 +104,10 @@ app.put("/update_location", async (req, res) => {
 
 app.put("/update_favorite_genre", async (req, res) => {
   try {
-    const {favorite_genre} = req.body;
+    const {favorite_genre, uid} = req.body;
     const response = await pool.query(
-      "UPDATE users SET favorite_genre = $1 RETURNING favorite_genre",
-      [favorite_genre]
+      "UPDATE users SET favorite_genre = $1 WHERE uid = $2 RETURNING favorite_genre",
+      [favorite_genre, uid]
     );
     res.json(response.rows[0].favorite_genre);
   } catch (err) {
@@ -130,10 +117,10 @@ app.put("/update_favorite_genre", async (req, res) => {
 
 app.put("/update_favorite_song", async (req, res) => {
   try {
-    const {favorite_song} = req.body;
+    const {favorite_song, uid} = req.body;
     const response = await pool.query(
-      "UPDATE users SET favorite_song = $1 RETURNING favorite_song",
-      [favorite_song]
+      "UPDATE users SET favorite_song = $1 WHERE uid = $2 RETURNING favorite_song",
+      [favorite_song, uid]
     );
     res.json(response.rows[0].favorite_song);
   } catch (err) {
@@ -143,10 +130,10 @@ app.put("/update_favorite_song", async (req, res) => {
 
 app.put("/update_favorite_artist", async (req, res) => {
   try {
-    const {favorite_artist} = req.body;
+    const {favorite_artist, uid} = req.body;
     const response = await pool.query(
-      "UPDATE users SET favorite_artist = $1 RETURNING favorite_artist",
-      [favorite_artist]
+      "UPDATE users SET favorite_artist = $1 WHERE uid = $2 RETURNING favorite_artist",
+      [favorite_artist, uid]
     );
     res.json(response.rows[0].favorite_artist);
   } catch (err) {
@@ -156,10 +143,10 @@ app.put("/update_favorite_artist", async (req, res) => {
 
 app.put("/update_current_favorite_song", async (req, res) => {
   try {
-    const {current_favorite_song} = req.body;
+    const {current_favorite_song, uid} = req.body;
     const response = await pool.query(
-      "UPDATE users SET current_favorite_song = $1 RETURNING current_favorite_song",
-      [current_favorite_song]
+      "UPDATE users SET current_favorite_song = $1 WHERE uid = $2 RETURNING current_favorite_song",
+      [current_favorite_song, uid]
     );
     res.json(response.rows[0].current_favorite_song);
   } catch (err) {

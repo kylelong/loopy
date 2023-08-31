@@ -186,7 +186,6 @@ interface User {
   favorite_artist: string;
   favorite_genre: string;
   favorite_song: string;
-  location: string;
   uid: string;
   username: string;
 }
@@ -196,6 +195,7 @@ const Account = () => {
   const uid = user?.uid;
   const validGenres = genres.map((d) => d.value);
   const [hasTyped, setHasTyped] = useState<boolean>(false);
+  const [location, setLocation] = useState<string>("");
   const [hasNullUsername, setHasNullUsername] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [userData, setUserData] = useState<User>({
@@ -204,7 +204,6 @@ const Account = () => {
     favorite_artist: "",
     favorite_genre: "",
     favorite_song: "",
-    location: "",
     uid: "",
     username: "",
   });
@@ -217,7 +216,8 @@ const Account = () => {
     const fetchUserData = async () => {
       if (user) {
         const response = await axios.get(`${SERVER_ENDPOINT}/user_data/${uid}`);
-        console.log(response.data);
+        const {location} = response.data;
+        setLocation(location);
         setUserData(response.data);
       }
     };
@@ -257,7 +257,8 @@ const Account = () => {
 
   const updateLocation = async (location: any) => {
     setHasTyped(true);
-    setUserData({...userData, location: location});
+    let place = location as string;
+    setLocation(place);
   };
 
   const updateArtist = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -297,11 +298,17 @@ const Account = () => {
       current_favorite_song,
       favorite_genre,
       favorite_song,
-      location,
       favorite_artist,
     } = userData;
 
     // username
+
+    /**
+     *
+     * USERNAME:
+     * if username in db is null then it can stay blank
+     * but once a user has a username or tries to set one initially it must be >= len(2) (error)
+     */
     if (username) {
       userExists(username)
         .then((exists) => {
@@ -333,6 +340,7 @@ const Account = () => {
         }
         const response = await axios.put(`${SERVER_ENDPOINT}/update_username`, {
           username: username,
+          uid: uid,
         });
         console.log(response.data);
       }
@@ -342,6 +350,7 @@ const Account = () => {
     if (location) {
       const response = await axios.put(`${SERVER_ENDPOINT}/update_location`, {
         location: location,
+        uid: uid,
       });
       console.log(response.data);
     }
@@ -359,6 +368,7 @@ const Account = () => {
           `${SERVER_ENDPOINT}/update_favorite_genre`,
           {
             favorite_genre: favorite_genre,
+            uid: uid,
           }
         );
         console.log(response.data);
@@ -371,6 +381,7 @@ const Account = () => {
         `${SERVER_ENDPOINT}/update_favorite_artist`,
         {
           favorite_artist: favorite_artist,
+          uid: uid,
         }
       );
       console.log(response.data);
@@ -399,6 +410,7 @@ const Account = () => {
           `${SERVER_ENDPOINT}/update_current_favorite_song`,
           {
             current_favorite_song: current_favorite_song,
+            uid: uid,
           }
         );
         console.log(response.data);
@@ -416,21 +428,11 @@ const Account = () => {
           `${SERVER_ENDPOINT}/update_favorite_song`,
           {
             favorite_song: favorite_song,
+            uid: uid,
           }
         );
         console.log(response.data);
       }
-    }
-
-    /**
-     *
-     * USERNAME: if username in db is null then it can stay blank
-     *            but once a user has a username or tries to set one initially it must be >= len(2) (error)
-     */
-
-    if (!hasErrors) {
-      console.log("UPDATING PROFILE...");
-      // TODO: backend calls to update everything
     }
   };
 
@@ -443,7 +445,6 @@ const Account = () => {
         </MenuItems>
       </MenuHeader>
       <AccountContainer>
-        {JSON.stringify(userData, null, 2)}
         <Header>Edit Profile</Header>
 
         <InputContainer>
@@ -459,7 +460,7 @@ const Account = () => {
           <Label>Location</Label>
           <StyledAutoComplete
             apiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
-            defaultValue={userData.location === null ? "" : userData.location}
+            defaultValue={location}
             onPlaceSelected={(place: any) => {
               updateLocation(place.formatted_address);
             }}

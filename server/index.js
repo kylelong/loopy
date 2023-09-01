@@ -27,10 +27,10 @@ app.get("/", (req, res) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const {email, uid} = req.body;
+    const {email, uid, username} = req.body;
     const response = await pool.query(
-      "INSERT INTO users (email, uid) VALUES($1, $2) RETURNING *",
-      [email, uid]
+      "INSERT INTO users (email, uid, username) VALUES($1, $2, $3) RETURNING *",
+      [email, uid, username]
     );
     res.json(response.rows[0].id);
   } catch (err) {

@@ -289,7 +289,7 @@ export const Profile = () => {
         console.error(err);
       }
     }
-  }, [uid, user]);
+  }, [user, username]);
   useEffect(() => {
     if (!validUsername(username)) {
       setPageNotFound(true);

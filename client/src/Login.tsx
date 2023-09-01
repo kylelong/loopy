@@ -130,42 +130,49 @@ const Login = () => {
 
   const signInWithEmail = async () => {
     setErrors([]);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // SIGNED IN
-        console.log("signed in");
-      })
-      .catch((error) => {
-        const ERRORS = [
-          ["auth/wrong-password", "Wrong password, please try again"],
-          ["auth/user-not-found", "Invalid credentials, please try again"],
-          ["auth/invalid-email", "Invalid email, please try again"],
-          [
-            "auth/user-disabled",
-            "The account you are trying to update has been disabled",
-          ],
-          [
-            "too-many-requests",
-            "Too many failed attempts, try again later or reset your password",
-          ],
-        ];
-        const ERROR_CODES = ERRORS.map((item) => item[0]);
-        const errorCode = error.code;
-        if (ERROR_CODES.includes(errorCode)) {
-          let error_array: string[][] = ERRORS.filter(
-            (item) => item[0] === errorCode
-          );
-          let error_message: string = error_array[0][1];
-          setErrors((errors) => [...errors, error_message]);
-        }
-      });
-
+    let hasErrors = false;
+    if (email.length === 0) {
+      hasErrors = true;
+      setErrors((errors) => [...errors, "Please enter an email"]);
+    }
     if (password.length === 0) {
+      hasErrors = true;
       setErrors((errors) => [...errors, "Please enter a password."]);
     }
 
     if (email.length > 0 && !validEmail(email)) {
+      hasErrors = true;
       setErrors((errors) => [...errors, "Please enter a valid email"]);
+    }
+    if (!hasErrors) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // SIGNED IN
+        })
+        .catch((error) => {
+          const ERRORS = [
+            ["auth/wrong-password", "Wrong password, please try again"],
+            ["auth/user-not-found", "Invalid credentials, please try again"],
+            ["auth/invalid-email", "Invalid email, please try again"],
+            [
+              "auth/user-disabled",
+              "The account you are trying to update has been disabled",
+            ],
+            [
+              "too-many-requests",
+              "Too many failed attempts, try again later or reset your password",
+            ],
+          ];
+          const ERROR_CODES = ERRORS.map((item) => item[0]);
+          const errorCode = error.code;
+          if (ERROR_CODES.includes(errorCode)) {
+            let error_array: string[][] = ERRORS.filter(
+              (item) => item[0] === errorCode
+            );
+            let error_message: string = error_array[0][1];
+            setErrors((errors) => [...errors, error_message]);
+          }
+        });
     }
   };
 

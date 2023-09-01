@@ -5,7 +5,7 @@ import "./share.css";
 import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
-import refresh from "./assets/refresh.svg";
+// import refresh from "./assets/refresh.svg";
 import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
 import ReactSearchBox from "react-search-box";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -250,7 +250,8 @@ interface SongData {
 function Share() {
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
-  const [profileLink, setProfileLink] = useState<string>("");
+  const username = localStorage.getItem("username");
+  const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
   const [songData, setSongData] = useState<SongData>({
     title: "",
@@ -385,10 +386,14 @@ function Share() {
    */
   useEffect(() => {
     const getUsername = async () => {
-      const response = await axios.get(
-        `${SERVER_ENDPOINT}/get_username/${user?.uid}`
-      );
-      setProfileLink(`/${response.data}`);
+      try {
+        const response = await axios.get(
+          `${SERVER_ENDPOINT}/get_username/${user?.uid}`
+        );
+        setProfileLink(`/${response.data}`);
+      } catch (err) {
+        console.error(err);
+      }
     };
     getUsername();
   }, [user?.uid]);
@@ -410,7 +415,7 @@ function Share() {
           <VerifyEmail>
             Please check your email to verify your account to use Loopy.
           </VerifyEmail>
-          <Link to="/" style={linkStyle}>
+          {/* <Link to="/" style={linkStyle}>
             <RefreshButton
               onClick={() => {
                 user?.reload();
@@ -419,7 +424,7 @@ function Share() {
               <RefreshIcon src={refresh} />
               Refresh
             </RefreshButton>
-          </Link>
+          </Link> */}
         </NoticeContainer>
       </VerifyEmailContainer>
     );

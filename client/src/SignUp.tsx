@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import styled from "styled-components";
 import LoopyLogo from "./LoopyLogo";
-import {validEmail} from "./functions";
+import {validEmail, validUsername, userExists} from "./functions";
 import {SERVER_ENDPOINT} from "./constants";
 import {
   createUserWithEmailAndPassword,
@@ -135,7 +135,7 @@ const SignUp = () => {
    * 2. valid [a-z]{2,30}
    */
   const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUsername(event.target.value);
+    setUsername(event.target.value.toLowerCase());
   };
 
   const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,7 +148,9 @@ const SignUp = () => {
       await axios.post(`${SERVER_ENDPOINT}/register`, {
         email: email,
         uid: uid,
+        username: username,
       });
+      localStorage.setItem("username", username);
     } catch (err) {
       console.log(err);
     }
@@ -170,43 +172,80 @@ const SignUp = () => {
   const register = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setErrors([]);
+    let hasErrors = false;
 
-    await createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        insertUser(userCredential);
-        sendConfirmationEmail(userCredential.user);
-      })
-      .catch((error) => {
-        const ERRORS = [
-          [
-            "auth/email-already-in-use",
-            "Email is alreay in use. Please log in.",
-          ],
-          ["auth/invalid-email", "Invalid email, please try again"],
-          [
-            "auth/operation-not-allowed",
-            "Operation not allowed, double check and try again",
-          ],
-          [
-            "auth/weak-password",
-            "Password is too weak, please add more complexity",
-          ],
-        ];
-        const ERROR_CODES = ERRORS.map((item) => item[0]);
-        const errorCode = error.code;
-        if (ERROR_CODES.includes(errorCode)) {
-          let error_array: string[][] = ERRORS.filter(
-            (item) => item[0] === errorCode
-          );
-          let error_message: string = error_array[0][1];
-          setErrors((errors) => [...errors, error_message]);
-        }
-      });
+    // empty checks
+    if (email.length === 0) {
+      hasErrors = true;
+      setErrors((errors) => [...errors, "Please enter an email."]);
+    }
     if (password.length === 0) {
+      hasErrors = true;
       setErrors((errors) => [...errors, "Please enter a password."]);
     }
+
+    if (username.length === 0) {
+      hasErrors = true;
+      setErrors((errors) => [...errors, "Please enter a username."]);
+    }
+    //  check if username is valid
+    if (username.length > 0 && !validUsername(username)) {
+      hasErrors = true;
+      setErrors((errors) => [
+        ...errors,
+        "Username must be only letters between 2-30 characters long.",
+      ]);
+    }
+
+    // check if username exists
+    try {
+      const response = await userExists(username);
+      if (response) {
+        hasErrors = true;
+        setErrors((errors) => [...errors, "This username is already taken."]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    // validate email
     if (email.length > 0 && !validEmail(email)) {
+      hasErrors = true;
       setErrors((errors) => [...errors, "Please enter a valid email"]);
+    }
+
+    if (!hasErrors) {
+      await createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          insertUser(userCredential);
+          sendConfirmationEmail(userCredential.user);
+        })
+        .catch((error) => {
+          const ERRORS = [
+            [
+              "auth/email-already-in-use",
+              "Email is alreay in use. Please log in.",
+            ],
+            ["auth/invalid-email", "Invalid email, please try again"],
+            [
+              "auth/operation-not-allowed",
+              "Operation not allowed, double check and try again",
+            ],
+            [
+              "auth/weak-password",
+              "Password is too weak, please add more complexity",
+            ],
+          ];
+          const ERROR_CODES = ERRORS.map((item) => item[0]);
+          const errorCode = error.code;
+          if (ERROR_CODES.includes(errorCode)) {
+            let error_array: string[][] = ERRORS.filter(
+              (item) => item[0] === errorCode
+            );
+            let error_message: string = error_array[0][1];
+            setErrors((errors) => [...errors, error_message]);
+          }
+        });
     }
   };
 

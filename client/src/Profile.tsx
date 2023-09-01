@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import styled from "styled-components";
 import {Link} from "react-router-dom";
 import {useParams} from "react-router-dom";
@@ -226,17 +226,22 @@ export const Profile = () => {
   });
   const [menuIndex, setMenuIndex] = useState<number>(0);
   const menuItems = ["Songs", "Favorite Songs", "Favorite Artist"];
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     if (user) {
-      const response = await axios.get(`${SERVER_ENDPOINT}/user_data/${uid}`);
-      setUserData(response.data);
+      try {
+        const response = await axios.get(`${SERVER_ENDPOINT}/user_data/${uid}`);
+        setUserData(response.data);
+      } catch (err) {
+        console.error(err);
+      }
     }
-  };
+  }, [uid, user]);
   useEffect(() => {
     if (!validUsername(username)) {
       setPageNotFound(true);
     } else {
       userExists(username).then((result) => {
+        console.log(result);
         if (!result) {
           setPageNotFound(true);
         } else {
@@ -244,7 +249,7 @@ export const Profile = () => {
         }
       });
     }
-  }, []);
+  }, [username, fetchUserData]);
 
   return (
     <>

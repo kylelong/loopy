@@ -388,10 +388,9 @@ function Share() {
         `${SERVER_ENDPOINT}/get_username/${user?.uid}`
       );
       setProfileLink(`/${response.data}`);
-      console.log(`/${response.data}`);
     };
     getUsername();
-  }, []);
+  }, [user?.uid]);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>

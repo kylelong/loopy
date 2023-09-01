@@ -38,7 +38,20 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/user_data/:uid", async (req, res) => {
+app.get("/user_data/:username", async (req, res) => {
+  try {
+    const {username} = req.params;
+    const response = await pool.query(
+      "SELECT * FROM users WHERE username = $1",
+      [username]
+    );
+    res.json(response.rows[0]);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.get("/user_data_from_uid/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
     const response = await pool.query("SELECT * FROM users WHERE uid = $1", [

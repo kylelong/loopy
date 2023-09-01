@@ -242,6 +242,7 @@ export const Heart = styled.img`
   top: 11px;
 `;
 
+// WILL BE ABLE TO GET SONGS FROM UID CAUSE FETCHDATA() SETS USERDATA.UID
 interface User {
   current_favorite_song: string;
   email: string;
@@ -257,7 +258,7 @@ export const Profile = () => {
   const params = useParams();
   const username = params.username || "";
   const [user] = useAuthState(auth);
-  const uid = user?.uid;
+  const uid = user?.uid; // LOGGED IN USER
 
   const [pageNotFound, setPageNotFound] = useState<boolean>(false);
   const [userData, setUserData] = useState<User>({
@@ -280,7 +281,9 @@ export const Profile = () => {
   const fetchUserData = useCallback(async () => {
     if (user) {
       try {
-        const response = await axios.get(`${SERVER_ENDPOINT}/user_data/${uid}`);
+        const response = await axios.get(
+          `${SERVER_ENDPOINT}/user_data/${username}`
+        );
         setUserData(response.data);
       } catch (err) {
         console.error(err);
@@ -308,9 +311,11 @@ export const Profile = () => {
         <div>
           <MenuHeader>
             <LoopyLogo />
-            <MenuItems>
-              <MenuItem onClick={logout}>Logout</MenuItem>
-            </MenuItems>
+            {user && (
+              <MenuItems>
+                <MenuItem onClick={logout}>Logout</MenuItem>
+              </MenuItems>
+            )}
           </MenuHeader>
           <ProfileContainer>
             <ProfileIcon>K</ProfileIcon>

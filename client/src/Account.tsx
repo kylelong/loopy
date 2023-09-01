@@ -221,7 +221,9 @@ const Account = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
-        const response = await axios.get(`${SERVER_ENDPOINT}/user_data/${uid}`);
+        const response = await axios.get(
+          `${SERVER_ENDPOINT}/user_data_from_uid/${uid}`
+        );
         const {location, username} = response.data;
         setLocation(location);
         setCurrentUsername(username);

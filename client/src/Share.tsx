@@ -13,6 +13,7 @@ import {Cross2Icon} from "@radix-ui/react-icons";
 import genres from "./genres";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
+import {SERVER_ENDPOINT} from "./constants";
 
 export const ShareContainer = styled.div``;
 
@@ -249,6 +250,8 @@ interface SongData {
 function Share() {
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
+  const [profileLink, setProfileLink] = useState<string>("");
+
   const [songData, setSongData] = useState<SongData>({
     title: "",
     url: "",
@@ -379,15 +382,24 @@ function Share() {
   /**
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const getUsername = async () => {
+      const response = await axios.get(
+        `${SERVER_ENDPOINT}/get_username/${user?.uid}`
+      );
+      setProfileLink(`/${response.data}`);
+      console.log(`/${response.data}`);
+    };
+    getUsername();
+  }, []);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>
         <MenuHeader>
           <LoopyLogo />
           <MenuItems>
-            <Link to="/account" style={linkStyle}>
-              <MenuItem>Account</MenuItem>
+            <Link to={profileLink} style={linkStyle}>
+              <MenuItem>Profile</MenuItem>
             </Link>
 
             <MenuItem onClick={logout}>Logout</MenuItem>
@@ -418,8 +430,8 @@ function Share() {
       <MenuHeader>
         <LoopyLogo />
         <MenuItems>
-          <Link to="/account" style={linkStyle}>
-            <MenuItem>Account</MenuItem>
+          <Link to={profileLink} style={linkStyle}>
+            <MenuItem>Profile</MenuItem>
           </Link>
 
           <MenuItem onClick={logout}>Logout</MenuItem>

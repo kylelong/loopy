@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
+import {Link} from "react-router-dom";
 import Autocomplete from "react-google-autocomplete";
 import ReactSearchBox from "react-search-box";
 import {useAuthState} from "react-firebase-hooks/auth";
@@ -200,6 +201,7 @@ const Account = () => {
   const [location, setLocation] = useState<string>("");
   const [currentUsername, setCurrentUsername] = useState<string>("");
   const [hasNullUsername, setHasNullUsername] = useState<boolean>(false);
+  const [profileLink, setProfileLink] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
   const [userData, setUserData] = useState<User>({
     current_favorite_song: "",
@@ -222,6 +224,7 @@ const Account = () => {
         const {location, username} = response.data;
         setLocation(location);
         setCurrentUsername(username);
+        setProfileLink(`/${username}`);
         setUserData(response.data);
       }
     };
@@ -333,6 +336,7 @@ const Account = () => {
             uid: uid,
           });
           setCurrentUsername(username);
+          setProfileLink(`/${username}`);
         } catch (err) {
           console.error(err);
         }
@@ -436,7 +440,11 @@ const Account = () => {
     <div>
       <MenuHeader>
         <LoopyLogo />
+
         <MenuItems>
+          <Link to={profileLink} style={linkStyle}>
+            <MenuItem>Profile</MenuItem>
+          </Link>
           <MenuItem onClick={logout}>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>

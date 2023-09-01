@@ -63,6 +63,19 @@ app.get("/is_username_null/:uid", async (req, res) => {
   }
 });
 
+app.get("/get_username/:uid", async (req, res) => {
+  try {
+    const {uid} = req.params;
+    const response = await pool.query(
+      "SELECT username FROM users WHERE uid = $1",
+      [uid]
+    );
+    res.json(response.rows[0].username);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.get("/username_exist/:username", async (req, res) => {
   try {
     const {username} = req.params;

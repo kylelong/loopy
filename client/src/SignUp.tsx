@@ -122,10 +122,20 @@ export const ErrorList = styled.ul`
 const SignUp = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
+  };
+
+  /**
+   * TODO: errors
+   * 1. check if username exists in postgres database
+   * 2. valid [a-z]{2,30}
+   */
+  const handleUsername = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUsername(event.target.value);
   };
 
   const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,6 +222,10 @@ const SignUp = () => {
         <InputContainer>
           <Label>Email</Label>
           <InputBox onChange={handleEmail} />
+        </InputContainer>
+        <InputContainer>
+          <Label>Username</Label>
+          <InputBox onChange={handleUsername} />
         </InputContainer>
 
         <InputContainer>

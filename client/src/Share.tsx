@@ -377,6 +377,7 @@ function Share() {
 
   const logout = () => {
     auth.signOut();
+    window.location.href = "/";
   };
 
   /**

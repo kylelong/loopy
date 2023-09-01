@@ -19,6 +19,7 @@ CREATE TABLE songs (
     id SERIAL PRIMARY KEY,
     uid VARCHAR(255) NOT NULL,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    location VARCHAR(255) NULL,
     title VARCHAR(255) NULL,
     genre VARCHAR(255) NOT NULL,
     link VARCHAR(255) NOT NULL,

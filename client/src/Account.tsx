@@ -215,6 +215,7 @@ const Account = () => {
 
   const logout = () => {
     auth.signOut();
+    window.location.href = "/";
   };
 
   useEffect(() => {

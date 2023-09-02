@@ -11,6 +11,7 @@ import axios from "axios";
 import {SERVER_ENDPOINT} from "./constants";
 import star from "./assets/star.svg";
 import FavoriteSongs from "./FavoriteSongs";
+import FavoriteArtist from "./FavoriteArtist";
 
 /* invalid username / 404 styles */
 export const NotFoundContainer = styled.div`
@@ -110,10 +111,15 @@ export const ProfileIcon = styled.div`
 
 export const Username = styled.div`
   margin-bottom: 3px;
+  color: #525f7f;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: sans-serif;
 `;
 export const LocationContainer = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
 `;
 export const Svg = styled.img`
   width: 1.2rem;
@@ -122,13 +128,22 @@ export const Svg = styled.img`
 `;
 export const Location = styled.div`
   margin-bottom: 3px;
+  color: #525f7f;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: sans-serif;
 `;
 export const GenreContainer = styled.div`
   display: flex;
   flex-direction: row;
+  align-items: center;
 `;
 export const Genre = styled.div`
   margin-bottom: 3px;
+  color: #525f7f;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: sans-serif;
 `;
 export const linkStyle = {
   textDecoration: "none",
@@ -137,32 +152,6 @@ export const linkStyle = {
 export const ProfileMenu = styled.div`
   display: flex;
   flex-direction: row;
-`;
-
-export const ProfileItemInactive = styled.div`
-  height: 34px;
-  max-width: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  color: rgb(93, 93, 255);
-
-  font-family: sans-serif;
-  font-size: 16px;
-  font-weight: bold;
-  margin-top: 6px;
-  margin-bottom: 15px;
-  margin-right: 24px;
-  text-align: center;
-  opacity: 1;
-  &:hover {
-    cursor: pointer;
-    border: 0px;
-    border-radius: 5px;
-    background-color: #eef2ff;
-  }
 `;
 
 export const MenuHeader = styled.div`
@@ -204,7 +193,7 @@ export const MenuItem = styled.div`
 `;
 
 export const ProfileItem = styled.div`
-  height: 34px;
+  height: 56px;
   max-width: 150px;
   display: flex;
   flex-direction: column;
@@ -223,6 +212,38 @@ export const ProfileItem = styled.div`
   margin-right: 24px;
   text-align: center;
   opacity: 1;
+  @media (min-width: 767px) {
+    height: 34px;
+  }
+`;
+
+export const ProfileItemInactive = styled.div`
+  height: 56px;
+  max-width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: rgb(93, 93, 255);
+
+  font-family: sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 6px;
+  margin-bottom: 15px;
+  margin-right: 24px;
+  text-align: center;
+  opacity: 1;
+  &:hover {
+    cursor: pointer;
+    border: 0px;
+    border-radius: 5px;
+    background-color: #eef2ff;
+  }
+  @media (min-width: 767px) {
+    height: 34px;
+  }
 `;
 
 export const ProfileItemContainer = styled.div`
@@ -360,6 +381,9 @@ export const Profile = () => {
                 current_favorite_song={userData.current_favorite_song}
                 favorite_song={userData.favorite_song}
               />
+            )}
+            {menuIndex === 2 && (
+              <FavoriteArtist favorite_artist={userData.favorite_artist} />
             )}
           </ProfileContainer>
         </div>

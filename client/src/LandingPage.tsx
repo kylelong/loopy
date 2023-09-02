@@ -41,13 +41,6 @@ export const Header = styled.div`
   width: 100%;
 `;
 
-// export const Heart = styled.img`
-//   width: 85px;
-//   height: 85px;
-//   position: relative;
-//   bottom: 2px;
-//   right: 3px;
-// `;
 export const Music = styled.img`
   width: 1.5rem;
   height: 1.5rem;

@@ -112,7 +112,7 @@ export const ProfileIcon = styled.div`
 export const Username = styled.div`
   margin-bottom: 3px;
   color: #525f7f;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: sans-serif;
 `;
@@ -129,7 +129,7 @@ export const Svg = styled.img`
 export const Location = styled.div`
   margin-bottom: 3px;
   color: #525f7f;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: sans-serif;
 `;
@@ -141,7 +141,7 @@ export const GenreContainer = styled.div`
 export const Genre = styled.div`
   margin-bottom: 3px;
   color: #525f7f;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: sans-serif;
 `;
@@ -300,23 +300,20 @@ export const Profile = () => {
     window.location.href = "/";
   };
   const fetchUserData = useCallback(async () => {
-    if (user) {
-      try {
-        const response = await axios.get(
-          `${SERVER_ENDPOINT}/user_data/${username}`
-        );
-        setUserData(response.data);
-      } catch (err) {
-        console.error(err);
-      }
+    try {
+      const response = await axios.get(
+        `${SERVER_ENDPOINT}/user_data/${username}`
+      );
+      setUserData(response.data);
+    } catch (err) {
+      console.error(err);
     }
-  }, [user, username]);
+  }, [username]);
   useEffect(() => {
     if (!validUsername(username)) {
       setPageNotFound(true);
     } else {
       userExists(username).then((result) => {
-        console.log(result);
         if (!result) {
           setPageNotFound(true);
         } else {

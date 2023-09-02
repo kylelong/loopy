@@ -250,6 +250,7 @@ interface SongData {
 function Share() {
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
+  const [errors, setErrors] = useState<string[]>([]);
   const username = localStorage.getItem("username");
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
@@ -276,6 +277,8 @@ function Share() {
   const validGenres = genres.map((d) => d.value);
 
   const processUrl = () => {
+    setErrors([]);
+    let hasErrors = false;
     // youtube / spotify /
     //
     //TODO: make sure host name is valid
@@ -296,6 +299,11 @@ function Share() {
     // https://www.youtube.com/watch?v=6_mWyjJQxWg&ab_channel=KodakBlack
     // https://soundcloud.com/ragerthelabel/erykah-badu-kodak-black?si=c86d26e269ea43d1808b280a6e703fe9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
     // https://open.spotify.com/track/5TrkFfJgrGa1PdAkJO5QAs?si=PiAb5HucQxes3ZS2yb6Y7g
+
+    if (songData.url.length === 0) {
+      hasErrors = true;
+      setErrors((errors) => [...errors, "Please enter a url."]);
+    }
     let link = new URL(songData.url);
     let hostname = link.hostname;
 

@@ -10,6 +10,7 @@ import globe from "./assets/globe.svg";
 import axios from "axios";
 import {SERVER_ENDPOINT} from "./constants";
 import star from "./assets/star.svg";
+import FavoriteSongs from "./FavoriteSongs";
 
 /* invalid username / 404 styles */
 export const NotFoundContainer = styled.div`
@@ -273,7 +274,6 @@ export const Profile = () => {
   });
   const [menuIndex, setMenuIndex] = useState<number>(0);
   const menuItems = ["Songs", "Favorite Songs", "Favorite Artist"];
-
   const logout = () => {
     auth.signOut();
     window.location.href = "/";
@@ -355,7 +355,12 @@ export const Profile = () => {
                 );
               })}
             </ProfileMenu>
-            <ProfileItemContainer></ProfileItemContainer>
+            {menuIndex === 1 && (
+              <FavoriteSongs
+                current_favorite_song={userData.current_favorite_song}
+                favorite_song={userData.favorite_song}
+              />
+            )}
           </ProfileContainer>
         </div>
       ) : (

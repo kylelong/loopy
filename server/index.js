@@ -89,6 +89,19 @@ app.get("/get_username/:uid", async (req, res) => {
   }
 });
 
+app.get("/get_location/:uid", async (req, res) => {
+  try {
+    const {uid} = req.params;
+    const response = await pool.query(
+      "SELECT location FROM users WHERE uid = $1",
+      [uid]
+    );
+    res.json(response.rows[0].location);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.get("/username_exist/:username", async (req, res) => {
   try {
     const {username} = req.params;

@@ -40,10 +40,13 @@ input {
 
 .DialogTitle {
   margin: 0;
-  font-weight: 500;
+  /* font-weight: 500; */
   font-family: "Helvetica Neue", sans-serif;
-  color: var(--mauve-12);
+  /* color: var(--mauve-12); */
   font-size: 17px;
+  color: #525f7f;
+  font-weight: 500;
+  font-family: sans-serif;
 }
 
 .DialogDescription {

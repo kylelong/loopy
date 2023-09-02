@@ -14,6 +14,11 @@ import genres from "./genres";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
 import {SERVER_ENDPOINT} from "./constants";
+import {
+  validSoundCloudLink,
+  validSpotifyLink,
+  validYoutubeLink,
+} from "./functions";
 
 export const ShareContainer = styled.div``;
 
@@ -236,6 +241,13 @@ export const RefreshButton = styled.button`
   }
 `;
 
+export const ErrorMsg = styled.div`
+  color: #525f7f;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: sans-serif;
+`;
+
 export const linkStyle = {
   textDecoration: "none",
 };
@@ -299,62 +311,83 @@ function Share() {
     // https://www.youtube.com/watch?v=6_mWyjJQxWg&ab_channel=KodakBlack
     // https://soundcloud.com/ragerthelabel/erykah-badu-kodak-black?si=c86d26e269ea43d1808b280a6e703fe9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
     // https://open.spotify.com/track/5TrkFfJgrGa1PdAkJO5QAs?si=PiAb5HucQxes3ZS2yb6Y7g
+    const {url} = songData;
+    const validUrl =
+      validSoundCloudLink(url) ||
+      validSpotifyLink(url) ||
+      validYoutubeLink(url);
 
-    if (songData.url.length === 0) {
+    if (url.length === 0) {
       hasErrors = true;
       setErrors((errors) => [...errors, "Please enter a url."]);
     }
-    let link = new URL(songData.url);
-    let hostname = link.hostname;
+    if (!validUrl) {
+      hasErrors = true;
+      setErrors((errors) => [
+        ...errors,
+        "Please enter a valid song link from youtube, soundcloud, or spotify.",
+      ]);
+    }
 
-    let youtube = ["youtu.be", "www.youtube.com"];
-    let soundcloud = ["soundcloud.com", "on.soundcloud.com"];
-    let spotify = "open.spotify.com";
-    let embedUrl = "";
+    if (!hasErrors) {
+      let link = new URL(songData.url);
+      let hostname = link.hostname;
 
-    if (youtube.includes(hostname)) {
-      let videoCode = "";
-      if (hostname === "www.youtube.com") {
-        videoCode = songData.url.split("v=")[1].split("&")[0];
-        embedUrl = `https://www.youtube.com/embed/${videoCode}`;
-      } else if (hostname === "youtu.be") {
-        videoCode = link.pathname.substring(1);
-        embedUrl = `https://www.youtube.com/embed/${videoCode}`;
-      }
-      setError(false);
-      setSongData({...songData, embededUrl: embedUrl});
-    } else if (soundcloud.includes(hostname)) {
-      axios
-        .get(`https://soundcloud.com/oembed?url=${songData.url}&format=json`)
-        .then((resp) => {
-          let iframe = resp.data.html;
-          let title = resp.data.title;
-          let srcIndex = iframe.indexOf("src");
-          let last = iframe.lastIndexOf('"');
-          let soundcloudLink = iframe.substring(srcIndex + 5, last);
-          setSongData({...songData, embededUrl: soundcloudLink, title: title});
-        });
-      setError(false);
-    } else if (hostname === spotify) {
-      axios
-        .get(`https://open.spotify.com/oembed?url=${songData.url}&format=json`)
-        .then((resp) => {
-          let iframe = resp.data.html;
-          let title = resp.data.title;
+      let youtube = ["youtu.be", "www.youtube.com"];
+      let soundcloud = ["soundcloud.com", "on.soundcloud.com"];
+      let spotify = "open.spotify.com";
+      let embedUrl = "";
 
-          let srcIndex = iframe.indexOf("src");
-          let last = iframe.lastIndexOf('"');
-          let spotifyLink = iframe.substring(srcIndex + 5, last);
-          setSongData({
-            ...songData,
-            embededUrl: spotifyLink,
-            spotifyLink: true,
-            title: title,
+      if (youtube.includes(hostname)) {
+        let videoCode = "";
+        if (hostname === "www.youtube.com") {
+          videoCode = songData.url.split("v=")[1].split("&")[0];
+          embedUrl = `https://www.youtube.com/embed/${videoCode}`;
+        } else if (hostname === "youtu.be") {
+          videoCode = link.pathname.substring(1);
+          embedUrl = `https://www.youtube.com/embed/${videoCode}`;
+        }
+        setError(false);
+        setSongData({...songData, embededUrl: embedUrl});
+      } else if (soundcloud.includes(hostname)) {
+        axios
+          .get(`https://soundcloud.com/oembed?url=${songData.url}&format=json`)
+          .then((resp) => {
+            let iframe = resp.data.html;
+            let title = resp.data.title;
+            let srcIndex = iframe.indexOf("src");
+            let last = iframe.lastIndexOf('"');
+            let soundcloudLink = iframe.substring(srcIndex + 5, last);
+            setSongData({
+              ...songData,
+              embededUrl: soundcloudLink,
+              title: title,
+            });
           });
-        });
-      setError(false);
-    } else {
-      setError(true);
+        setError(false);
+      } else if (hostname === spotify) {
+        axios
+          .get(
+            `https://open.spotify.com/oembed?url=${songData.url}&format=json`
+          )
+          .then((resp) => {
+            let iframe = resp.data.html;
+            let title = resp.data.title;
+
+            let srcIndex = iframe.indexOf("src");
+            let last = iframe.lastIndexOf('"');
+            let spotifyLink = iframe.substring(srcIndex + 5, last);
+            setSongData({
+              ...songData,
+              embededUrl: spotifyLink,
+              spotifyLink: true,
+              title: title,
+            });
+          });
+        setError(false);
+      } else {
+        setError(true);
+      }
     }
   };
 
@@ -375,13 +408,10 @@ function Share() {
   const handleSharing = () => {
     setAdded(true);
     setError(false);
-    // setSongData({
-    //   title: "",
-    //   url: "",
-    //   embededUrl: "",
-    //   genre: "",
-    //   spotifyLink: false,
-    // });
+
+    // TODO: add axios call here
+    // get users location
+    console.log("sharing", songData);
   };
 
   const logout = () => {
@@ -404,7 +434,7 @@ function Share() {
       }
     };
     getUsername();
-  }, [user?.uid]);
+  }, [user?.uid, errors]);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>
@@ -483,6 +513,9 @@ function Share() {
                   />
                   <SearchButton onClick={processUrl}>Search</SearchButton>
                 </SearchContainer>
+                <div>
+                  {errors.length > 0 && <ErrorMsg>{errors[0]}</ErrorMsg>}
+                </div>
 
                 {songData.embededUrl && (
                   <>
@@ -522,7 +555,9 @@ function Share() {
                     <Dialog.Close asChild>
                       <ShareButton
                         onClick={handleSharing}
-                        disabled={songData.genre === "" || error}
+                        disabled={
+                          songData.genre === "" || error || errors.length > 0
+                        }
                         style={
                           songData.genre === "" || error
                             ? {backgroundColor: "lightgrey"}
@@ -539,7 +574,13 @@ function Share() {
                 )}
               </MusicContainer>
               <Dialog.Close asChild>
-                <button className="IconButton" aria-label="Close">
+                <button
+                  className="IconButton"
+                  aria-label="Close"
+                  onClick={() => {
+                    setErrors([]);
+                  }}
+                >
                   <Cross2Icon />
                 </button>
               </Dialog.Close>

@@ -12,6 +12,7 @@ import {SERVER_ENDPOINT} from "./constants";
 import star from "./assets/star.svg";
 import FavoriteSongs from "./FavoriteSongs";
 import FavoriteArtist from "./FavoriteArtist";
+import Songs from "./Songs";
 
 /* invalid username / 404 styles */
 export const NotFoundContainer = styled.div`
@@ -294,6 +295,7 @@ export const Profile = () => {
     username: "",
   });
   const [menuIndex, setMenuIndex] = useState<number>(0);
+  const [songs, setSongs] = useState<[]>([]);
   const menuItems = ["Songs", "Favorite Songs", "Favorite Artist"];
   const logout = () => {
     auth.signOut();
@@ -309,6 +311,22 @@ export const Profile = () => {
       console.error(err);
     }
   }, [username]);
+
+  const fetchSongs = useCallback(async () => {
+    try {
+      const uid = userData.uid;
+      if (uid) {
+        const response = await axios.get(
+          `${SERVER_ENDPOINT}/get_user_songs/${uid}`
+        );
+        setSongs(response.data);
+        console.log(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }, [userData.uid]);
+
   useEffect(() => {
     if (!validUsername(username)) {
       setPageNotFound(true);
@@ -321,7 +339,8 @@ export const Profile = () => {
         }
       });
     }
-  }, [username, fetchUserData]);
+    fetchSongs();
+  }, [username, fetchUserData, fetchSongs]);
 
   return (
     <>
@@ -373,6 +392,9 @@ export const Profile = () => {
                 );
               })}
             </ProfileMenu>
+            {menuIndex === 0 && (
+              <Songs songs={songs} username={userData.username} />
+            )}
             {menuIndex === 1 && (
               <FavoriteSongs
                 current_favorite_song={userData.current_favorite_song}

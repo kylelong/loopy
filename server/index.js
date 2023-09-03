@@ -194,8 +194,17 @@ app.put("/update_current_favorite_song", async (req, res) => {
 });
 
 // SONGS
-
-//TODO: get all user songs, [] if no songs
+app.get("/get_user_songs/:uid", async (req, res) => {
+  try {
+    const {uid} = req.params;
+    const response = await pool.query("SELECT * FROM songs WHERE uid = $1", [
+      uid,
+    ]);
+    res.json(response.rows); // [] if no songs
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 // INSERT INTO songs
 app.post("/add_song", async (req, res) => {

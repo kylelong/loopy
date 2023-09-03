@@ -429,7 +429,7 @@ function Share() {
 
     const {title, genre, url, source, embededUrl} = songData;
     try {
-      const response = await axios.post(`${SERVER_ENDPOINT}/add_song`, {
+      await axios.post(`${SERVER_ENDPOINT}/add_song`, {
         uid: user?.uid,
         location: location,
         title: title,
@@ -468,7 +468,6 @@ function Share() {
           `${SERVER_ENDPOINT}/get_location/${user?.uid}`
         );
         setLocation(response.data);
-        console.log(response.data);
       } catch (err) {
         console.error(err);
       }

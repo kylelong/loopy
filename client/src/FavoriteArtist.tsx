@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 interface Props {
   favorite_artist: string;
+  username: string;
 }
 export const ProfileItemContainer = styled.div`
   border-radius: 4px;
@@ -26,11 +27,24 @@ export const Artist = styled.div`
   font-weight: bold;
 `;
 
-const FavoriteArist: React.FC<Props> = ({favorite_artist}) => {
+export const NoArtist = styled.div`
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 12px;
+`;
+
+const FavoriteArist: React.FC<Props> = ({favorite_artist, username}) => {
   return (
     <>
       <ProfileItemContainer>
-        <Artist>{favorite_artist}</Artist>
+        {favorite_artist.length > 0 ? (
+          <Artist>{favorite_artist}</Artist>
+        ) : (
+          <NoArtist>
+            @{username} has not shared their favorite artist yet
+          </NoArtist>
+        )}
       </ProfileItemContainer>
     </>
   );

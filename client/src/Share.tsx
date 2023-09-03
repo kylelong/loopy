@@ -166,12 +166,16 @@ export const SearchBoxContainer = styled.div`
 export const AddedContainer = styled.div`
   display: flex;
   flex-direction: row;
-  margin-top: 10px;
+  margin-top: 16px;
 `;
 
 export const SongShared = styled.div`
   position: relative;
   margin-left: 7px;
+  color: #525f7f;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: sans-serif;
 `;
 
 export const SourceImageContainer = styled.div`
@@ -258,12 +262,14 @@ interface SongData {
   embededUrl: string;
   genre: string;
   spotifyLink: boolean;
+  source: string;
 }
 function Share() {
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const username = localStorage.getItem("username");
+  const [location, setLocation] = useState(null);
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
   const [songData, setSongData] = useState<SongData>({
@@ -272,6 +278,7 @@ function Share() {
     embededUrl: "",
     genre: "",
     spotifyLink: false, // is it a spotify song (diff styling)
+    source: "",
   });
 
   const [user] = useAuthState(auth);
@@ -348,7 +355,7 @@ function Share() {
           embedUrl = `https://www.youtube.com/embed/${videoCode}`;
         }
         setError(false);
-        setSongData({...songData, embededUrl: embedUrl});
+        setSongData({...songData, embededUrl: embedUrl, source: "youtube"});
       } else if (soundcloud.includes(hostname)) {
         axios
           .get(`https://soundcloud.com/oembed?url=${songData.url}&format=json`)
@@ -362,6 +369,7 @@ function Share() {
               ...songData,
               embededUrl: soundcloudLink,
               title: title,
+              source: "soundcloud",
             });
           });
         setError(false);
@@ -382,6 +390,7 @@ function Share() {
               embededUrl: spotifyLink,
               spotifyLink: true,
               title: title,
+              source: "spotify",
             });
           });
         setError(false);
@@ -405,13 +414,33 @@ function Share() {
     setSongData({...songData, genre: item.value});
   };
 
-  const handleSharing = () => {
+  const handleSharing = async () => {
     setAdded(true);
     setError(false);
 
-    // TODO: add axios call here
-    // get users location
-    console.log("sharing", songData);
+    /**
+     *   title: string;
+  url: string;
+  embededUrl: string;
+  genre: string;
+  spotifyLink: boolean;
+  source: string;
+     */
+
+    const {title, genre, url, source, embededUrl} = songData;
+    try {
+      const response = await axios.post(`${SERVER_ENDPOINT}/add_song`, {
+        uid: user?.uid,
+        location: location,
+        title: title,
+        genre: genre,
+        link: url,
+        source: source,
+        embed_url: embededUrl,
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const logout = () => {
@@ -433,7 +462,21 @@ function Share() {
         console.error(err);
       }
     };
+    const getLocation = async () => {
+      try {
+        const response = await axios.get(
+          `${SERVER_ENDPOINT}/get_location/${user?.uid}`
+        );
+        setLocation(response.data);
+        console.log(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
     getUsername();
+    getLocation();
+
+    // TODO: get user location
   }, [user?.uid, errors]);
   if (!user?.emailVerified) {
     return (
@@ -494,6 +537,7 @@ function Share() {
                   embededUrl: "",
                   genre: "",
                   spotifyLink: false,
+                  source: "",
                 });
               }}
             >
@@ -595,18 +639,11 @@ function Share() {
               />
               <SongShared>song shared</SongShared>
             </AddedContainer>
-            <div>{JSON.stringify(songData, null, 2)}</div>
           </>
         )}
       </ModalContainer>
     </div>
   );
-
-  //   <div className="App">
-
-  //     {/* {error && <div>error loading song.</div>} */}
-  //   </div>
-  // );
 }
 
 export default Share;

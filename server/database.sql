@@ -23,6 +23,6 @@ CREATE TABLE songs (
     title VARCHAR(255) NULL,
     genre VARCHAR(255) NOT NULL,
     link VARCHAR(255) NOT NULL,
-    src VARCHAR(255) NOT NULL,
+    source VARCHAR(255) NOT NULL,
     embed_url VARCHAR(255) NOT NULL
 );

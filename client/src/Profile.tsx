@@ -380,7 +380,10 @@ export const Profile = () => {
               />
             )}
             {menuIndex === 2 && (
-              <FavoriteArtist favorite_artist={userData.favorite_artist} />
+              <FavoriteArtist
+                username={userData.username}
+                favorite_artist={userData.favorite_artist}
+              />
             )}
           </ProfileContainer>
         </div>

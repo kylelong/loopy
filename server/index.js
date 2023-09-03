@@ -193,6 +193,25 @@ app.put("/update_current_favorite_song", async (req, res) => {
   }
 });
 
+// SONGS
+
+//TODO: get all user songs, [] if no songs
+
+// INSERT INTO songs
+app.post("/add_song", async (req, res) => {
+  try {
+    const {uid, location, title, genre, link, source, embed_url} = req.body;
+    await pool.query(
+      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      [uid, location, title, genre, link, source, embed_url]
+    );
+    res.json({status: 200});
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+//
 app.listen(config.PORT, () => {
   console.log(`server listening on port http://${config.HOST}:${config.PORT}`);
 });

@@ -43,7 +43,7 @@ const Songs: React.FC<Props> = ({songs, username}) => {
         {songs.length > 0 ? (
           <SongContainer>{JSON.stringify(songs, null, 2)}</SongContainer>
         ) : (
-          <NoSong>@{username} has not shared any songs yet</NoSong>
+          <NoSong>no shared songs yet</NoSong>
         )}
       </ProfileItemContainer>
     </>

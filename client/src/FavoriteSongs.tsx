@@ -7,6 +7,7 @@ import refresh from "./assets/refresh.svg";
 interface FavoriteSongsProps {
   current_favorite_song: string;
   favorite_song: string;
+  username: string;
 }
 interface Urls {
   current_favorite_song_embed_url?: string;
@@ -112,9 +113,33 @@ export const SongDescription = styled.div`
   width: 100%;
 `;
 
+export const NoSongContainer = styled.div`
+  border-radius: 4px;
+  max-width: 560px;
+  max-height: 355px;
+  height: 355px;
+  // background-color: #eef2ff;
+  background-color: rgb(93, 93, 255);
+  color: white;
+  width: 100%;
+  border: 1px solid rgb(102, 112, 133);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const NoSong = styled.div`
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 12px;
+`;
+
 const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
   current_favorite_song,
   favorite_song,
+  username,
 }) => {
   const [urls, setUrls] = useState<Urls>({
     current_favorite_song_embed_url: "",
@@ -122,11 +147,11 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
   });
   const [showCurrent, setShowCurrent] = useState<boolean>(true);
   let current_favorite_song_link = useMemo(
-    () => new URL(current_favorite_song),
+    () => new URL(current_favorite_song, "https://randomapi.com/"),
     [current_favorite_song]
   );
   let favorite_song_link = useMemo(
-    () => new URL(favorite_song),
+    () => new URL(favorite_song, "https://randomapi.com/"),
     [favorite_song]
   );
   let current_favorite_song_hostname = current_favorite_song_link.hostname;
@@ -138,7 +163,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
 
   const processLink = useCallback(
     async (source: string, link: URL, hostname: string) => {
-      console.log(hostname);
+      console.log(hostname); // randomapi.com
       let embedUrl = "";
       if (youtube.includes(hostname)) {
         let videoCode = "";
@@ -273,19 +298,46 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
             </>
           )}
         </ButtonContainer>
-        <Video
-          width="560"
-          height="355"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          src={
-            showCurrent
-              ? urls.current_favorite_song_embed_url
-              : urls.favorite_song_embed_url
-          }
-        ></Video>
+        {showCurrent &&
+        current_favorite_song_link.href === "https://randomapi.com/" ? (
+          <>
+            <NoSongContainer>
+              <NoSong>no current favorite song yet</NoSong>
+            </NoSongContainer>
+          </>
+        ) : (
+          showCurrent && (
+            <Video
+              width="560"
+              height="355"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              src={urls.current_favorite_song_embed_url}
+            ></Video>
+          )
+        )}
+        {!showCurrent &&
+        favorite_song_link.href === "https://randomapi.com/" ? (
+          <>
+            <NoSongContainer>
+              <NoSong>no all-time favorite song yet</NoSong>
+            </NoSongContainer>
+          </>
+        ) : (
+          !showCurrent && (
+            <Video
+              width="560"
+              height="355"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              src={urls.favorite_song_embed_url}
+            ></Video>
+          )
+        )}
       </Container>
     </>
   );

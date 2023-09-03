@@ -399,6 +399,7 @@ export const Profile = () => {
               <FavoriteSongs
                 current_favorite_song={userData.current_favorite_song}
                 favorite_song={userData.favorite_song}
+                username={userData.username}
               />
             )}
             {menuIndex === 2 && (

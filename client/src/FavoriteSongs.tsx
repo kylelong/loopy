@@ -131,7 +131,7 @@ export const NoSongContainer = styled.div`
 
 export const NoSong = styled.div`
   font-family: "Helvetica Neue", sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   padding: 12px;
 `;

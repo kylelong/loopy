@@ -2,12 +2,29 @@
 
 import React from "react";
 import styled from "styled-components";
+import Carousel from "./Carousel";
 
 interface Props {
   songs: [];
   username: string;
 }
+// song is blank: blank background-color: rgb(93, 93, 255);
 export const ProfileItemContainer = styled.div`
+  max-width: 560px;
+  height: 353px;
+  max-height: 353px;
+  width: 100%;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 600px) {
+    left: unset;
+  }
+`;
+
+export const NoSongContainer = styled.div`
   border-radius: 4px;
   max-width: 560px;
   max-height: 355px;
@@ -23,12 +40,6 @@ export const ProfileItemContainer = styled.div`
   justify-content: center;
 `;
 
-export const SongContainer = styled.div`
-  font-family: "Helvetica Neue", sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-`;
-
 export const NoSong = styled.div`
   font-family: "Helvetica Neue", sans-serif;
   font-size: 20px;
@@ -39,13 +50,15 @@ export const NoSong = styled.div`
 const Songs: React.FC<Props> = ({songs, username}) => {
   return (
     <>
-      <ProfileItemContainer>
-        {songs.length > 0 ? (
-          <SongContainer>{JSON.stringify(songs, null, 2)}</SongContainer>
-        ) : (
+      {songs.length > 0 ? (
+        <ProfileItemContainer>
+          <Carousel songs={songs} inProfile={true} />
+        </ProfileItemContainer>
+      ) : (
+        <NoSongContainer>
           <NoSong>no shared songs yet</NoSong>
-        )}
-      </ProfileItemContainer>
+        </NoSongContainer>
+      )}
     </>
   );
 };

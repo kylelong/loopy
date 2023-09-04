@@ -31,16 +31,15 @@ export const InactiveCircle = styled.div`
   margin-left: 5px;
 `;
 
-export const CarouselContainer = styled.div`
+export const CarouselContainer = styled.div<Props>`
   max-width: 560px;
   height: 353px;
   max-height: 353px;
   width: 100%;
   border-radius: 12px;
-
-  margin: 24px;
+  margin: ${(props) => (props.inProfile ? "0px" : "24px")};
   position: relative;
-  left: 14px;
+  left: ${(props) => (props.inProfile ? "0px" : "14px")};
   @media (max-width: 600px) {
     left: unset;
   }
@@ -71,13 +70,14 @@ export const Globe = styled.img`
   margin-right: 2px;
 `;
 
-export const CarouselDots = styled.div`
+export const CarouselDots = styled.div<Props>`
   display: flex;
   flex-direction: row;
+  margin-top: ${(props) => (props.inProfile ? "16px" : "0px")};
 `;
 
-export const Details = styled.div`
-  display: flex;
+export const Details = styled.div<Props>`
+  display: ${(props) => (props.inProfile ? "none" : "flex")};
   flex-direction: row;
   align-content: center;
   justify-content: center;
@@ -106,15 +106,7 @@ export const DetailText = styled.div`
     align-self: flex-start;
   }
 `;
-/**
- * name 
- *      position: relative;
-    right: 6px;
-}
- * location 
- *     position: relative;
-    left: 6px;
- */
+
 export const Genre = styled.div`
   position: absolute;
   top: 5px;
@@ -135,74 +127,88 @@ export const Genre = styled.div`
   }
 }
 `;
-const Carousel = () => {
+export interface Song {
+  link: string;
+  genre: string;
+  user: string;
+  location: string;
+}
+interface Props {
+  songs?: Song[];
+  inProfile: boolean;
+}
+const defaultSongs: Song[] = [
+  {
+    link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true",
+    genre: "House",
+    user: "Kyle",
+    location: "New York, NY, USA",
+  },
+  {
+    link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F526329195&show_artwork=true",
+    genre: "Hip Hop",
+    user: "Carter",
+    location: "Blacksburg, VA, USA",
+  },
+  {
+    link: "https://www.youtube.com/embed/BlzeUi9rv2w",
+    genre: "Classical",
+    user: "Chloe",
+    location: "Toronto, Canada",
+  },
+  {
+    link: "https://open.spotify.com/embed/track/6FjKAch1aGFI9LxJziA2Xe?si=d30d348c6dd14ed7&utm_source=oembed",
+    genre: "Indie",
+    user: "Ava",
+    location: "San Francisco, CA, USA",
+  },
+  {
+    link: "https://www.youtube.com/embed/myEv3Qr3Efo",
+    genre: "Afrobeat",
+    user: "Tobe",
+    location: "Nigeria, Africa",
+  },
+  {
+    link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F675062333&show_artwork=true",
+    genre: "R&B",
+    user: "Gabrielle",
+    location: "Houston, TX, USA",
+  },
+  {
+    link: "https://open.spotify.com/embed/track/56xZjKy9eGabvEOh5WOM1v?si=dc30a0b74aeb48c0&utm_source=oembed",
+    genre: "Rock",
+    user: "Sebastian",
+    location: "Sydney, Australia",
+  },
+  {
+    link: "https://www.youtube.com/embed/0ero1Xexyhs",
+    genre: "Rap",
+    user: "Michael",
+    location: "Buffalo, NY, USA",
+  },
+  {
+    link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F1033771624&show_artwork=true",
+    genre: "Rap",
+    user: "Julia",
+    location: "Atlanta, GA, USA",
+  },
+  {
+    link: "https://open.spotify.com/embed/track/0vFOzaXqZHahrZp6enQwQb?si=1a3d3f0ae1e84b80&utm_source=oembed",
+    genre: "Rock",
+    user: "Mateo",
+    location: "Berlin, Germany",
+  },
+];
+const Carousel: React.FC<Props> = ({
+  songs = defaultSongs,
+  inProfile = false,
+}) => {
   /**
    * happy house
    * i choose you
    * z4L
    */
-  const songs = [
-    {
-      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true",
-      genre: "House",
-      user: "Kyle",
-      location: "New York, NY, USA",
-    },
-    {
-      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F526329195&show_artwork=true",
-      genre: "Hip Hop",
-      user: "Carter",
-      location: "Blacksburg, VA, USA",
-    },
-    {
-      link: "https://www.youtube.com/embed/BlzeUi9rv2w",
-      genre: "Classical",
-      user: "Chloe",
-      location: "Toronto, Canada",
-    },
-    {
-      link: "https://open.spotify.com/embed/track/6FjKAch1aGFI9LxJziA2Xe?si=d30d348c6dd14ed7&utm_source=oembed",
-      genre: "Indie",
-      user: "Ava",
-      location: "San Francisco, CA, USA",
-    },
-    {
-      link: "https://www.youtube.com/embed/myEv3Qr3Efo",
-      genre: "Afrobeat",
-      user: "Tobe",
-      location: "Nigeria, Africa",
-    },
-    {
-      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F675062333&show_artwork=true",
-      genre: "R&B",
-      user: "Gabrielle",
-      location: "Houston, TX, USA",
-    },
-    {
-      link: "https://open.spotify.com/embed/track/56xZjKy9eGabvEOh5WOM1v?si=dc30a0b74aeb48c0&utm_source=oembed",
-      genre: "Rock",
-      user: "Sebastian",
-      location: "Sydney, Australia",
-    },
-    {
-      link: "https://www.youtube.com/embed/0ero1Xexyhs",
-      genre: "Rap",
-      user: "Michael",
-      location: "Buffalo, NY, USA",
-    },
-    {
-      link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F1033771624&show_artwork=true",
-      genre: "Rap",
-      user: "Julia",
-      location: "Atlanta, GA, USA",
-    },
-    {
-      link: "https://open.spotify.com/embed/track/0vFOzaXqZHahrZp6enQwQb?si=1a3d3f0ae1e84b80&utm_source=oembed",
-      genre: "Rock",
-      user: "Mateo",
-      location: "Berlin, Germany",
-    },
-  ];
+
   const [dotIndex, setDotIndex] = useState<number>(0);
 
   const handleLeftClick = () => {
@@ -225,7 +231,7 @@ const Carousel = () => {
   useEffect(() => {}, [dotIndex]);
   return (
     <>
-      <CarouselContainer>
+      <CarouselContainer inProfile={inProfile}>
         <SongContainer
           title=""
           width="560"
@@ -238,7 +244,7 @@ const Carousel = () => {
           src={songs[dotIndex].link}
         ></SongContainer>
       </CarouselContainer>
-      <Details>
+      <Details inProfile={inProfile}>
         <DetailText>
           <div>{`${songs[dotIndex].user} shared a song`}</div>
           <Circle />
@@ -247,7 +253,7 @@ const Carousel = () => {
         </DetailText>
         <Genre>{`${songs[dotIndex].genre}`}</Genre>
       </Details>
-      <CarouselDots>
+      <CarouselDots inProfile={inProfile}>
         {songs.map((song, index) => {
           return (
             <>{dotIndex === index ? <ActiveCircle /> : <InactiveCircle />}</>

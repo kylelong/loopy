@@ -163,7 +163,6 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
 
   const processLink = useCallback(
     async (source: string, link: URL, hostname: string) => {
-      console.log(hostname); // randomapi.com
       let embedUrl = "";
       if (youtube.includes(hostname)) {
         let videoCode = "";

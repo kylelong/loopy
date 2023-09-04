@@ -271,7 +271,7 @@ function LandingPage() {
             </Listening>
           </div>
         </Header>
-        <Carousel />
+        <Carousel inProfile={false} />
         <Section>
           <SectionHeader>
             <Heart src={heart} />

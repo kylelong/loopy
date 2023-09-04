@@ -197,9 +197,10 @@ app.put("/update_current_favorite_song", async (req, res) => {
 app.get("/get_user_songs/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
-    const response = await pool.query("SELECT * FROM songs WHERE uid = $1", [
-      uid,
-    ]);
+    const response = await pool.query(
+      "SELECT uid AS user, location, title, genre, embed_url AS link FROM songs WHERE uid = $1 ORDER BY created_at DESC",
+      [uid]
+    );
     res.json(response.rows); // [] if no songs
   } catch (err) {
     console.error(err);

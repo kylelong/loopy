@@ -320,7 +320,6 @@ export const Profile = () => {
           `${SERVER_ENDPOINT}/get_user_songs/${uid}`
         );
         setSongs(response.data);
-        console.log(response.data);
       }
     } catch (err) {
       console.error(err);

@@ -9,11 +9,16 @@ const express = require("express");
 const config = require("./config");
 const bodyParser = require("body-parser");
 const app = express();
+const corsOptions = {
+  origin: true,
+  credentials: true,
+  methods: "POST, PUT, GET ,OPTIONS, DELETE",
+};
 
 const cors = require("cors");
 const pool = require("./db");
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 const endpoint =

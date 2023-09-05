@@ -15,17 +15,6 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// loopy
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCQ99IeCWJ5mQ0ay3cP_tyyG9rhxDZwebA",
-//   authDomain: "loopy-8c163.firebaseapp.com",
-//   projectId: "loopy-8c163",
-//   storageBucket: "loopy-8c163.appspot.com",
-//   messagingSenderId: "648426823123",
-//   appId: "1:648426823123:web:c0c234e7199a473daf2326",
-//   measurementId: "G-162296BMWG",
-// };
-
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

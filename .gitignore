@@ -19,8 +19,6 @@ server/production.env
 server/enviornment.env
 
 
-firebase-config.js
-
 # misc
 .DS_Store
 .env.local

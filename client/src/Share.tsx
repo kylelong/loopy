@@ -463,7 +463,6 @@ function Share() {
     try {
       const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
       setSongs(response.data);
-      console.log(response.data);
     } catch (err) {
       console.error(err);
     }

@@ -5,6 +5,7 @@ import * as timeago from "timeago.js";
 import {Song} from "./types/types";
 import {SERVER_ENDPOINT} from "./constants";
 import axios from "axios";
+import {Link} from "react-router-dom";
 
 export const Container = styled.div`
   display: flex;
@@ -88,6 +89,9 @@ export const Location = styled.div`
   font-family: sans-serif;
   margin-right: 6px;
 `;
+export const linkStyle = {
+  textDecoration: "none",
+};
 
 interface Props {
   song: Song;
@@ -96,22 +100,25 @@ interface Props {
 const SongItem: React.FC<Props> = ({song}) => {
   const [timestamp, setTimeStamp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
+  const [profileLink, setProfileLink] = useState<string>("");
+
   const getUsername = useCallback(async () => {
     try {
       const response = await axios.get(
         `${SERVER_ENDPOINT}/get_username/${song.user}`
       );
-      setUsername(`@${response.data}`);
+      setUsername(response.data);
+      setProfileLink(`/${response.data}`);
     } catch (err) {
       console.error(err);
     }
   }, [song.user]);
 
   useEffect(() => {
+    getUsername();
     let postedDate = new Date(`${song?.created_at}`);
     setTimeStamp(timeago.format(postedDate));
-    getUsername();
-  }, [getUsername, song?.created_at, username]);
+  }, [username, getUsername, song?.created_at]);
   return (
     <>
       <Container>
@@ -127,20 +134,23 @@ const SongItem: React.FC<Props> = ({song}) => {
           src={song.link}
         ></SongContainer>
       </Container>
-      <SongDetails>
-        <Username>{`${username}`}</Username>
-        <Dot></Dot>
-        <Genre>{`${song.genre}`}</Genre>
+      <Link to={profileLink} style={linkStyle}>
+        <SongDetails>
+          <Username>{`@${username}`}</Username>
 
-        {song.location && (
-          <LocationContainer>
-            <Dot></Dot>
-            <Globe src={globe} />
-            <Location>{`${song.location}`}</Location>
-          </LocationContainer>
-        )}
-        <Time>{timestamp}</Time>
-      </SongDetails>
+          <Dot></Dot>
+          <Genre>{`${song.genre}`}</Genre>
+
+          {song.location && (
+            <LocationContainer>
+              <Dot></Dot>
+              <Globe src={globe} />
+              <Location>{`${song.location}`}</Location>
+            </LocationContainer>
+          )}
+          <Time>{timestamp}</Time>
+        </SongDetails>
+      </Link>
     </>
   );
 };

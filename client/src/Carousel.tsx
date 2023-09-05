@@ -57,6 +57,7 @@ export const ArrowContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 24px;
+  margin-bottom: 12px;
 `;
 
 export const Arrow = styled.img`

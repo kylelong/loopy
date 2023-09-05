@@ -171,5 +171,5 @@ server:
   npm install express pg dotenv body-parser cors nodemon
 
   RUNNING:
-  server: npx nodemon index NODE_ENV=development
+  server: NODE_ENV=development npx nodemon index
   client: npm run dev

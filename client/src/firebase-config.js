@@ -15,17 +15,21 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
-// loopy
-// const firebaseConfig = {
-//   apiKey: "AIzaSyCQ99IeCWJ5mQ0ay3cP_tyyG9rhxDZwebA",
-//   authDomain: "loopy-8c163.firebaseapp.com",
-//   projectId: "loopy-8c163",
-//   storageBucket: "loopy-8c163.appspot.com",
-//   messagingSenderId: "648426823123",
-//   appId: "1:648426823123:web:c0c234e7199a473daf2326",
-//   measurementId: "G-162296BMWG",
-// };
+const firebaseConfigDev = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY_DEV,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN_DEV,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID_DEV,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET_DEV,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_I_DEVD,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID_DEV,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID_DEV,
+};
+
+const config =
+  process.env.REACT_APP_NODE_ENV === "production"
+    ? firebaseConfig
+    : firebaseConfigDev;
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig);
+export const app = initializeApp(config);
 export const auth = getAuth(app);

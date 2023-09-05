@@ -427,6 +427,7 @@ function Share() {
   const handleSharing = async () => {
     setAdded(true);
     setError(false);
+    window.location.href = "/";
 
     /**
      *   title: string;

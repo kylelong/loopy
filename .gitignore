@@ -17,6 +17,7 @@ client/.env
 server/.env
 server/production.env
 server/enviornment.env
+server/development.env
 
 
 # misc

@@ -128,8 +128,8 @@ export const GenreBox = styled.div`
   }
 }
 `;
-export const SongDetails = styled.div`
-  display: flex;
+export const SongDetails = styled.div<Props>`
+  display: ${(props) => (props.inProfile ? "flex" : "none")};
   flex-direction: row;
   justify-content: space-around;
   align-self: flex-start;
@@ -297,7 +297,7 @@ const Carousel: React.FC<Props> = ({
         </DetailText>
         <GenreBox>{`${songs[dotIndex].genre}`}</GenreBox>
       </Details>
-      <SongDetails>
+      <SongDetails inProfile={inProfile}>
         <Genre>{`${songs[dotIndex].genre}`}</Genre>
         <Dot></Dot>
         <Time>{timestamp}</Time>

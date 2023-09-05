@@ -25,8 +25,9 @@ export const validSpotifyLink = (link: string) => {
 export const validSoundCloudLink = (link: string) => {
   const regexOne = /https:\/\/on\.soundcloud\.com\/.+/;
   const regexTwo = /https:\/\/soundcloud\.com\/.+/;
+  const regexThree = /https:\/\/soundcloud\.app\.goo\.gl\/.+/;
 
-  return regexOne.test(link) || regexTwo.test(link);
+  return regexOne.test(link) || regexTwo.test(link) || regexThree.test(link);
 };
 
 export const validYoutubeLink = (link: string) => {

@@ -3,6 +3,7 @@ import styled from "styled-components";
 import arrowLeft from "./assets/arrowLeft.svg";
 import arrowRight from "./assets/arrowRight.svg";
 import globe from "./assets/globe.svg";
+import * as timeago from "timeago.js";
 
 export const Circle = styled.div`
   width: 8px;
@@ -107,7 +108,7 @@ export const DetailText = styled.div`
   }
 `;
 
-export const Genre = styled.div`
+export const GenreBox = styled.div`
   position: absolute;
   top: 5px;
   left: 469px;
@@ -127,11 +128,50 @@ export const Genre = styled.div`
   }
 }
 `;
+export const SongDetails = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-self: flex-start;
+  margin-top: 10px;
+  color: rgb(93, 93, 255);
+  background-color: #eef2ff;
+  border: 0;
+  border-radius: 5px;
+  height: 56px;
+  padding: 6px;
+`;
+
+export const Genre = styled.div`
+  color: #525f7f;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: sans-serif;
+  margin-right: 6px;
+`;
+
+export const Time = styled.div`
+  color: #9ca3af;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: sans-serif;
+`;
+
+export const Dot = styled.div`
+  width: 8px;
+  height: 8px;
+  background-color: rgb(93, 93, 255); /* You can change this color */
+  border-radius: 50%; /* Makes the div a circle */
+  position: relative;
+  top: 6px;
+  margin-right: 6px;
+`;
 export interface Song {
   link: string;
   genre: string;
   user: string;
   location: string;
+  created_at?: string;
 }
 interface Props {
   songs?: Song[];
@@ -210,6 +250,7 @@ const Carousel: React.FC<Props> = ({
    */
 
   const [dotIndex, setDotIndex] = useState<number>(0);
+  const [timestamp, setTimeStamp] = useState<string>("");
 
   const handleLeftClick = () => {
     if (dotIndex === 0) {
@@ -228,7 +269,10 @@ const Carousel: React.FC<Props> = ({
   // happy house
   // https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
 
-  useEffect(() => {}, [dotIndex]);
+  useEffect(() => {
+    let postedDate = new Date(`${songs[dotIndex].created_at}`);
+    setTimeStamp(timeago.format(postedDate));
+  }, [dotIndex]);
   return (
     <>
       <CarouselContainer inProfile={inProfile}>
@@ -251,8 +295,13 @@ const Carousel: React.FC<Props> = ({
           <Globe src={globe} />
           <div>{`${songs[dotIndex].location}`}</div>
         </DetailText>
-        <Genre>{`${songs[dotIndex].genre}`}</Genre>
+        <GenreBox>{`${songs[dotIndex].genre}`}</GenreBox>
       </Details>
+      <SongDetails>
+        <Genre>{`${songs[dotIndex].genre}`}</Genre>
+        <Dot></Dot>
+        <Time>{timestamp}</Time>
+      </SongDetails>
       <CarouselDots inProfile={inProfile}>
         {songs.map((song, index) => {
           return (

@@ -354,7 +354,9 @@ export const Profile = () => {
             )}
           </MenuHeader>
           <ProfileContainer>
-            <ProfileIcon>K</ProfileIcon>
+            <ProfileIcon>
+              {params.username?.charAt(0).toLocaleUpperCase()}
+            </ProfileIcon>
             <ProfileInfo>
               <Username>@{params.username}</Username>
               {userData.location && (

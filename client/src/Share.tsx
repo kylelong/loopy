@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {Link} from "react-router-dom";
 import "./App.css";
 import "./share.css";
@@ -14,6 +14,7 @@ import genres from "./genres";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
 import {SERVER_ENDPOINT} from "./constants";
+import SongItem from "./SongItem";
 import {
   validSoundCloudLink,
   validSpotifyLink,
@@ -256,6 +257,14 @@ export const linkStyle = {
   textDecoration: "none",
 };
 
+export const SongContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+`;
+
 interface SongData {
   title: string;
   url: string;
@@ -270,6 +279,7 @@ function Share() {
   const [errors, setErrors] = useState<string[]>([]);
   const username = localStorage.getItem("username");
   const [location, setLocation] = useState(null);
+  const [songs, setSongs] = useState<[]>([]);
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
   const [songData, setSongData] = useState<SongData>({
@@ -448,6 +458,16 @@ function Share() {
     window.location.href = "/";
   };
 
+  const fetchSongs = useCallback(async () => {
+    try {
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
+      setSongs(response.data);
+      console.log(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   /**
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
@@ -474,8 +494,7 @@ function Share() {
     };
     getUsername();
     getLocation();
-
-    // TODO: get user location
+    fetchSongs();
   }, [user?.uid, errors]);
   if (!user?.emailVerified) {
     return (
@@ -493,18 +512,9 @@ function Share() {
 
         <NoticeContainer>
           <VerifyEmail>
-            Please check your email to verify your account to use Loopy.
+            Please check your email to verify your account to use Loopy. Check
+            your spam folder just in case.
           </VerifyEmail>
-          {/* <Link to="/" style={linkStyle}>
-            <RefreshButton
-              onClick={() => {
-                user?.reload();
-              }}
-            >
-              <RefreshIcon src={refresh} />
-              Refresh
-            </RefreshButton>
-          </Link> */}
         </NoticeContainer>
       </VerifyEmailContainer>
     );
@@ -641,6 +651,16 @@ function Share() {
           </>
         )}
       </ModalContainer>
+      <SongContainer>
+        {songs.map((song, i) => {
+          return (
+            <>
+              {" "}
+              <SongItem song={song} key={i} />
+            </>
+          );
+        })}
+      </SongContainer>
     </div>
   );
 }

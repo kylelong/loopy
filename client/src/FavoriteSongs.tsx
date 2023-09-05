@@ -154,6 +154,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
     () => new URL(favorite_song, "https://randomapi.com/"),
     [favorite_song]
   );
+
   let current_favorite_song_hostname = current_favorite_song_link.hostname;
   let favorite_song_hostname = favorite_song_link.hostname;
 
@@ -298,7 +299,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
           )}
         </ButtonContainer>
         {showCurrent &&
-        current_favorite_song_link.href === "https://randomapi.com/" ? (
+        current_favorite_song_link.origin === "https://randomapi.com" ? (
           <>
             <NoSongContainer>
               <NoSong>no current favorite song yet</NoSong>
@@ -318,7 +319,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
           )
         )}
         {!showCurrent &&
-        favorite_song_link.href === "https://randomapi.com/" ? (
+        favorite_song_link.origin === "https://randomapi.com" ? (
           <>
             <NoSongContainer>
               <NoSong>no all-time favorite song yet</NoSong>

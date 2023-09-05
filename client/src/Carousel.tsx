@@ -4,6 +4,7 @@ import arrowLeft from "./assets/arrowLeft.svg";
 import arrowRight from "./assets/arrowRight.svg";
 import globe from "./assets/globe.svg";
 import * as timeago from "timeago.js";
+import {Song} from "./types/types";
 
 export const Circle = styled.div`
   width: 8px;
@@ -166,13 +167,6 @@ export const Dot = styled.div`
   top: 6px;
   margin-right: 6px;
 `;
-export interface Song {
-  link: string;
-  genre: string;
-  user: string;
-  location: string;
-  created_at?: string;
-}
 interface Props {
   songs?: Song[];
   inProfile: boolean;
@@ -272,7 +266,7 @@ const Carousel: React.FC<Props> = ({
   useEffect(() => {
     let postedDate = new Date(`${songs[dotIndex].created_at}`);
     setTimeStamp(timeago.format(postedDate));
-  }, [dotIndex]);
+  }, [dotIndex, songs]);
   return (
     <>
       <CarouselContainer inProfile={inProfile}>

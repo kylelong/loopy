@@ -158,11 +158,11 @@ const SignUp = () => {
 
   const sendConfirmationEmail = async (user: User) => {
     if (user) {
-      // let actionCodeSettings = {
-      //     url: "http://localhost:3000/confirm_email?email="+ user.email
-      // }
+      let actionCodeSettings = {
+        url: "http://localhost:3000/",
+      };
       try {
-        await sendEmailVerification(user);
+        await sendEmailVerification(user, actionCodeSettings);
       } catch (err) {
         console.log(err);
       }

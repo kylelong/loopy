@@ -224,7 +224,7 @@ app.post("/add_song", async (req, res) => {
 app.get("/get_songs", async (req, res) => {
   try {
     const response = await pool.query(
-      "SELECT uid, location, title, genre, embed_url, created_at  FROM songs ORDER BY created_at DESC"
+      "SELECT uid AS user, location, title, genre, embed_url AS link, created_at  FROM songs ORDER BY created_at DESC"
     );
     res.json(response.rows); // [] if no songs
   } catch (err) {

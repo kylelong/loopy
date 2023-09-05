@@ -38,7 +38,7 @@ const FavoriteArist: React.FC<Props> = ({favorite_artist, username}) => {
   return (
     <>
       <ProfileItemContainer>
-        {favorite_artist.length > 0 ? (
+        {favorite_artist && favorite_artist.length > 0 ? (
           <Artist>{favorite_artist}</Artist>
         ) : (
           <NoArtist>no favorite artist yet</NoArtist>

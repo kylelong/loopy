@@ -159,7 +159,10 @@ const SignUp = () => {
   const sendConfirmationEmail = async (user: User) => {
     if (user) {
       let actionCodeSettings = {
-        url: "http://localhost:3000/",
+        url:
+          process.env.REACT_APP_NODE_ENV === "production"
+            ? process.env.REACT_APP_LIVE_URL!
+            : process.env.REACT_APP_LOCAL_URL!,
       };
       try {
         await sendEmailVerification(user, actionCodeSettings);

@@ -19,7 +19,6 @@ server/production.env
 server/enviornment.env
 
 
-/src/firebase-config.js
 firebase-config.js
 
 # misc

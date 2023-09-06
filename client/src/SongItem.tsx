@@ -39,7 +39,8 @@ export const SongDetails = styled.div`
   background-color: #eef2ff;
   border: 0;
   border-radius: 5px;
-  height: 31px;
+  min-height: 31px;
+  height: 100%;
   padding: 6px;
   margin-bottom: 32px;
 `;

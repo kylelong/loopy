@@ -184,11 +184,13 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
             `https://soundcloud.com/oembed?url=${source}&format=json`
           );
           let iframe = resp.data.html;
+          console.log(`iframe: ${iframe}`);
           // let title = resp.data.title;
           let srcIndex = iframe.indexOf("src");
           let last = iframe.lastIndexOf('"');
           let soundcloudLink = iframe.substring(srcIndex + 5, last);
           embedUrl = soundcloudLink;
+          console.log(`embedUrl: ${soundcloudLink}`);
           return embedUrl;
         } catch (err) {
           console.error(err);

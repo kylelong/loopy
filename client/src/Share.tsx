@@ -91,7 +91,7 @@ export const SearchBox = styled.input`
   margin-right: 5px;
   @media (max-width: 500px) {
     flex-direction: column;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     max-width: 500px;
   }
 `;
@@ -431,16 +431,6 @@ function Share() {
   const handleSharing = async () => {
     setAdded(true);
     setError(false);
-    window.location.href = "/";
-
-    /**
-     *   title: string;
-  url: string;
-  embededUrl: string;
-  genre: string;
-  spotifyLink: boolean;
-  source: string;
-     */
 
     const {title, genre, url, source, embededUrl} = songData;
     try {
@@ -456,6 +446,8 @@ function Share() {
     } catch (err) {
       console.error(err);
     }
+
+    window.location.href = "/";
   };
 
   const logout = () => {

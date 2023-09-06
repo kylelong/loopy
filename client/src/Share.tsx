@@ -443,11 +443,10 @@ function Share() {
         source: source,
         embed_url: embededUrl,
       });
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
     }
-
-    window.location.href = "/";
   };
 
   const logout = () => {

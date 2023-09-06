@@ -351,7 +351,11 @@ function Share() {
       let hostname = link.hostname;
 
       let youtube = ["youtu.be", "www.youtube.com"];
-      let soundcloud = ["soundcloud.com", "on.soundcloud.com"];
+      let soundcloud = [
+        "soundcloud.com",
+        "on.soundcloud.com",
+        "soundcloud.app.goo.gl",
+      ];
       let spotify = "open.spotify.com";
       let embedUrl = "";
 

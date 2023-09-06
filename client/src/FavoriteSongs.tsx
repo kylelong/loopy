@@ -159,7 +159,10 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
   let favorite_song_hostname = favorite_song_link.hostname;
 
   let youtube = useMemo(() => ["youtu.be", "www.youtube.com"], []);
-  let soundcloud = useMemo(() => ["soundcloud.com", "on.soundcloud.com"], []);
+  let soundcloud = useMemo(
+    () => ["soundcloud.com", "on.soundcloud.com", "soundcloud.app.goo.gl"],
+    []
+  );
   let spotify = "open.spotify.com";
 
   const processLink = useCallback(

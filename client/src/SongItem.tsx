@@ -27,13 +27,14 @@ export const SongContainer = styled.iframe`
 export const Globe = styled.img`
   width: 1.2rem;
   margin-right: 2px;
+  @media (max-width: 500px) {
+    margin-bottom: 16px;
+  }
 `;
 
 export const SongDetails = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  align-self: center;
+  flex-direction: column;
   margin-top: 10px;
   color: rgb(93, 93, 255);
   background-color: #eef2ff;
@@ -43,6 +44,14 @@ export const SongDetails = styled.div`
   height: 100%;
   padding: 6px;
   margin-bottom: 32px;
+  @media (min-width: 560px) {
+    width: 560px;
+  }
+`;
+
+export const Row = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 export const Username = styled.div`
@@ -66,6 +75,9 @@ export const Time = styled.div`
   font-size: 12px;
   font-weight: 700;
   font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  margin-top: 6px;
 `;
 
 export const Dot = styled.div`
@@ -81,6 +93,9 @@ export const Dot = styled.div`
 export const LocationContainer = styled.div`
   display: flex;
   flex-direction: row;
+  position: relative;
+  top: 6px;
+  padding-bottom: 6px;
 `;
 
 export const Location = styled.div`
@@ -137,14 +152,14 @@ const SongItem: React.FC<Props> = ({song}) => {
       </Container>
       <Link to={profileLink} style={linkStyle}>
         <SongDetails>
-          <Username>{`@${username}`}</Username>
-
-          <Dot></Dot>
-          <Genre>{`${song.genre}`}</Genre>
+          <Row>
+            <Username>{`@${username}`}</Username>
+            <Dot></Dot>
+            <Genre>{`${song.genre}`}</Genre>
+          </Row>
 
           {song.location && (
             <LocationContainer>
-              <Dot></Dot>
               <Globe src={globe} />
               <Location>{`${song.location}`}</Location>
             </LocationContainer>

@@ -27,9 +27,6 @@ export const SongContainer = styled.iframe`
 export const Globe = styled.img`
   width: 1.2rem;
   margin-right: 2px;
-  @media (max-width: 500px) {
-    margin-bottom: 16px;
-  }
 `;
 
 export const SongDetails = styled.div`

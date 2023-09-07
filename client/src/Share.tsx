@@ -447,7 +447,7 @@ function Share() {
         source: source,
         embed_url: embededUrl,
       });
-      window.location.href = "/";
+      await fetchSongs();
     } catch (err) {
       console.error(err);
     }

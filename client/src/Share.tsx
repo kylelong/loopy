@@ -653,10 +653,10 @@ function Share() {
       <SongContainer>
         {songs.map((song, i) => {
           return (
-            <>
+            <div>
               {" "}
               <SongItem song={song} key={i} />
-            </>
+            </div>
           );
         })}
       </SongContainer>

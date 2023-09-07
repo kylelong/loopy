@@ -237,7 +237,15 @@ app.get("/get_songs", async (req, res) => {
   }
 });
 
-//
+//FILTERING
+app.get("/get_genres", async (req, res) => {
+  try {
+    const response = await pool.query("SELECT DISTINCT(genre) from songs");
+    res.json(response.rows);
+  } catch (err) {
+    console.error(err);
+  }
+});
 app.listen(config.PORT, () => {
   console.log(`server listening on port http://${config.HOST}:${config.PORT}`);
 });

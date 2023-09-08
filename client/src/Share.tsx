@@ -462,11 +462,33 @@ function Share() {
     auth.signOut();
     window.location.href = "/";
   };
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_favorites`);
+      return response.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
+  function compareCreatedAt(
+    a: {created_at: string},
+    b: {created_at: string}
+  ): number {
+    const dateA = new Date(a.created_at);
+    const dateB = new Date(b.created_at);
+
+    return dateB.getTime() - dateA.getTime();
+  }
 
   const fetchSongs = useCallback(async () => {
     try {
       const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
       setSongs(response.data);
+      // const favorites = await fetchFavorites();
+      // let combined = response.data.concat(favorites);
+      // combined.sort(compareCreatedAt);
+      // console.log(combined);
     } catch (err) {
       console.error(err);
     }

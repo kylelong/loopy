@@ -8,6 +8,7 @@ require("dotenv").config({
 const express = require("express");
 const config = require("./config");
 const bodyParser = require("body-parser");
+const axios = require("axios");
 const app = express();
 const corsOptions = {
   origin: true,
@@ -28,6 +29,27 @@ const endpoint =
 
 app.get("/", (req, res) => {
   res.send("LOOPY is on: " + process.env.NODE_ENV);
+});
+// TODO:
+
+app.get("/spotify", async (req, res) => {
+  try {
+    // Get the Spotify URL from the query parameter
+    const {url} = req.query;
+    const apiUrl = `https://open.spotify.com/oembed?url=${url}&format=json`;
+    const response = await axios.get(apiUrl);
+    // Make the Axios GET request to Spotify
+
+    // Set appropriate CORS headers
+    // res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Replace with your front-end's origin
+    // res.setHeader("Access-Control-Allow-Credentials", "true");
+
+    // Send the data as JSON in the response
+    res.json(response.data.html);
+  } catch (error) {
+    console.error("Error making Axios GET request:", error);
+    res.status(500).json({error: "Internal Server Error"});
+  }
 });
 
 app.post("/register", async (req, res) => {
@@ -232,6 +254,17 @@ app.get("/get_songs", async (req, res) => {
       "SELECT uid AS user, location, title, genre, embed_url AS link, created_at  FROM songs ORDER BY created_at DESC"
     );
     res.json(response.rows); // [] if no songs
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.get("/get_favorites", async (req, res) => {
+  try {
+    const response = await pool.query(
+      "SELECT uid, favorite_song, current_favorite_song, created_at FROM users WHERE ( current_favorite_song IS NOT NULL OR favorite_song IS NOT NULL )  AND (current_favorite_song != ''  OR favorite_song != '') ORDER BY created_at DESC"
+    );
+    res.json(response.rows);
   } catch (err) {
     console.error(err);
   }

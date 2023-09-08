@@ -269,6 +269,11 @@ export const SongContainer = styled.div`
   }
 `;
 
+export const SongItemWrapper = styled.div`
+  max-width: 560px;
+  width: 100%;
+`;
+
 interface SongData {
   title: string;
   url: string;
@@ -653,10 +658,10 @@ function Share() {
       <SongContainer>
         {songs.map((song, i) => {
           return (
-            <div>
+            <SongItemWrapper>
               {" "}
               <SongItem song={song} key={i} />
-            </div>
+            </SongItemWrapper>
           );
         })}
       </SongContainer>

@@ -342,7 +342,7 @@ export const Profile = () => {
   }, [username, fetchUserData, fetchSongs]);
 
   return (
-    <>
+    <div>
       {!pageNotFound ? (
         <div>
           <MenuHeader>
@@ -423,7 +423,7 @@ export const Profile = () => {
           </NotFoundContainer>
         </div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -5,7 +5,6 @@ import "./share.css";
 import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
-// import refresh from "./assets/refresh.svg";
 import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
 import ReactSearchBox from "react-search-box";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -15,6 +14,7 @@ import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
 import {SERVER_ENDPOINT} from "./constants";
 import SongItem from "./SongItem";
+import Select from "react-select";
 import {
   validSoundCloudLink,
   validSpotifyLink,
@@ -284,6 +284,7 @@ function Share() {
   const username = localStorage.getItem("username");
   const [location, setLocation] = useState(null);
   const [songs, setSongs] = useState<[]>([]);
+  const [songGenres, setSongGenres] = useState<[]>([]);
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
   const [songData, setSongData] = useState<SongData>({
@@ -467,6 +468,19 @@ function Share() {
     }
   }, []);
 
+  const fetchGenres = useCallback(async () => {
+    try {
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_genres`);
+      const options: any = [];
+      response.data.forEach((el: any) => {
+        options.push({value: el.genre, label: el.genre});
+      });
+      setSongGenres(options);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
+
   /**
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
@@ -494,6 +508,7 @@ function Share() {
     getUsername();
     getLocation();
     fetchSongs();
+    fetchGenres();
   }, [user?.uid, errors]);
   if (!user?.emailVerified) {
     return (
@@ -521,6 +536,7 @@ function Share() {
   return (
     // TODO: change this className
     <div>
+      <Select options={songGenres} isMulti />
       <MenuHeader>
         <LoopyLogo />
         <MenuItems>

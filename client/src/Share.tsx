@@ -276,6 +276,10 @@ export const SelectContainer = styled.div`
   position: relative;
   top: 12px;
 `;
+export const SongItemWrapper = styled.div`
+  max-width: 560px;
+  width: 100%;
+`;
 
 interface SongData {
   title: string;
@@ -503,11 +507,11 @@ function Share() {
     try {
       const response = await axios.get(`${SERVER_ENDPOINT}/get_genres`);
       const options: any = [];
-      // console.log(response.data);
       response.data.forEach((el: any) => {
         options.push({value: el.genre, label: el.genre});
       });
       setSongGenres(options);
+      setSongs(response.data);
     } catch (err) {
       console.error(err);
     }
@@ -708,10 +712,10 @@ function Share() {
       <SongContainer>
         {songs.map((song, i) => {
           return (
-            <div>
+            <SongItemWrapper>
               {" "}
               <SongItem song={song} key={i} />
-            </div>
+            </SongItemWrapper>
           );
         })}
       </SongContainer>

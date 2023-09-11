@@ -52,8 +52,11 @@ input {
 .DialogDescription {
   margin: 10px 0 20px;
   color: var(--mauve-11);
-  font-size: 15px;
   line-height: 1.5;
+  font-size: 15px;
+  /* color: #525f7f; */
+  font-weight: 500;
+  font-family: sans-serif;
 }
 
 .Button {

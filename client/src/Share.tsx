@@ -293,6 +293,7 @@ function Share() {
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+  // const [filter, setFilter] = useState<boolean>(false);
   const username = localStorage.getItem("username");
   const [location, setLocation] = useState(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -308,8 +309,34 @@ function Share() {
     source: "",
   });
   const songsRef = useRef([]);
+  // const originalSongsRef = useRef([]);
 
-  const [user] = useAuthState(auth);
+  const [user, loading] = useAuthState(auth);
+
+  const getUsername = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_ENDPOINT}/get_username/${user?.uid}`
+      );
+      setProfileLink(`/${response.data}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  const getLocation = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_ENDPOINT}/get_location/${user?.uid}`
+      );
+      setLocation(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  if (!loading && user) {
+    getUsername();
+    getLocation();
+  }
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSongData({...songData, url: event.target.value});
@@ -322,13 +349,6 @@ function Share() {
   };
 
   const validGenres = genres.map((d) => d.value);
-
-  const customStyles = {
-    control: (base: any) => ({
-      ...base,
-      border: "2px solid #333",
-    }),
-  };
 
   const processUrl = () => {
     setErrors([]);
@@ -454,10 +474,15 @@ function Share() {
       (song: Song) => genres.indexOf(song.genre) !== -1
     );
     if (genres.length > 0) {
+      // songsRef.current = filteredSongs;
       setSongs(filteredSongs);
+      //setFilter(true);
     }
-    if (genres.length == 0) {
+    if (genres.length === 0) {
+      // need originalSongsRef because we manipulate songsRef.current on filter
+      //setFilter(false);
       setSongs(songsRef.current);
+      //  setSongs(originalSongsRef.current); // never changes
     }
   };
 
@@ -482,6 +507,7 @@ function Share() {
         embed_url: embededUrl,
       });
       await fetchSongs();
+      await fetchGenres();
     } catch (err) {
       console.error(err);
     }
@@ -498,10 +524,13 @@ function Share() {
       let songs = response.data;
       setSongs(songs);
       songsRef.current = songs;
+      // originalSongsRef.current = songs;
     } catch (err) {
       console.error(err);
     }
   }, []);
+
+  // https://open.spotify.com/track/3glr5QzpWpglaMC6skyVDx?si=K2gfCBA2QZuBcX_5Usyzpw
 
   const fetchGenres = useCallback(async () => {
     try {
@@ -521,31 +550,11 @@ function Share() {
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
   useEffect(() => {
-    const getUsername = async () => {
-      try {
-        const response = await axios.get(
-          `${SERVER_ENDPOINT}/get_username/${user?.uid}`
-        );
-        setProfileLink(`/${response.data}`);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    const getLocation = async () => {
-      try {
-        const response = await axios.get(
-          `${SERVER_ENDPOINT}/get_location/${user?.uid}`
-        );
-        setLocation(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getUsername();
-    getLocation();
-    fetchGenres();
-    fetchSongs();
-  }, [user?.uid, error]);
+    if (songs.length === 0) {
+      fetchSongs();
+      fetchGenres();
+    }
+  }, [user?.uid, error, fetchGenres, fetchSongs, songs.length]);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>
@@ -606,6 +615,9 @@ function Share() {
             <Dialog.Overlay className="DialogOverlay" />
             <Dialog.Content className="DialogContent">
               <Dialog.Title className="DialogTitle">Share a song</Dialog.Title>
+              <Dialog.Description className="DialogDescription">
+                make sure this song is an all-time favorite of yours &#128522;
+              </Dialog.Description>
               <MusicContainer>
                 <SearchContainer>
                   <SearchBox
@@ -718,6 +730,23 @@ function Share() {
             </SongItemWrapper>
           );
         })}
+        {/* {filter
+          ? songsRef.current.map((song, i) => {
+              return (
+                <SongItemWrapper>
+                  {" "}
+                  <SongItem song={song} key={i} />
+                </SongItemWrapper>
+              );
+            })
+          : originalSongsRef.current.map((song, i) => {
+              return (
+                <SongItemWrapper>
+                  {" "}
+                  <SongItem song={song} key={i} />
+                </SongItemWrapper>
+              );
+            })} */}
       </SongContainer>
     </div>
   );

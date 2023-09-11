@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 import {Link} from "react-router-dom";
 import "./App.css";
 import "./share.css";
@@ -15,6 +15,7 @@ import {auth} from "./firebase-config";
 import {SERVER_ENDPOINT} from "./constants";
 import SongItem from "./SongItem";
 import Select from "react-select";
+import {Song} from "./types/types";
 import {
   validSoundCloudLink,
   validSpotifyLink,
@@ -269,6 +270,13 @@ export const SongContainer = styled.div`
   }
 `;
 
+export const SelectContainer = styled.div`
+  max-width: 350px;
+  width: 100%;
+  position: relative;
+  top: 12px;
+`;
+
 interface SongData {
   title: string;
   url: string;
@@ -283,7 +291,7 @@ function Share() {
   const [errors, setErrors] = useState<string[]>([]);
   const username = localStorage.getItem("username");
   const [location, setLocation] = useState(null);
-  const [songs, setSongs] = useState<[]>([]);
+  const [songs, setSongs] = useState<Song[]>([]);
   const [songGenres, setSongGenres] = useState<[]>([]);
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
@@ -295,6 +303,7 @@ function Share() {
     spotifyLink: false, // is it a spotify song (diff styling)
     source: "",
   });
+  const songsRef = useRef([]);
 
   const [user] = useAuthState(auth);
 
@@ -309,6 +318,13 @@ function Share() {
   };
 
   const validGenres = genres.map((d) => d.value);
+
+  const customStyles = {
+    control: (base: any) => ({
+      ...base,
+      border: "2px solid #333",
+    }),
+  };
 
   const processUrl = () => {
     setErrors([]);
@@ -428,6 +444,19 @@ function Share() {
     }
   };
 
+  const handleGenreFilter = (selected: any) => {
+    const genres = selected.map((el: any) => el.value);
+    let filteredSongs = songsRef.current.filter(
+      (song: Song) => genres.indexOf(song.genre) !== -1
+    );
+    if (genres.length > 0) {
+      setSongs(filteredSongs);
+    }
+    if (genres.length == 0) {
+      setSongs(songsRef.current);
+    }
+  };
+
   const handleSearch = (selected: any) => {
     const {item} = selected;
     setSongData({...songData, genre: item.value});
@@ -462,7 +491,9 @@ function Share() {
   const fetchSongs = useCallback(async () => {
     try {
       const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
-      setSongs(response.data);
+      let songs = response.data;
+      setSongs(songs);
+      songsRef.current = songs;
     } catch (err) {
       console.error(err);
     }
@@ -472,6 +503,7 @@ function Share() {
     try {
       const response = await axios.get(`${SERVER_ENDPOINT}/get_genres`);
       const options: any = [];
+      // console.log(response.data);
       response.data.forEach((el: any) => {
         options.push({value: el.genre, label: el.genre});
       });
@@ -507,9 +539,9 @@ function Share() {
     };
     getUsername();
     getLocation();
-    fetchSongs();
     fetchGenres();
-  }, [user?.uid, errors]);
+    fetchSongs();
+  }, [user?.uid, error]);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>
@@ -534,9 +566,7 @@ function Share() {
     );
   }
   return (
-    // TODO: change this className
     <div>
-      <Select options={songGenres} isMulti />
       <MenuHeader>
         <LoopyLogo />
         <MenuItems>
@@ -665,7 +695,16 @@ function Share() {
             </AddedContainer>
           </>
         )}
+        <SelectContainer>
+          <Select
+            options={songGenres}
+            isMulti
+            onChange={handleGenreFilter}
+            placeholder="Filter by genre"
+          />
+        </SelectContainer>
       </ModalContainer>
+
       <SongContainer>
         {songs.map((song, i) => {
           return (

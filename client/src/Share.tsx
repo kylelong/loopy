@@ -1,11 +1,10 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 import {Link} from "react-router-dom";
 import "./App.css";
 import "./share.css";
 import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
-// import refresh from "./assets/refresh.svg";
 import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
 import ReactSearchBox from "react-search-box";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -15,6 +14,8 @@ import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
 import {SERVER_ENDPOINT} from "./constants";
 import SongItem from "./SongItem";
+import Select from "react-select";
+import {Song} from "./types/types";
 import {
   validSoundCloudLink,
   validSpotifyLink,
@@ -269,6 +270,12 @@ export const SongContainer = styled.div`
   }
 `;
 
+export const SelectContainer = styled.div`
+  max-width: 350px;
+  width: 100%;
+  position: relative;
+  top: 12px;
+`;
 export const SongItemWrapper = styled.div`
   max-width: 560px;
   width: 100%;
@@ -288,7 +295,8 @@ function Share() {
   const [errors, setErrors] = useState<string[]>([]);
   const username = localStorage.getItem("username");
   const [location, setLocation] = useState(null);
-  const [songs, setSongs] = useState<[]>([]);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [songGenres, setSongGenres] = useState<[]>([]);
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
 
   const [songData, setSongData] = useState<SongData>({
@@ -299,6 +307,7 @@ function Share() {
     spotifyLink: false, // is it a spotify song (diff styling)
     source: "",
   });
+  const songsRef = useRef([]);
 
   const [user] = useAuthState(auth);
 
@@ -313,6 +322,13 @@ function Share() {
   };
 
   const validGenres = genres.map((d) => d.value);
+
+  const customStyles = {
+    control: (base: any) => ({
+      ...base,
+      border: "2px solid #333",
+    }),
+  };
 
   const processUrl = () => {
     setErrors([]);
@@ -432,6 +448,19 @@ function Share() {
     }
   };
 
+  const handleGenreFilter = (selected: any) => {
+    const genres = selected.map((el: any) => el.value);
+    let filteredSongs = songsRef.current.filter(
+      (song: Song) => genres.indexOf(song.genre) !== -1
+    );
+    if (genres.length > 0) {
+      setSongs(filteredSongs);
+    }
+    if (genres.length == 0) {
+      setSongs(songsRef.current);
+    }
+  };
+
   const handleSearch = (selected: any) => {
     const {item} = selected;
     setSongData({...songData, genre: item.value});
@@ -462,33 +491,27 @@ function Share() {
     auth.signOut();
     window.location.href = "/";
   };
-  const fetchFavorites = useCallback(async () => {
+
+  const fetchSongs = useCallback(async () => {
     try {
-      const response = await axios.get(`${SERVER_ENDPOINT}/get_favorites`);
-      return response.data;
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
+      let songs = response.data;
+      setSongs(songs);
+      songsRef.current = songs;
     } catch (err) {
       console.error(err);
     }
   }, []);
 
-  function compareCreatedAt(
-    a: {created_at: string},
-    b: {created_at: string}
-  ): number {
-    const dateA = new Date(a.created_at);
-    const dateB = new Date(b.created_at);
-
-    return dateB.getTime() - dateA.getTime();
-  }
-
-  const fetchSongs = useCallback(async () => {
+  const fetchGenres = useCallback(async () => {
     try {
-      const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_genres`);
+      const options: any = [];
+      response.data.forEach((el: any) => {
+        options.push({value: el.genre, label: el.genre});
+      });
+      setSongGenres(options);
       setSongs(response.data);
-      // const favorites = await fetchFavorites();
-      // let combined = response.data.concat(favorites);
-      // combined.sort(compareCreatedAt);
-      // console.log(combined);
     } catch (err) {
       console.error(err);
     }
@@ -520,8 +543,9 @@ function Share() {
     };
     getUsername();
     getLocation();
+    fetchGenres();
     fetchSongs();
-  }, [user?.uid, errors]);
+  }, [user?.uid, error]);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>
@@ -546,7 +570,6 @@ function Share() {
     );
   }
   return (
-    // TODO: change this className
     <div>
       <MenuHeader>
         <LoopyLogo />
@@ -676,7 +699,16 @@ function Share() {
             </AddedContainer>
           </>
         )}
+        <SelectContainer>
+          <Select
+            options={songGenres}
+            isMulti
+            onChange={handleGenreFilter}
+            placeholder="Filter by genre"
+          />
+        </SelectContainer>
       </ModalContainer>
+
       <SongContainer>
         {songs.map((song, i) => {
           return (

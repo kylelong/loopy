@@ -251,7 +251,7 @@ app.get("/get_songs", async (req, res) => {
   // select id, uid AS user, location, title, genre, embed_url AS link, created_at FROM songs ORDER BY created_at DESC LIMIT 20 OFFSET 0;
   try {
     const response = await pool.query(
-      "SELECT uid AS user, location, title, genre, embed_url AS link, created_at  FROM songs ORDER BY created_at DESC LIMIT 5"
+      "SELECT uid AS user, location, title, genre, embed_url AS link, created_at  FROM songs ORDER BY created_at DESC LIMIT 20"
     );
     res.json(response.rows); // [] if no songs
   } catch (err) {

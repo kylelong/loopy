@@ -328,7 +328,7 @@ const Account = () => {
         hasErrors = true;
         setErrors((errors) => [
           ...errors,
-          "Username must be between 2 and 30 lowercase letters long.",
+          "Username must be between 2 and 30 lowercase letters long with numbers or ('.', '_') only.",
         ]);
       } else {
         if (hasErrors === false) {

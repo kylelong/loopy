@@ -5,7 +5,7 @@ export const validEmail = (email: string) => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 };
 export const validUsername = (username: string) => {
-  const regex = /^[a-z]{2,30}$/;
+  const regex = /^[a-z0-9_.]{2,30}$/;
   return regex.test(username);
 };
 

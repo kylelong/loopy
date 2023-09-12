@@ -13,6 +13,7 @@ import genres from "./genres";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
 import {SERVER_ENDPOINT} from "./constants";
+import InfiniteScroll from "react-infinite-scroll-component";
 import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
@@ -299,6 +300,9 @@ function Share() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [songGenres, setSongGenres] = useState<[]>([]);
   const [profileLink, setProfileLink] = useState<string>(`/${username}`);
+  const [page, setPage] = useState<number>(1);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [fetchingSongs, setFetchingSongs] = useState<boolean>(false);
 
   const [songData, setSongData] = useState<SongData>({
     title: "",
@@ -308,8 +312,9 @@ function Share() {
     spotifyLink: false, // is it a spotify song (diff styling)
     source: "",
   });
-  const songsRef = useRef([]);
-  const originalSongsRef = useRef([]);
+  const songsRef = useRef<Song[]>([]);
+  const originalSongsRef = useRef<Song[]>([]);
+  const dataFetchedRef = useRef(false);
 
   const [user, loading] = useAuthState(auth);
 
@@ -523,16 +528,32 @@ function Share() {
   };
 
   const fetchSongs = useCallback(async () => {
+    // Add a guard clause to prevent multiple calls
+    if (fetchingSongs) {
+      return;
+    }
+
     try {
-      const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`);
-      let songs = response.data;
-      setSongs(songs);
-      songsRef.current = songs;
-      originalSongsRef.current = songs;
+      setFetchingSongs(true); // Set a flag to indicate that data is being fetched
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`, {
+        params: {page},
+      });
+      if (!response.data || response.data.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      console.log("called with: ", page);
+      const newSongs = response.data;
+      setSongs((prevSongs) => [...prevSongs, ...newSongs]);
+      songsRef.current = [...songsRef.current, ...newSongs];
+      originalSongsRef.current = [...originalSongsRef.current, ...newSongs];
+      setPage(page + 1);
     } catch (err) {
       console.error(err);
+    } finally {
+      setFetchingSongs(false); // Reset the fetching flag
     }
-  }, []);
+  }, [page, fetchingSongs]);
 
   const fetchGenres = useCallback(async () => {
     try {
@@ -542,21 +563,24 @@ function Share() {
         options.push({value: el.genre, label: el.genre});
       });
       setSongGenres(options);
-      setSongs(response.data);
     } catch (err) {
       console.error(err);
     }
   }, []);
 
+  const handleLoadMore = () => {
+    fetchSongs();
+  };
+
   /**
    *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
    */
   useEffect(() => {
-    if (songs.length === 0) {
-      fetchSongs();
-      fetchGenres();
-    }
-  }, [user?.uid, error, fetchGenres, fetchSongs, songs.length]);
+    if (dataFetchedRef.current) return;
+    dataFetchedRef.current = true;
+    fetchSongs();
+    fetchGenres();
+  }, [fetchGenres, fetchSongs]);
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>
@@ -723,8 +747,7 @@ function Share() {
         </SelectContainer>
       </ModalContainer>
 
-      <SongContainer>
-        {filter
+      {/* {filter
           ? songsRef.current.map((song, i) => {
               return (
                 <SongItemWrapper>
@@ -740,7 +763,33 @@ function Share() {
                   <SongItem song={song} key={i} />
                 </SongItemWrapper>
               );
-            })}
+            })} */}
+
+      <SongContainer>
+        <InfiniteScroll
+          dataLength={songs.length}
+          next={handleLoadMore}
+          hasMore={hasMore}
+          loader={<h4>Loading...</h4>}
+        >
+          {filter
+            ? songsRef.current.map((song, i) => {
+                return (
+                  <SongItemWrapper>
+                    {" "}
+                    <SongItem song={song} key={i} />
+                  </SongItemWrapper>
+                );
+              })
+            : originalSongsRef.current.map((song, i) => {
+                return (
+                  <SongItemWrapper>
+                    {" "}
+                    <SongItem song={song} key={i} />
+                  </SongItemWrapper>
+                );
+              })}
+        </InfiniteScroll>
       </SongContainer>
     </div>
   );

@@ -542,7 +542,6 @@ function Share() {
         setHasMore(false);
         return;
       }
-      console.log("called with: ", page);
       const newSongs = response.data;
       setSongs((prevSongs) => [...prevSongs, ...newSongs]);
       songsRef.current = [...songsRef.current, ...newSongs];
@@ -746,32 +745,13 @@ function Share() {
           />
         </SelectContainer>
       </ModalContainer>
-
-      {/* {filter
-          ? songsRef.current.map((song, i) => {
-              return (
-                <SongItemWrapper>
-                  {" "}
-                  <SongItem song={song} key={i} />
-                </SongItemWrapper>
-              );
-            })
-          : originalSongsRef.current.map((song, i) => {
-              return (
-                <SongItemWrapper>
-                  {" "}
-                  <SongItem song={song} key={i} />
-                </SongItemWrapper>
-              );
-            })} */}
-
-      <SongContainer>
-        <InfiniteScroll
-          dataLength={songs.length}
-          next={handleLoadMore}
-          hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
-        >
+      <InfiniteScroll
+        dataLength={songs.length}
+        next={handleLoadMore}
+        hasMore={hasMore}
+        loader={<h4>Loading...</h4>}
+      >
+        <SongContainer>
           {filter
             ? songsRef.current.map((song, i) => {
                 return (
@@ -789,8 +769,8 @@ function Share() {
                   </SongItemWrapper>
                 );
               })}
-        </InfiniteScroll>
-      </SongContainer>
+        </SongContainer>
+      </InfiniteScroll>
     </div>
   );
 }

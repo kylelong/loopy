@@ -53,7 +53,7 @@ export const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 12px;
-  @media (max-width: 500px) {
+  @media (max-width: 400px) {
     flex-direction: column;
   }
 `;
@@ -75,8 +75,8 @@ export const ListenBtn = styled.button`
     cursor: pointer;
     opacity: 0.8;
   }
-  @media (max-width: 300px) {
-    max-width: 300px;
+  @media (max-width: 400px) {
+    max-width: 230px;
     width: 100%;
   }
 `;
@@ -97,9 +97,8 @@ export const SignUpBtn = styled.button`
     cursor: pointer;
     opacity: 0.8;
   }
-  @media (max-width: 300px) {
-    max-width: 300px;
-    width: 100%;
+  @media (max-width: 400px) {
+    width: 230px;
   }
 `;
 

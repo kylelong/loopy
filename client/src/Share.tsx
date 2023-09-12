@@ -303,6 +303,7 @@ function Share() {
   const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [fetchingSongs, setFetchingSongs] = useState<boolean>(false);
+  const [updateFilter, setUpdateFilter] = useState<boolean>(false);
 
   const [songData, setSongData] = useState<SongData>({
     title: "",
@@ -476,24 +477,33 @@ function Share() {
   };
 
   const handleGenreFilter = (selected: any) => {
+    setHasMore(true);
     songsRef.current = originalSongsRef.current;
+    // console.log("current: ", songsRef.current);
+    // console.log("og songs: ", originalSongsRef.current);
     const genres = selected.map((el: any) => el.value);
     let filteredSongs = songsRef.current.filter(
       (song: Song) => genres.indexOf(song.genre) !== -1
     );
+    // console.log("filtered songs: ", filteredSongs);
     if (genres.length > 0) {
       songsRef.current = filteredSongs;
+      // console.log("current songs set to filtered songs: ", songsRef.current);
       // setSongs(filteredSongs);
       setFilter(true);
     }
     if (genres.length === 0) {
       // need originalSongsRef because we manipulate songsRef.current on filter
       songsRef.current = originalSongsRef.current;
+      // console.log("current songs resetting: ", songsRef.current);
+      // console.log("og songs: ", originalSongsRef.current);
       setFilter(false);
       // reset songsRef to original
 
       //  setSongs(originalSongsRef.current); // never changes
     }
+    setUpdateFilter(!updateFilter);
+    setHasMore(false);
   };
 
   const handleSearch = (selected: any) => {
@@ -575,13 +585,25 @@ function Share() {
   const handleLoadMore = () => {
     fetchSongs();
   };
-
   useEffect(() => {
-    if (dataFetchedRef.current) return;
-    dataFetchedRef.current = true;
-    fetchSongs();
-    fetchGenres();
-  }, [fetchGenres, fetchSongs]);
+    // Check if data has already been fetched
+    if (!dataFetchedRef.current) {
+      // Fetch data if not already fetched
+      fetchSongs();
+      fetchGenres();
+      // Mark data as fetched
+      dataFetchedRef.current = true;
+    }
+  }, [
+    fetchSongs,
+    fetchGenres,
+    filter,
+    songsRef,
+    songsRef.current,
+    originalSongsRef,
+    originalSongsRef.current,
+  ]);
+
   if (!user?.emailVerified) {
     return (
       <VerifyEmailContainer>

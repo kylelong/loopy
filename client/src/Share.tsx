@@ -459,6 +459,8 @@ function Share() {
     }
   };
 
+  // for uploading a song not filtering by genre
+
   const handleGenreChange = (value: string) => {
     setSongData({...songData, genre: value});
     if (!validGenres.includes(value)) {
@@ -531,8 +533,6 @@ function Share() {
       console.error(err);
     }
   }, []);
-
-  // https://open.spotify.com/track/3glr5QzpWpglaMC6skyVDx?si=K2gfCBA2QZuBcX_5Usyzpw
 
   const fetchGenres = useCallback(async () => {
     try {

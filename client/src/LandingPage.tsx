@@ -48,9 +48,41 @@ export const Music = styled.img`
   top: 27px;
   right: 19px;
 `;
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 12px;
+  @media (max-width: 500px) {
+    flex-direction: column;
+  }
+`;
+
+export const ListenBtn = styled.button`
+  width: 230px;
+  background-color: #e2e8f0;
+  color: rgb(93, 93, 255);
+  font-weight: 700;
+  font-size: 1rem;
+  height: 50px;
+  border-color: transparent;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgb(0, 0, 0, 0.05);
+  margin-top: 8px;
+  margin-bottom: 8px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+  @media (max-width: 300px) {
+    max-width: 300px;
+    width: 100%;
+  }
+`;
+
 export const SignUpBtn = styled.button`
-  max-width: 130px;
-  width: 100%;
+  width: 130px;
   background-color: rgb(93, 93, 255);
   color: white;
   font-size: 1rem;
@@ -60,11 +92,17 @@ export const SignUpBtn = styled.button`
   border-radius: 0.375rem;
   box-shadow: 0 1px 2px 0 rgb(0, 0, 0, 0.05);
   margin-top: 8px;
+  font-weight: 700;
   &:hover {
     cursor: pointer;
     opacity: 0.8;
   }
+  @media (max-width: 300px) {
+    max-width: 300px;
+    width: 100%;
+  }
 `;
+
 export const MenuHeader = styled.div`
   display: flex;
   flex-direction: row;
@@ -228,6 +266,7 @@ export const SongSource = styled.img`
   height: 21px;
   margin-right: 12px;
 `;
+
 export const linkStyle = {
   textDecoration: "none",
 };
@@ -259,9 +298,18 @@ function LandingPage() {
           <Saying>
             Discover songs you love from people that already love them.
           </Saying>
-          <Link to="/signup" style={linkStyle}>
-            <SignUpBtn>Sign up</SignUpBtn>
-          </Link>
+          <ButtonContainer>
+            <div style={{marginRight: "24px"}}>
+              <Link to="/preview" style={linkStyle}>
+                <ListenBtn>Listen to new music</ListenBtn>
+              </Link>
+            </div>
+            <div>
+              <Link to="/signup" style={linkStyle}>
+                <SignUpBtn>Sign up</SignUpBtn>
+              </Link>
+            </div>
+          </ButtonContainer>
           <div
             style={{display: "flex", flexDirection: "row", marginTop: "32px"}}
           >
@@ -327,7 +375,7 @@ function LandingPage() {
           </Description>
         </Section>{" "}
         <Discover>
-          <Link to="signup" style={linkStyle}>
+          <Link to="/preview" style={linkStyle}>
             <div style={{marginLeft: "27px", color: "white"}}>
               Discover new music{" "}
             </div>

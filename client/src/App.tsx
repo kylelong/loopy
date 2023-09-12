@@ -8,6 +8,7 @@ import Share from "./Share";
 import Profile from "./Profile";
 import AuthRoute from "./util/AuthRoute";
 import AuthRouteLoggedOut from "./util/AuthRouteLoggedOut";
+import Preview from "./Preview";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/account" element={<Account />}></Route>
           </Route>
           <Route path="/:username" element={<Profile />}></Route>
+          <Route path="/preview" element={<Preview />}></Route>
         </Routes>
       </Router>
     </div>

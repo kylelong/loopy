@@ -293,7 +293,7 @@ function Share() {
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
-  // const [filter, setFilter] = useState<boolean>(false);
+  const [filter, setFilter] = useState<boolean>(false);
   const username = localStorage.getItem("username");
   const [location, setLocation] = useState(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -309,7 +309,7 @@ function Share() {
     source: "",
   });
   const songsRef = useRef([]);
-  // const originalSongsRef = useRef([]);
+  const originalSongsRef = useRef([]);
 
   const [user, loading] = useAuthState(auth);
 
@@ -469,20 +469,22 @@ function Share() {
   };
 
   const handleGenreFilter = (selected: any) => {
+    songsRef.current = originalSongsRef.current;
     const genres = selected.map((el: any) => el.value);
     let filteredSongs = songsRef.current.filter(
       (song: Song) => genres.indexOf(song.genre) !== -1
     );
     if (genres.length > 0) {
-      // songsRef.current = filteredSongs;
+      songsRef.current = filteredSongs;
       setSongs(filteredSongs);
-      //setFilter(true);
+      setFilter(true);
     }
     if (genres.length === 0) {
       // need originalSongsRef because we manipulate songsRef.current on filter
-      //setFilter(false);
-      setSongs(songsRef.current);
-      //  setSongs(originalSongsRef.current); // never changes
+      setFilter(false);
+      // reset songsRef to original
+      songsRef.current = originalSongsRef.current;
+      setSongs(originalSongsRef.current); // never changes
     }
   };
 
@@ -524,7 +526,7 @@ function Share() {
       let songs = response.data;
       setSongs(songs);
       songsRef.current = songs;
-      // originalSongsRef.current = songs;
+      originalSongsRef.current = songs;
     } catch (err) {
       console.error(err);
     }
@@ -722,15 +724,7 @@ function Share() {
       </ModalContainer>
 
       <SongContainer>
-        {songs.map((song, i) => {
-          return (
-            <SongItemWrapper>
-              {" "}
-              <SongItem song={song} key={i} />
-            </SongItemWrapper>
-          );
-        })}
-        {/* {filter
+        {filter
           ? songsRef.current.map((song, i) => {
               return (
                 <SongItemWrapper>
@@ -746,7 +740,7 @@ function Share() {
                   <SongItem song={song} key={i} />
                 </SongItemWrapper>
               );
-            })} */}
+            })}
       </SongContainer>
     </div>
   );

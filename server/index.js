@@ -238,7 +238,7 @@ app.post("/add_song", async (req, res) => {
   try {
     const {uid, location, title, genre, link, source, embed_url} = req.body;
     await pool.query(
-      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url,hash) VALUES($1, $2, $3, $4, $5, $6, $7, substring(md5(random()::text), 0, 25)) RETURNING *",
       [uid, location, title, genre, link, source, embed_url]
     );
     res.json({status: 200});

@@ -515,8 +515,7 @@ function Share() {
         source: source,
         embed_url: embededUrl,
       });
-      await fetchSongs();
-      await fetchGenres();
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
     }
@@ -542,6 +541,7 @@ function Share() {
         setHasMore(false);
         return;
       }
+
       const newSongs = response.data;
       setSongs((prevSongs) => [...prevSongs, ...newSongs]);
       songsRef.current = [...songsRef.current, ...newSongs];
@@ -571,9 +571,6 @@ function Share() {
     fetchSongs();
   };
 
-  /**
-   *  {link: url, embededUrl: embededUrl, genre: genre, user_id: 1, created_at: "{date}"}
-   */
   useEffect(() => {
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;

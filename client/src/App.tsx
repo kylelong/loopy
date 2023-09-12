@@ -27,6 +27,7 @@ function App() {
           </Route>
           <Route path="/:username" element={<Profile />}></Route>
           <Route path="/preview" element={<Preview />}></Route>
+          {/* <Route path="/songs/:id" element={<SongViewer />}></Route> */}
         </Routes>
       </Router>
     </div>

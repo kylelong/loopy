@@ -483,15 +483,16 @@ function Share() {
     );
     if (genres.length > 0) {
       songsRef.current = filteredSongs;
-      setSongs(filteredSongs);
+      // setSongs(filteredSongs);
       setFilter(true);
     }
     if (genres.length === 0) {
       // need originalSongsRef because we manipulate songsRef.current on filter
+      songsRef.current = originalSongsRef.current;
       setFilter(false);
       // reset songsRef to original
-      songsRef.current = originalSongsRef.current;
-      setSongs(originalSongsRef.current); // never changes
+
+      //  setSongs(originalSongsRef.current); // never changes
     }
   };
 
@@ -516,6 +517,10 @@ function Share() {
         embed_url: embededUrl,
       });
       window.location.href = "/";
+      // setFetchingSongs(false);
+      // setPage(1);
+      // await fetchSongs();
+      // await fetchGenres();
     } catch (err) {
       console.error(err);
     }

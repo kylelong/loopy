@@ -268,7 +268,6 @@ export const Heart = styled.img`
 // WILL BE ABLE TO GET SONGS FROM UID CAUSE FETCHDATA() SETS USERDATA.UID
 interface User {
   current_favorite_song: string;
-  email: string;
   location: string;
   favorite_artist: string;
   favorite_genre: string;
@@ -286,7 +285,6 @@ export const Profile = () => {
   const [pageNotFound, setPageNotFound] = useState<boolean>(false);
   const [userData, setUserData] = useState<User>({
     current_favorite_song: "",
-    email: "",
     location: "",
     favorite_artist: "",
     favorite_genre: "",

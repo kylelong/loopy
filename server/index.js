@@ -68,7 +68,7 @@ app.get("/user_data/:username", async (req, res) => {
   try {
     const {username} = req.params;
     const response = await pool.query(
-      "SELECT * FROM users WHERE username = $1",
+      "SELECT uid,created_at,location, favorite_artist, favorite_song, current_favorite_song, favorite_genre, username FROM users WHERE username = $1",
       [username]
     );
     res.json(response.rows[0]);

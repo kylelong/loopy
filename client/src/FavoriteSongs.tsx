@@ -257,7 +257,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
               <SongLabelContainer>
                 <ProfileItem
                   onClick={() => {
-                    setShowCurrent(!showCurrent);
+                    setShowCurrent(true);
                   }}
                 >
                   <SVG src={refresh} />
@@ -268,7 +268,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
               <SongLabelContainer>
                 <ProfileItemInactive
                   onClick={() => {
-                    setShowCurrent(!showCurrent);
+                    setShowCurrent(false);
                   }}
                 >
                   {" "}
@@ -283,7 +283,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
               <SongLabelContainer>
                 <ProfileItemInactive
                   onClick={() => {
-                    setShowCurrent(!showCurrent);
+                    setShowCurrent(true);
                   }}
                 >
                   <SVG src={refresh} />
@@ -293,7 +293,11 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
               </SongLabelContainer>
 
               <SongLabelContainer>
-                <ProfileItem>
+                <ProfileItem
+                  onClick={() => {
+                    setShowCurrent(false);
+                  }}
+                >
                   {" "}
                   <SVG src={heart} />
                   Favorite Song

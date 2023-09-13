@@ -22,6 +22,7 @@ import {
   validSpotifyLink,
   validYoutubeLink,
 } from "./functions";
+import Loader from "./Loader";
 
 export const ShareContainer = styled.div``;
 
@@ -775,32 +776,36 @@ function Share() {
           />
         </SelectContainer>
       </ModalContainer>
-      <InfiniteScroll
-        dataLength={songs.length}
-        next={() => handleLoadMore(page + 1)}
-        hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-      >
-        <SongContainer>
-          {filter
-            ? songsRef.current.map((song, i) => {
-                return (
-                  <SongItemWrapper>
-                    {" "}
-                    <SongItem song={song} key={i} />
-                  </SongItemWrapper>
-                );
-              })
-            : originalSongsRef.current.map((song, i) => {
-                return (
-                  <SongItemWrapper>
-                    {" "}
-                    <SongItem song={song} key={i} />
-                  </SongItemWrapper>
-                );
-              })}
-        </SongContainer>
-      </InfiniteScroll>
+      {dataFetchedRef.current ? (
+        <InfiniteScroll
+          dataLength={songs.length}
+          next={() => handleLoadMore(page + 1)}
+          hasMore={hasMore}
+          loader={<Loader />}
+        >
+          <SongContainer>
+            {filter
+              ? songsRef.current.map((song, i) => {
+                  return (
+                    <SongItemWrapper>
+                      {" "}
+                      <SongItem song={song} key={i} />
+                    </SongItemWrapper>
+                  );
+                })
+              : originalSongsRef.current.map((song, i) => {
+                  return (
+                    <SongItemWrapper>
+                      {" "}
+                      <SongItem song={song} key={i} />
+                    </SongItemWrapper>
+                  );
+                })}
+          </SongContainer>
+        </InfiniteScroll>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 }

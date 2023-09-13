@@ -6,6 +6,7 @@ import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Loader from "./Loader";
 import genres from "./genres";
 
 import {SERVER_ENDPOINT} from "./constants";
@@ -273,32 +274,36 @@ function Preview() {
           />
         </SelectContainer>
       </ModalContainer>
-      <InfiniteScroll
-        dataLength={songs.length}
-        next={() => handleLoadMore(page + 1)}
-        hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-      >
-        <SongContainer>
-          {filter
-            ? songsRef.current.map((song, i) => {
-                return (
-                  <SongItemWrapper>
-                    {" "}
-                    <SongItem song={song} key={i} />
-                  </SongItemWrapper>
-                );
-              })
-            : originalSongsRef.current.map((song, i) => {
-                return (
-                  <SongItemWrapper>
-                    {" "}
-                    <SongItem song={song} key={i} />
-                  </SongItemWrapper>
-                );
-              })}
-        </SongContainer>
-      </InfiniteScroll>
+      {dataFetchedRef.current ? (
+        <InfiniteScroll
+          dataLength={songs.length}
+          next={() => handleLoadMore(page + 1)}
+          hasMore={hasMore}
+          loader={<Loader />}
+        >
+          <SongContainer>
+            {filter
+              ? songsRef.current.map((song, i) => {
+                  return (
+                    <SongItemWrapper>
+                      {" "}
+                      <SongItem song={song} key={i} />
+                    </SongItemWrapper>
+                  );
+                })
+              : originalSongsRef.current.map((song, i) => {
+                  return (
+                    <SongItemWrapper>
+                      {" "}
+                      <SongItem song={song} key={i} />
+                    </SongItemWrapper>
+                  );
+                })}
+          </SongContainer>
+        </InfiniteScroll>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 }

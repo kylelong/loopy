@@ -523,6 +523,7 @@ function Share() {
         embed_url: embededUrl,
       });
       await fetchSongs(validGenres, 1);
+      await fetchGenres();
     } catch (err) {
       console.error(err);
     }

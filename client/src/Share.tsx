@@ -291,6 +291,7 @@ interface SongData {
   source: string;
 }
 function Share() {
+  const validGenres: string[] = genres.map((d) => d.value);
   const [error, setError] = useState<boolean>(false);
   const [added, setAdded] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
@@ -304,6 +305,7 @@ function Share() {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [fetchingSongs, setFetchingSongs] = useState<boolean>(false);
   const [updateFilter, setUpdateFilter] = useState<boolean>(false);
+  const [filteredGenres, setFilteredGenres] = useState<string[]>(validGenres);
 
   const [songData, setSongData] = useState<SongData>({
     title: "",
@@ -353,8 +355,6 @@ function Share() {
       processUrl();
     }
   };
-
-  const validGenres = genres.map((d) => d.value);
 
   const processUrl = () => {
     setErrors([]);
@@ -476,34 +476,29 @@ function Share() {
     }
   };
 
-  const handleGenreFilter = (selected: any) => {
+  const handleGenreFilter = async (selected: any) => {
     setHasMore(true);
     songsRef.current = originalSongsRef.current;
-    // console.log("current: ", songsRef.current);
-    // console.log("og songs: ", originalSongsRef.current);
     const genres = selected.map((el: any) => el.value);
+    setFilteredGenres(genres); // filter by genres i want to see
     let filteredSongs = songsRef.current.filter(
       (song: Song) => genres.indexOf(song.genre) !== -1
     );
-    // console.log("filtered songs: ", filteredSongs);
+    // page is 1 because  are starting over
     if (genres.length > 0) {
       songsRef.current = filteredSongs;
-      // console.log("current songs set to filtered songs: ", songsRef.current);
-      // setSongs(filteredSongs);
       setFilter(true);
+      await fetchSongs(genres, 1);
     }
+    // reset to default genres
     if (genres.length === 0) {
       // need originalSongsRef because we manipulate songsRef.current on filter
       songsRef.current = originalSongsRef.current;
-      // console.log("current songs resetting: ", songsRef.current);
-      // console.log("og songs: ", originalSongsRef.current);
       setFilter(false);
-      // reset songsRef to original
-
-      //  setSongs(originalSongsRef.current); // never changes
+      setFilteredGenres([]); // reset to see all songs
+      await fetchSongs(validGenres, 1);
     }
     setUpdateFilter(!updateFilter);
-    setHasMore(false);
   };
 
   const handleSearch = (selected: any) => {
@@ -526,11 +521,7 @@ function Share() {
         source: source,
         embed_url: embededUrl,
       });
-      window.location.href = "/";
-      // setFetchingSongs(false);
-      // setPage(1);
-      // await fetchSongs();
-      // await fetchGenres();
+      await fetchSongs(validGenres, 1);
     } catch (err) {
       console.error(err);
     }
@@ -541,33 +532,45 @@ function Share() {
     window.location.href = "/";
   };
 
-  const fetchSongs = useCallback(async () => {
-    // Add a guard clause to prevent multiple calls
-    if (fetchingSongs) {
-      return;
-    }
-
-    try {
-      setFetchingSongs(true); // Set a flag to indicate that data is being fetched
-      const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`, {
-        params: {page},
-      });
-      if (!response.data || response.data.length === 0) {
-        setHasMore(false);
+  const fetchSongs = useCallback(
+    async (genres: string[], page: number) => {
+      // Add a guard clause to prevent multiple calls
+      setPage(page);
+      if (fetchingSongs) {
         return;
       }
 
-      const newSongs = response.data;
-      setSongs((prevSongs) => [...prevSongs, ...newSongs]);
-      songsRef.current = [...songsRef.current, ...newSongs];
-      originalSongsRef.current = [...originalSongsRef.current, ...newSongs];
-      setPage(page + 1);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setFetchingSongs(false); // Reset the fetching flag
-    }
-  }, [page, fetchingSongs]);
+      try {
+        setFetchingSongs(true); // Set a flag to indicate that data is being fetched
+        const response = await axios.get(`${SERVER_ENDPOINT}/get_songs`, {
+          params: {page: page, genres: genres},
+        });
+        if (!response.data || response.data.length === 0) {
+          setHasMore(false);
+          return;
+        }
+        if (response.data.length < 15) {
+          setHasMore(false);
+        }
+
+        const newSongs = response.data;
+        if (page > 1) {
+          setSongs((prevSongs) => [...prevSongs, ...newSongs]);
+          songsRef.current = [...songsRef.current, ...newSongs];
+          originalSongsRef.current = [...originalSongsRef.current, ...newSongs];
+        } else {
+          setSongs(newSongs);
+          songsRef.current = newSongs;
+          originalSongsRef.current = newSongs;
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFetchingSongs(false); // Reset the fetching flag
+      }
+    },
+    [page, fetchingSongs]
+  );
 
   const fetchGenres = useCallback(async () => {
     try {
@@ -582,14 +585,14 @@ function Share() {
     }
   }, []);
 
-  const handleLoadMore = () => {
-    fetchSongs();
+  const handleLoadMore = (page: number) => {
+    fetchSongs(filteredGenres, page);
   };
   useEffect(() => {
     // Check if data has already been fetched
     if (!dataFetchedRef.current) {
       // Fetch data if not already fetched
-      fetchSongs();
+      fetchSongs(validGenres, 1);
       fetchGenres();
       // Mark data as fetched
       dataFetchedRef.current = true;
@@ -602,6 +605,8 @@ function Share() {
     songsRef.current,
     originalSongsRef,
     originalSongsRef.current,
+    filteredGenres,
+    hasMore,
   ]);
 
   if (!user?.emailVerified) {
@@ -771,7 +776,7 @@ function Share() {
       </ModalContainer>
       <InfiniteScroll
         dataLength={songs.length}
-        next={handleLoadMore}
+        next={() => handleLoadMore(page + 1)}
         hasMore={hasMore}
         loader={<h4>Loading...</h4>}
       >

@@ -550,6 +550,7 @@ function Share() {
           return;
         }
         if (response.data.length < 15) {
+          // TODO: this is prolly a bug
           setHasMore(false);
         }
 

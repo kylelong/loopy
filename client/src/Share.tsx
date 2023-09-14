@@ -549,6 +549,7 @@ function Share() {
     setHasMore(true);
     setNoSongData(false);
     setIsLoading(true);
+    setShowFavoriteGenre(false);
     songsRef.current = originalSongsRef.current;
     const genres = selected.map((el: any) => el.value);
     setFilteredGenres(genres); // filter by genres i want to see

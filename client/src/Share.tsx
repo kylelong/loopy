@@ -17,6 +17,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
+import star from "./assets/star.svg";
 import {
   validSoundCloudLink,
   validSpotifyLink,
@@ -283,6 +284,78 @@ export const SongItemWrapper = styled.div`
   width: 100%;
 `;
 
+export const GenreButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 24px;
+  @media (min-width: 561px) {
+    justify-content: center;
+    align-items: center;
+    padding: unset;
+  }
+`;
+export const Svg = styled.img`
+  width: 1.2rem;
+  margin-right: 4px;
+`;
+export const GenreButtonRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`;
+
+export const FavoriteGenreButtonDisabled = styled.button`
+  padding: 12px;
+  border-radius: 5px;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: "Helvetica Neue", sans-serif;
+  color: #525f7f;
+  font-weight: bold;
+  font-size: 16px;
+  opacity: 0.7;
+  border: none;
+
+  &:hover {
+    opacity: 1;
+    color: #d1d5db;
+    background-color: rgb(93, 93, 255);
+    cursor: pointer;
+  }
+`;
+export const FavoriteGenreButton = styled.button`
+  padding: 12px;
+  border-radius: 5px;
+  color: #d1d5db;
+  background-color: rgb(93, 93, 255);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: "Helvetica Neue", sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  opacity: 1;
+  border: none;
+
+  &:hover {
+    cursor: pointer;
+    color: #525f7f;
+    background-color: #f0f0f0;
+  }
+`;
+
+export const NoSongData = styled.div`
+  color: #525f7f;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: sans-serif;
+  margin-top: 15px;
+`;
+
 interface SongData {
   title: string;
   url: string;
@@ -307,6 +380,10 @@ function Share() {
   const [fetchingSongs, setFetchingSongs] = useState<boolean>(false);
   const [updateFilter, setUpdateFilter] = useState<boolean>(false);
   const [filteredGenres, setFilteredGenres] = useState<string[]>(validGenres);
+  const [favoriteGenre, setFavoriteGenre] = useState<string>("");
+  const [showFavoriteGenre, setShowFavoriteGenre] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [noSongData, setNoSongData] = useState<boolean>(false);
 
   const [songData, setSongData] = useState<SongData>({
     title: "",
@@ -332,6 +409,16 @@ function Share() {
       console.error(err);
     }
   };
+  const getFavoriteGenre = async () => {
+    try {
+      const response = await axios.get(
+        `${SERVER_ENDPOINT}/get_genre/${user?.uid}`
+      );
+      setFavoriteGenre(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const getLocation = async () => {
     try {
       const response = await axios.get(
@@ -343,6 +430,7 @@ function Share() {
     }
   };
   if (!loading && user) {
+    getFavoriteGenre();
     getUsername();
     getLocation();
   }
@@ -360,26 +448,6 @@ function Share() {
   const processUrl = () => {
     setErrors([]);
     let hasErrors = false;
-    // youtube / spotify /
-    //
-    //TODO: make sure host name is valid
-
-    // const validHostNames = [
-    //   "www.youtube.com",
-    //   "youtu.be",
-    //   "soundcloud.com",
-    //   "on.soundcloud.com",
-    // ];
-
-    // YOUTUBE
-    /*
-     if hostname is youtu.be || www.youtube.com
-    */
-
-    // https://on.soundcloud.com/x4uzk
-    // https://www.youtube.com/watch?v=6_mWyjJQxWg&ab_channel=KodakBlack
-    // https://soundcloud.com/ragerthelabel/erykah-badu-kodak-black?si=c86d26e269ea43d1808b280a6e703fe9&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing
-    // https://open.spotify.com/track/5TrkFfJgrGa1PdAkJO5QAs?si=PiAb5HucQxes3ZS2yb6Y7g
     const {url} = songData;
     const validUrl =
       validSoundCloudLink(url) ||
@@ -479,6 +547,8 @@ function Share() {
 
   const handleGenreFilter = async (selected: any) => {
     setHasMore(true);
+    setNoSongData(false);
+    setIsLoading(true);
     songsRef.current = originalSongsRef.current;
     const genres = selected.map((el: any) => el.value);
     setFilteredGenres(genres); // filter by genres i want to see
@@ -500,6 +570,7 @@ function Share() {
       await fetchSongs(validGenres, 1);
     }
     setUpdateFilter(!updateFilter);
+    setIsLoading(false);
   };
 
   const handleSearch = (selected: any) => {
@@ -548,8 +619,11 @@ function Share() {
           params: {page: page, genres: genres},
         });
         if (!response.data || response.data.length === 0) {
+          setNoSongData(true);
           setHasMore(false);
           return;
+        } else {
+          setNoSongData(false);
         }
         if (response.data.length < 15) {
           // TODO: this is prolly a bug
@@ -590,6 +664,23 @@ function Share() {
 
   const handleLoadMore = (page: number) => {
     fetchSongs(filteredGenres, page);
+  };
+
+  const handleFavoriteGenre = async () => {
+    // TODO: toggle
+    setIsLoading(true);
+    setNoSongData(false);
+    setShowFavoriteGenre(!showFavoriteGenre);
+    if (!showFavoriteGenre) {
+      // show fave genre lag with setting state
+      let genres = favoriteGenre ? [favoriteGenre] : validGenres;
+      setHasMore(true);
+      await fetchSongs(genres, 1);
+    } else {
+      setHasMore(true);
+      await fetchSongs(validGenres, 1);
+    }
+    setIsLoading(false);
   };
   useEffect(() => {
     // Check if data has already been fetched
@@ -777,7 +868,44 @@ function Share() {
           />
         </SelectContainer>
       </ModalContainer>
-      {dataFetchedRef.current ? (
+      <GenreButtonContainer>
+        {favoriteGenre ? (
+          showFavoriteGenre ? (
+            <FavoriteGenreButton onClick={handleFavoriteGenre}>
+              <Svg src={star} />
+              Favorite Genre
+            </FavoriteGenreButton>
+          ) : (
+            <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
+              <Svg src={star} />
+              Favorite Genre
+            </FavoriteGenreButtonDisabled>
+          )
+        ) : showFavoriteGenre ? (
+          <Link to="/account" style={linkStyle}>
+            <FavoriteGenreButton onClick={handleFavoriteGenre}>
+              <Svg src={star} />
+              Favorite Genre
+            </FavoriteGenreButton>
+          </Link>
+        ) : (
+          <Link to="/account" style={linkStyle}>
+            <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
+              <Svg src={star} />
+              Favorite Genre
+            </FavoriteGenreButtonDisabled>
+          </Link>
+        )}
+        {favoriteGenre && noSongData && (
+          <NoSongData>
+            no songs for {favoriteGenre} yet{" "}
+            <span style={{fontSize: "18px", position: "relative", top: "2px"}}>
+              &#128532;
+            </span>
+          </NoSongData>
+        )}
+      </GenreButtonContainer>
+      {dataFetchedRef.current && !isLoading ? (
         <InfiniteScroll
           dataLength={songs.length}
           next={() => handleLoadMore(page + 1)}

@@ -115,6 +115,19 @@ app.get("/get_username/:uid", async (req, res) => {
   }
 });
 
+app.get("/get_genre/:uid", async (req, res) => {
+  try {
+    const {uid} = req.params;
+    const response = await pool.query(
+      "SELECT favorite_genre FROM users WHERE uid = $1",
+      [uid]
+    );
+    res.json(response.rows[0].favorite_genre);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.get("/get_location/:uid", async (req, res) => {
   try {
     const {uid} = req.params;

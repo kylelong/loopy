@@ -74,7 +74,7 @@ const SongViewer = () => {
     user: "",
     location: "",
     created_at: "",
-    hash: "",
+    hash: hash,
   });
 
   useEffect(() => {

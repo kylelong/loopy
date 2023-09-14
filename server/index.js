@@ -286,7 +286,7 @@ app.get("/get_song/:hash", async (req, res) => {
 
   try {
     const response = await pool.query(
-      `SELECT uid AS user, location, title, genre, embed_url AS link, created_at
+      `SELECT uid AS user, hash, location, title, genre, embed_url AS link, created_at
       FROM songs WHERE hash = $1`,
       [hash]
     );

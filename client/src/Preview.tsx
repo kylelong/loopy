@@ -8,6 +8,8 @@ import LoopyLogo from "./LoopyLogo";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Loader from "./Loader";
 import genres from "./genres";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "./firebase-config";
 
 import {SERVER_ENDPOINT} from "./constants";
 import SongItem from "./SongItem";
@@ -138,6 +140,8 @@ function Preview() {
   const [updateFilter, setUpdateFilter] = useState<boolean>(false);
   const [filteredGenres, setFilteredGenres] = useState<string[]>(validGenres);
 
+  const [user] = useAuthState(auth);
+
   const songsRef = useRef<Song[]>([]);
   const originalSongsRef = useRef<Song[]>([]);
   const dataFetchedRef = useRef(false);
@@ -205,7 +209,7 @@ function Preview() {
         setFetchingSongs(false); // Reset the fetching flag
       }
     },
-    [page, fetchingSongs]
+    [fetchingSongs]
   );
 
   const fetchGenres = useCallback(async () => {
@@ -215,6 +219,7 @@ function Preview() {
       response.data.forEach((el: any) => {
         options.push({value: el.genre, label: el.genre});
       });
+      options.sort((a: any, b: any) => a.value.localeCompare(b.value));
       setSongGenres(options);
     } catch (err) {
       console.error(err);
@@ -239,29 +244,38 @@ function Preview() {
     fetchGenres,
     filter,
     songsRef,
-    songsRef.current,
     originalSongsRef,
-    originalSongsRef.current,
     filteredGenres,
     hasMore,
+    validGenres,
   ]);
 
   return (
     <div>
       <MenuHeader>
         <LoopyLogo />
-        <MenuRow>
-          <MenuItems>
-            <Link to="/signup" style={linkStyle}>
-              <MenuItem>Sign up</MenuItem>
-            </Link>
-          </MenuItems>
-          <MenuItems>
-            <Link to="/login" style={linkStyle}>
-              <MenuItem>Login</MenuItem>
-            </Link>
-          </MenuItems>
-        </MenuRow>
+        {user ? (
+          <MenuRow>
+            <MenuItems>
+              <Link to="/" style={linkStyle}>
+                <MenuItem>Home</MenuItem>
+              </Link>
+            </MenuItems>
+          </MenuRow>
+        ) : (
+          <MenuRow>
+            <MenuItems>
+              <Link to="/signup" style={linkStyle}>
+                <MenuItem>Sign up</MenuItem>
+              </Link>
+            </MenuItems>
+            <MenuItems>
+              <Link to="/login" style={linkStyle}>
+                <MenuItem>Login</MenuItem>
+              </Link>
+            </MenuItems>
+          </MenuRow>
+        )}
       </MenuHeader>
 
       <ModalContainer>

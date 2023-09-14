@@ -237,7 +237,7 @@ app.get("/get_user_songs/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
     const response = await pool.query(
-      "SELECT uid AS user, location, title, genre, embed_url AS link, created_at FROM songs WHERE uid = $1 ORDER BY created_at DESC",
+      "SELECT uid AS user, location, title, hash, genre, embed_url AS link, created_at FROM songs WHERE uid = $1 ORDER BY created_at DESC",
       [uid]
     );
     res.json(response.rows); // [] if no songs
@@ -270,9 +270,25 @@ app.get("/get_songs", async (req, res) => {
       ? "genre = ANY($3::text[])"
       : "genre = $3";
     const response = await pool.query(
-      `SELECT uid AS user, location, title, genre, embed_url AS link, created_at
+      `SELECT uid AS user, hash, location, title, genre, embed_url AS link, created_at
       FROM songs WHERE ${genreFilter} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset, genres]
+    );
+    res.json(response.rows); // [] if no songs
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.get("/get_song/:hash", async (req, res) => {
+  // select id, uid AS user, location, title, genre, embed_url AS link, created_at FROM songs ORDER BY created_at DESC LIMIT 20 OFFSET 0;
+  const {hash} = req.params;
+
+  try {
+    const response = await pool.query(
+      `SELECT uid AS user, location, title, genre, embed_url AS link, created_at
+      FROM songs WHERE hash = $1`,
+      [hash]
     );
     res.json(response.rows); // [] if no songs
   } catch (err) {

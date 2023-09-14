@@ -1,10 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import styled from "styled-components";
 import arrowLeft from "./assets/arrowLeft.svg";
 import arrowRight from "./assets/arrowRight.svg";
 import globe from "./assets/globe.svg";
 import * as timeago from "timeago.js";
 import {Song} from "./types/types";
+import {SITE_URL} from "./constants";
+import CopyToClipboard from "react-copy-to-clipboard";
+import {CheckCircledIcon} from "@radix-ui/react-icons";
 
 export const Circle = styled.div`
   width: 8px;
@@ -132,7 +135,7 @@ export const GenreBox = styled.div`
 `;
 export const SongDetails = styled.div<Props>`
   display: ${(props) => (props.inProfile ? "flex" : "none")};
-  flex-direction: row;
+  flex-direction: ${(props) => (props.inProfile ? "column" : "row")};
   justify-content: space-around;
   align-self: flex-start;
   margin-top: 10px;
@@ -140,8 +143,11 @@ export const SongDetails = styled.div<Props>`
   background-color: #eef2ff;
   border: 0;
   border-radius: 5px;
-  height: 56px;
-  padding: 6px;
+  height: 100%;
+  padding: 12px;
+  @media (min-width: 560px) {
+    width: 560px;
+  }
 `;
 
 export const Genre = styled.div`
@@ -168,6 +174,44 @@ export const Dot = styled.div`
   top: 6px;
   margin-right: 6px;
 `;
+
+export const Share = styled.button`
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  font-size: 15px;
+  color: rgb(93, 93, 255);
+  font-family: "Helvetica Neue", sans-serif;
+  width: 65px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const CopyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 4px;
+  margin-top: 4px;
+`;
+
+export const ShowCopyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  top: 6px;
+  left: 5px;
+`;
+export const CopiedMessage = styled.div`
+  margin-left: 5px;
+  color: #525f7f;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: sans-serif;
+  top: 2px;
+  position: relative;
+`;
+
 interface Props {
   songs?: Song[];
   inProfile: boolean;
@@ -246,6 +290,9 @@ const Carousel: React.FC<Props> = ({
 
   const [dotIndex, setDotIndex] = useState<number>(0);
   const [timestamp, setTimeStamp] = useState<string>("");
+  const [showCopied, setShowCopied] = useState<boolean>(false);
+  const timerRef = useRef(0);
+  const [shareUrl, setShareUrl] = useState<string>("");
 
   const handleLeftClick = () => {
     if (dotIndex === 0) {
@@ -261,12 +308,23 @@ const Carousel: React.FC<Props> = ({
       setDotIndex(dotIndex + 1);
     }
   };
+  const handleShareLink = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.clearTimeout(timerRef.current);
+    setShowCopied(true);
+    timerRef.current = window.setTimeout(() => {
+      setShowCopied(false);
+    }, 2000);
+  };
   // happy house
   // https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
 
   useEffect(() => {
     let postedDate = new Date(`${songs[dotIndex].created_at}`);
     setTimeStamp(timeago.format(postedDate));
+    if (songs) {
+      setShareUrl(`${SITE_URL}/song/${songs[dotIndex].hash}`);
+    }
   }, [dotIndex, songs]);
   return (
     <>
@@ -293,10 +351,26 @@ const Carousel: React.FC<Props> = ({
         <GenreBox>{`${songs[dotIndex].genre}`}</GenreBox>
       </Details>
       <SongDetails inProfile={inProfile}>
-        <Genre>{`${songs[dotIndex].genre}`}</Genre>
-        <Dot></Dot>
-        <Time>{timestamp}</Time>
+        <div style={{display: "flex", flexDirection: "row"}}>
+          <Genre>{`${songs[dotIndex].genre}`}</Genre>
+          <Dot></Dot>
+          <Time>{timestamp}</Time>
+        </div>
+        <CopyContainer>
+          <CopyToClipboard text={shareUrl}>
+            <Share onClick={handleShareLink}>share</Share>
+          </CopyToClipboard>
+          {showCopied && (
+            <ShowCopyContainer>
+              <CheckCircledIcon
+                style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
+              />
+              <CopiedMessage>copied to clipboard</CopiedMessage>
+            </ShowCopyContainer>
+          )}
+        </CopyContainer>
       </SongDetails>
+
       <CarouselDots inProfile={inProfile}>
         {songs.map((song, index) => {
           return (

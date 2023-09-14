@@ -1,11 +1,13 @@
-import React, {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback, useRef} from "react";
 import styled from "styled-components";
 import globe from "./assets/globe.svg";
 import * as timeago from "timeago.js";
 import {Song} from "./types/types";
-import {SERVER_ENDPOINT} from "./constants";
+import {SERVER_ENDPOINT, SITE_URL} from "./constants";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import {CheckCircledIcon} from "@radix-ui/react-icons";
+import {CopyToClipboard} from "react-copy-to-clipboard";
 
 export const Container = styled.div`
   display: flex;
@@ -105,6 +107,42 @@ export const Location = styled.div`
 export const linkStyle = {
   textDecoration: "none",
 };
+export const Share = styled.button`
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  font-size: 15px;
+  color: rgb(93, 93, 255);
+  font-family: "Helvetica Neue", sans-serif;
+  width: 65px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const CopyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 4px;
+  margin-top: 4px;
+`;
+
+export const ShowCopyContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  top: 6px;
+  left: 5px;
+`;
+export const CopiedMessage = styled.div`
+  margin-left: 5px;
+  color: #525f7f;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: sans-serif;
+  top: 2px;
+  position: relative;
+`;
 
 interface Props {
   song: Song;
@@ -114,6 +152,10 @@ const SongItem: React.FC<Props> = ({song}) => {
   const [timestamp, setTimeStamp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [profileLink, setProfileLink] = useState<string>("");
+  const [showCopied, setShowCopied] = useState<boolean>(false);
+  const timerRef = useRef(0);
+
+  const share_url = `${SITE_URL}/song/${song.hash}`;
 
   const getUsername = useCallback(async () => {
     try {
@@ -126,6 +168,15 @@ const SongItem: React.FC<Props> = ({song}) => {
       console.error(err);
     }
   }, [song.user]);
+
+  const handleShareLink = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    window.clearTimeout(timerRef.current);
+    setShowCopied(true);
+    timerRef.current = window.setTimeout(() => {
+      setShowCopied(false);
+    }, 2000);
+  };
 
   useEffect(() => {
     getUsername();
@@ -162,6 +213,19 @@ const SongItem: React.FC<Props> = ({song}) => {
             </LocationContainer>
           )}
           <Time>{timestamp}</Time>
+          <CopyContainer>
+            <CopyToClipboard text={share_url}>
+              <Share onClick={handleShareLink}>share</Share>
+            </CopyToClipboard>
+            {showCopied && (
+              <ShowCopyContainer>
+                <CheckCircledIcon
+                  style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
+                />
+                <CopiedMessage>copied to clipboard</CopiedMessage>
+              </ShowCopyContainer>
+            )}
+          </CopyContainer>
         </SongDetails>
       </Link>
     </>

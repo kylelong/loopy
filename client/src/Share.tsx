@@ -647,7 +647,7 @@ function Share() {
         setFetchingSongs(false); // Reset the fetching flag
       }
     },
-    [page, fetchingSongs]
+    [fetchingSongs]
   );
 
   const fetchGenres = useCallback(async () => {
@@ -657,6 +657,7 @@ function Share() {
       response.data.forEach((el: any) => {
         options.push({value: el.genre, label: el.genre});
       });
+      options.sort((a: any, b: any) => a.value.localeCompare(b.value));
       setSongGenres(options);
     } catch (err) {
       console.error(err);
@@ -697,11 +698,10 @@ function Share() {
     fetchGenres,
     filter,
     songsRef,
-    songsRef.current,
     originalSongsRef,
-    originalSongsRef.current,
     filteredGenres,
     hasMore,
+    validGenres,
   ]);
 
   if (!user?.emailVerified) {

@@ -4,4 +4,5 @@ export interface Song {
   user: string;
   location: string;
   created_at?: string;
+  hash?: string;
 }

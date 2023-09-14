@@ -6,6 +6,7 @@ import SignUp from "./SignUp";
 import Account from "./Account";
 import Share from "./Share";
 import Profile from "./Profile";
+import SongViewer from "./SongViewer";
 import AuthRoute from "./util/AuthRoute";
 import AuthRouteLoggedOut from "./util/AuthRouteLoggedOut";
 import Preview from "./Preview";
@@ -27,7 +28,7 @@ function App() {
           </Route>
           <Route path="/:username" element={<Profile />}></Route>
           <Route path="/preview" element={<Preview />}></Route>
-          {/* <Route path="/songs/:id" element={<SongViewer />}></Route> */}
+          <Route path="/song/:hash" element={<SongViewer />}></Route>
         </Routes>
       </Router>
     </div>

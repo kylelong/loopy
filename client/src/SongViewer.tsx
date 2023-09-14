@@ -67,7 +67,7 @@ export const linkStyle = {
 const SongViewer = () => {
   const params = useParams();
   const hash = params.hash || "";
-  const user = useAuthState(auth);
+  const [user] = useAuthState(auth);
   const [song, setSong] = useState<Song>({
     link: "",
     genre: "",

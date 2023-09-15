@@ -184,7 +184,7 @@ const SongItem: React.FC<Props> = ({song}) => {
     setTimeStamp(timeago.format(postedDate));
   }, [username, getUsername, song?.created_at]);
   return (
-    <>
+    <div>
       <Container>
         <SongContainer
           title=""
@@ -228,7 +228,7 @@ const SongItem: React.FC<Props> = ({song}) => {
           </CopyContainer>
         </SongDetails>
       </Link>
-    </>
+    </div>
   );
 };
 export default SongItem;

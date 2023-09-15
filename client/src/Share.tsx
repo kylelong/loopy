@@ -266,7 +266,7 @@ export const SongContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 24px;
+  padding-top: 24px;
   @media (min-width: 561px) {
     justify-content: center;
     align-items: center;

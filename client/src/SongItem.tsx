@@ -17,7 +17,7 @@ export const Container = styled.div`
   height: 353px;
   max-height: 353px;
   margin: auto;
-  padding: 0 3px;
+  padding: 0 7px;
   border-radius: 12px;
 `;
 

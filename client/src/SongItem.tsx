@@ -117,6 +117,11 @@ export const Share = styled.button`
   color: rgb(93, 93, 255);
   font-family: "Helvetica Neue", sans-serif;
   width: 65px;
+  border: 0 !important;
+  background: #d1d5db;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
   &:hover {
     cursor: pointer;
   }
@@ -133,7 +138,7 @@ export const ShowCopyContainer = styled.div`
   display: flex;
   flex-direction: row;
   position: relative;
-  top: 6px;
+  top: 9px;
   left: 5px;
 `;
 export const CopiedMessage = styled.div`

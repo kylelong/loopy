@@ -37,23 +37,39 @@ export const InactiveCircle = styled.div`
 `;
 
 export const CarouselContainer = styled.div<Props>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
   max-width: 560px;
   height: 353px;
   max-height: 353px;
-  width: 100%;
   border-radius: 12px;
-  margin: ${(props) => (props.inProfile ? "0px" : "24px")};
+  padding: 0 3px;
+  margin: ${(props) => (props.inProfile ? "auto" : "24px")};
   position: relative;
   left: ${(props) => (props.inProfile ? "0px" : "14px")};
   @media (max-width: 600px) {
     left: unset;
   }
+
+  // display: flex;
+  // flex-direction: column;
+  // width: 100vw;
+  // max-width: 560px;
+  // height: 353px;
+  // max-height: 353px;
+  // margin: auto;
+  // padding: 0 3px;
+  // border-radius: 12px;
 `;
 
 export const SongContainer = styled.iframe`
   max-width: 560px;
   width: 100%;
   height: 355px;
+  max-height: 353px;
 `;
 
 export const ArrowContainer = styled.div`
@@ -61,6 +77,7 @@ export const ArrowContainer = styled.div`
   flex-direction: row;
   margin-top: 24px;
   margin-bottom: 12px;
+  justify-content: center;
 `;
 
 export const Arrow = styled.img`
@@ -80,6 +97,7 @@ export const CarouselDots = styled.div<Props>`
   display: flex;
   flex-direction: row;
   margin-top: ${(props) => (props.inProfile ? "16px" : "0px")};
+  justify-content: center;
 `;
 
 export const Details = styled.div<Props>`
@@ -89,7 +107,7 @@ export const Details = styled.div<Props>`
   justify-content: center;
   font-family: "Helvetica Neue", sans-serif;
   max-width: 560px;
-  width: 100%;
+  width: 100vw;
   border: 1px solid black;
   border-radius: 5px;
   padding: 12px;
@@ -137,17 +155,20 @@ export const SongDetails = styled.div<Props>`
   display: ${(props) => (props.inProfile ? "flex" : "none")};
   flex-direction: ${(props) => (props.inProfile ? "column" : "row")};
   justify-content: space-around;
-  align-self: flex-start;
   margin-top: 10px;
   color: rgb(93, 93, 255);
   background-color: #eef2ff;
   border: 0;
   border-radius: 5px;
-  height: 100%;
+  min-height: 31px;
   padding: 12px;
-  @media (min-width: 560px) {
-    width: 560px;
-  }
+  margin-bottom: 32px;
+  width: 100vw;
+  max-width: 560px;
+  padding: 5px 10px;
+  // @media (min-width: 560px) {
+  //   width: 560px;
+  // }
 `;
 
 export const Genre = styled.div`
@@ -332,7 +353,9 @@ const Carousel: React.FC<Props> = ({
     }
   }, [dotIndex, songs]);
   return (
-    <>
+    <div
+      style={{display: "flex", flexDirection: "column", alignItems: "center"}}
+    >
       <CarouselContainer inProfile={inProfile}>
         <SongContainer
           title=""
@@ -398,7 +421,7 @@ const Carousel: React.FC<Props> = ({
           alt="rightArrow"
         />
       </ArrowContainer>
-    </>
+    </div>
   );
 };
 export default Carousel;

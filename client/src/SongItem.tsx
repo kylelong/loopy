@@ -12,10 +12,12 @@ import {CopyToClipboard} from "react-copy-to-clipboard";
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100vw;
   max-width: 560px;
   height: 353px;
   max-height: 353px;
-  width: 100%;
+  margin: auto;
+  padding: 0 3px;
   border-radius: 12px;
 `;
 
@@ -43,9 +45,9 @@ export const SongDetails = styled.div`
   height: 100%;
   padding: 6px;
   margin-bottom: 32px;
-  @media (min-width: 560px) {
-    width: 560px;
-  }
+  width: 100vw;
+  max-width: 560px;
+  padding: 5px 10px;
 `;
 
 export const Row = styled.div`

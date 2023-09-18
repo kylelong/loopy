@@ -15,6 +15,7 @@ import {
   validYoutubeLink,
   validUsername,
   userExists,
+  isShortenSpotifyLink,
 } from "./functions";
 
 export const MenuHeader = styled.div`
@@ -409,9 +410,16 @@ const Account = () => {
           "Current favorite song must be a valid link from youtube,soundcloud, or spotify.",
         ]);
       } else {
+        let current_favorite_song_link = current_favorite_song;
+        if (isShortenSpotifyLink(current_favorite_song)) {
+          const response = await axios.get(
+            `${SERVER_ENDPOINT}/get_spotify_link/${current_favorite_song}`
+          );
+          current_favorite_song_link = response.data;
+        }
         try {
           await axios.put(`${SERVER_ENDPOINT}/update_current_favorite_song`, {
-            current_favorite_song: current_favorite_song,
+            current_favorite_song: current_favorite_song_link,
             uid: uid,
           });
         } catch (err) {
@@ -427,9 +435,16 @@ const Account = () => {
           "Favorite song must be a valid link from youtube,soundcloud, or spotify.",
         ]);
       } else {
+        let favorite_song_link = favorite_song;
+        if (isShortenSpotifyLink(favorite_song)) {
+          const response = await axios.get(
+            `${SERVER_ENDPOINT}/get_spotify_link/${favorite_song}`
+          );
+          favorite_song_link = response.data;
+        }
         try {
           await axios.put(`${SERVER_ENDPOINT}/update_favorite_song`, {
-            favorite_song: favorite_song,
+            favorite_song: favorite_song_link,
             uid: uid,
           });
         } catch (err) {

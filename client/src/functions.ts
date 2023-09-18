@@ -19,6 +19,12 @@ export const userExists = async (username: string) => {
 
 export const validSpotifyLink = (link: string) => {
   const regex = /https:\/\/open\.spotify\.com\/track\/.*\?si=.+/;
+  const regexTwo = /https:\/\/spotify\.link\/.+/;
+  return regex.test(link) || regexTwo.test(link);
+};
+
+export const isShortenSpotifyLink = (link: string) => {
+  const regex = /https:\/\/spotify\.link\/.+/;
   return regex.test(link);
 };
 

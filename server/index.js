@@ -7,6 +7,7 @@ require("dotenv").config({
 
 const express = require("express");
 const config = require("./config");
+const {http, https} = require("follow-redirects");
 const bodyParser = require("body-parser");
 const app = express();
 const corsOptions = {
@@ -312,6 +313,28 @@ app.get("/get_favorites", async (req, res) => {
       "SELECT uid, favorite_song, current_favorite_song, created_at FROM users WHERE ( current_favorite_song IS NOT NULL OR favorite_song IS NOT NULL )  AND (current_favorite_song != ''  OR favorite_song != '') ORDER BY created_at DESC"
     );
     res.json(response.rows);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.get("/get_spotify_link/*", async (req, res) => {
+  const link = req.params[0];
+  try {
+    const url = new URL(link);
+    const {hostname, pathname} = url;
+    const request = await https.request(
+      {
+        host: hostname,
+        path: pathname,
+      },
+      (response) => {
+        let link = response.responseUrl;
+        link = link.substring(0, link.indexOf("&"));
+        res.json(link);
+      }
+    );
+    request.end();
   } catch (err) {
     console.error(err);
   }

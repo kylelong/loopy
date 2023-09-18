@@ -22,6 +22,7 @@ import {
   validSoundCloudLink,
   validSpotifyLink,
   validYoutubeLink,
+  isShortenSpotifyLink,
 } from "./functions";
 import Loader from "./Loader";
 
@@ -445,7 +446,7 @@ function Share() {
     }
   };
 
-  const processUrl = () => {
+  const processUrl = async () => {
     setErrors([]);
     let hasErrors = false;
     const {url} = songData;
@@ -476,7 +477,7 @@ function Share() {
         "on.soundcloud.com",
         "soundcloud.app.goo.gl",
       ];
-      let spotify = "open.spotify.com";
+      let spotify = ["open.spotify.com", "spotify.link"];
       let embedUrl = "";
 
       if (youtube.includes(hostname)) {
@@ -507,11 +508,16 @@ function Share() {
             });
           });
         setError(false);
-      } else if (hostname === spotify) {
+      } else if (spotify.includes(hostname)) {
+        let song_link = songData.url;
+        if (isShortenSpotifyLink(song_link)) {
+          const response = await axios.get(
+            `${SERVER_ENDPOINT}/get_spotify_link/${songData.url}`
+          );
+          song_link = response.data;
+        }
         axios
-          .get(
-            `https://open.spotify.com/oembed?url=${songData.url}&format=json`
-          )
+          .get(`https://open.spotify.com/oembed?url=${song_link}&format=json`)
           .then((resp) => {
             let iframe = resp.data.html;
             let title = resp.data.title;
@@ -521,6 +527,7 @@ function Share() {
             let spotifyLink = iframe.substring(srcIndex + 5, last);
             setSongData({
               ...songData,
+              url: song_link,
               embededUrl: spotifyLink,
               spotifyLink: true,
               title: title,

@@ -36,18 +36,16 @@ export const Globe = styled.img`
 export const SongDetails = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
   color: rgb(93, 93, 255);
   background-color: #eef2ff;
   border: 0;
   border-radius: 5px;
   min-height: 31px;
   height: 100%;
-  padding: 6px;
-  margin-bottom: 32px;
-  width: 100vw;
-  max-width: 560px;
-  padding: 5px 10px;
+  width: 96vw;
+  max-width: 542px;
+  margin: 10px 10px 32px 10px;
+  padding: 5px 7px;
 `;
 
 export const Row = styled.div`

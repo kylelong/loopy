@@ -155,20 +155,15 @@ export const SongDetails = styled.div<Props>`
   display: ${(props) => (props.inProfile ? "flex" : "none")};
   flex-direction: ${(props) => (props.inProfile ? "column" : "row")};
   justify-content: space-around;
-  margin-top: 10px;
   color: rgb(93, 93, 255);
   background-color: #eef2ff;
   border: 0;
   border-radius: 5px;
   min-height: 31px;
-  padding: 12px;
-  margin-bottom: 32px;
-  width: 100vw;
-  max-width: 560px;
-  padding: 5px 10px;
-  // @media (min-width: 560px) {
-  //   width: 560px;
-  // }
+  width: 96vw;
+  max-width: 556px;
+  margin: 10px 10px 32px 10px;
+  padding: 5px 7px;
 `;
 
 export const Genre = styled.div`

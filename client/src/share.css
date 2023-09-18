@@ -55,7 +55,7 @@ input {
 }
 
 .DialogDescription {
-  margin: 10px 0 20px;
+  margin: 10px 0px 10px;
   color: var(--mauve-11);
   line-height: 1.5;
   font-size: 15px;

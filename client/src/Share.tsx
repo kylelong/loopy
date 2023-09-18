@@ -73,7 +73,7 @@ export const ModalContainer = styled.div`
 export const MusicContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 24px;
+  margin-top: 16px;
 `;
 export const SearchContainer = styled.div`
   display: flex;
@@ -772,7 +772,7 @@ function Share() {
             <Dialog.Content className="DialogContent">
               <Dialog.Title className="DialogTitle">Share a song</Dialog.Title>
               <Dialog.Description className="DialogDescription">
-                make sure this song is an all-time favorite of yours &#128522;
+                share a song that you think is great &#128522;
               </Dialog.Description>
               <MusicContainer>
                 <SearchContainer>

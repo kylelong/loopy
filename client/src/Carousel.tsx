@@ -1,10 +1,8 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 import arrowLeft from "./assets/arrowLeft.svg";
 import arrowRight from "./assets/arrowRight.svg";
-import * as timeago from "timeago.js";
 import {Song} from "./types/types";
-import {SITE_URL} from "./constants";
 import SongItem from "./SongItem";
 
 export const Circle = styled.div`
@@ -310,10 +308,6 @@ const Carousel: React.FC<Props> = ({
    */
 
   const [dotIndex, setDotIndex] = useState<number>(0);
-  const [timestamp, setTimeStamp] = useState<string>("");
-  const [showCopied, setShowCopied] = useState<boolean>(false);
-  const timerRef = useRef(0);
-  const [shareUrl, setShareUrl] = useState<string>("");
 
   const handleLeftClick = () => {
     if (dotIndex === 0) {
@@ -329,24 +323,10 @@ const Carousel: React.FC<Props> = ({
       setDotIndex(dotIndex + 1);
     }
   };
-  const handleShareLink = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    window.clearTimeout(timerRef.current);
-    setShowCopied(true);
-    timerRef.current = window.setTimeout(() => {
-      setShowCopied(false);
-    }, 2000);
-  };
+
   // happy house
   // https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true
 
-  useEffect(() => {
-    let postedDate = new Date(`${songs[dotIndex].created_at}`);
-    setTimeStamp(timeago.format(postedDate));
-    if (songs) {
-      setShareUrl(`${SITE_URL}/song/${songs[dotIndex].hash}`);
-    }
-  }, [dotIndex, songs]);
   return (
     <div
       style={{display: "flex", flexDirection: "column", alignItems: "center"}}

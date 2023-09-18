@@ -153,6 +153,7 @@ export const linkStyle = {
 export const ProfileMenu = styled.div`
   display: flex;
   flex-direction: row;
+  margin-top: 5px;
 `;
 
 export const MenuHeader = styled.div`

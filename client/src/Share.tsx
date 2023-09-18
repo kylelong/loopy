@@ -926,7 +926,7 @@ function Share() {
                   return (
                     <SongItemWrapper>
                       {" "}
-                      <SongItem song={song} key={i} />
+                      <SongItem song={song} key={i} inProfile={true} />
                     </SongItemWrapper>
                   );
                 })
@@ -934,7 +934,7 @@ function Share() {
                   return (
                     <SongItemWrapper>
                       {" "}
-                      <SongItem song={song} key={i} />
+                      <SongItem song={song} key={i} inProfile={true} />
                     </SongItemWrapper>
                   );
                 })}

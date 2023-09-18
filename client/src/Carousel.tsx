@@ -2,12 +2,10 @@ import React, {useState, useEffect, useRef} from "react";
 import styled from "styled-components";
 import arrowLeft from "./assets/arrowLeft.svg";
 import arrowRight from "./assets/arrowRight.svg";
-import globe from "./assets/globe.svg";
 import * as timeago from "timeago.js";
 import {Song} from "./types/types";
 import {SITE_URL} from "./constants";
-import CopyToClipboard from "react-copy-to-clipboard";
-import {CheckCircledIcon} from "@radix-ui/react-icons";
+import SongItem from "./SongItem";
 
 export const Circle = styled.div`
   width: 8px;
@@ -53,16 +51,6 @@ export const CarouselContainer = styled.div<Props>`
   @media (max-width: 600px) {
     left: unset;
   }
-
-  // display: flex;
-  // flex-direction: column;
-  // width: 100vw;
-  // max-width: 560px;
-  // height: 353px;
-  // max-height: 353px;
-  // margin: auto;
-  // padding: 0 3px;
-  // border-radius: 12px;
 `;
 
 export const SongContainer = styled.iframe`
@@ -77,6 +65,7 @@ export const ArrowContainer = styled.div`
   flex-direction: row;
   margin-top: 24px;
   margin-bottom: 12px;
+  padding-bottom: 24px;
   justify-content: center;
 `;
 
@@ -162,7 +151,8 @@ export const SongDetails = styled.div<Props>`
   min-height: 31px;
   width: 96vw;
   max-width: 556px;
-  margin: 10px 10px 32px 10px;
+  margin: ${(props) =>
+    props.inProfile ? "10px 10px 5px 10px" : "10px 10px 20px 10px"};
   padding: 5px 7px;
 `;
 
@@ -241,62 +231,72 @@ const defaultSongs: Song[] = [
   {
     link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F16959100&show_artwork=true",
     genre: "House",
-    user: "Kyle",
+    user: "@kyle",
     location: "New York, NY, USA",
+    onLandingPage: true,
   },
   {
     link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F526329195&show_artwork=true",
     genre: "Hip Hop",
-    user: "Carter",
+    user: "@carter",
     location: "Blacksburg, VA, USA",
+    onLandingPage: true,
   },
   {
     link: "https://www.youtube.com/embed/BlzeUi9rv2w",
     genre: "Classical",
-    user: "Chloe",
+    user: "@chloe",
     location: "Toronto, Canada",
+    onLandingPage: true,
   },
   {
     link: "https://open.spotify.com/embed/track/6FjKAch1aGFI9LxJziA2Xe?si=d30d348c6dd14ed7&utm_source=oembed",
     genre: "Indie",
-    user: "Ava",
+    user: "@ava38",
     location: "San Francisco, CA, USA",
+    onLandingPage: true,
   },
   {
     link: "https://www.youtube.com/embed/myEv3Qr3Efo",
     genre: "Afrobeat",
-    user: "Tobe",
+    user: "@king_tobe",
     location: "Nigeria, Africa",
+    onLandingPage: true,
   },
   {
     link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F675062333&show_artwork=true",
     genre: "R&B",
-    user: "Gabrielle",
+    user: "@gabybaby",
     location: "Houston, TX, USA",
+    onLandingPage: true,
   },
   {
     link: "https://open.spotify.com/embed/track/56xZjKy9eGabvEOh5WOM1v?si=dc30a0b74aeb48c0&utm_source=oembed",
     genre: "Rock",
-    user: "Sebastian",
+    user: "@seb.91",
     location: "Sydney, Australia",
+    onLandingPage: true,
   },
   {
     link: "https://www.youtube.com/embed/0ero1Xexyhs",
     genre: "Rap",
-    user: "Michael",
+    user: "@mikey",
     location: "Buffalo, NY, USA",
+    onLandingPage: true,
   },
   {
     link: "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F1033771624&show_artwork=true",
     genre: "Rap",
-    user: "Julia",
+    user: "@julia.foolia",
     location: "Atlanta, GA, USA",
+    onLandingPage: true,
   },
   {
     link: "https://open.spotify.com/embed/track/0vFOzaXqZHahrZp6enQwQb?si=1a3d3f0ae1e84b80&utm_source=oembed",
     genre: "Rock",
-    user: "Mateo",
+    user: "@mateo",
     location: "Berlin, Germany",
+    onLandingPage: true,
   },
 ];
 const Carousel: React.FC<Props> = ({
@@ -351,48 +351,7 @@ const Carousel: React.FC<Props> = ({
     <div
       style={{display: "flex", flexDirection: "column", alignItems: "center"}}
     >
-      <CarouselContainer inProfile={inProfile}>
-        <SongContainer
-          title=""
-          width="560"
-          height="355"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          style={{borderRadius: "12px"}}
-          src={songs[dotIndex].link}
-        ></SongContainer>
-      </CarouselContainer>
-      <Details inProfile={inProfile}>
-        <DetailText>
-          <div>{`${songs[dotIndex].user} shared a song`}</div>
-          <Circle />
-          <Globe src={globe} />
-          <div>{`${songs[dotIndex].location}`}</div>
-        </DetailText>
-        <GenreBox>{`${songs[dotIndex].genre}`}</GenreBox>
-      </Details>
-      <SongDetails inProfile={inProfile}>
-        <div style={{display: "flex", flexDirection: "row"}}>
-          <Genre>{`${songs[dotIndex].genre}`}</Genre>
-          <Dot></Dot>
-          <Time>{timestamp}</Time>
-        </div>
-        <CopyContainer>
-          <CopyToClipboard text={shareUrl}>
-            <Share onClick={handleShareLink}>share</Share>
-          </CopyToClipboard>
-          {showCopied && (
-            <ShowCopyContainer>
-              <CheckCircledIcon
-                style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
-              />
-              <CopiedMessage>copied to clipboard</CopiedMessage>
-            </ShowCopyContainer>
-          )}
-        </CopyContainer>
-      </SongDetails>
+      <SongItem song={songs[dotIndex]} inProfile={inProfile} />
 
       <CarouselDots inProfile={inProfile}>
         {songs.map((song, index) => {

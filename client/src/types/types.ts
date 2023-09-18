@@ -5,4 +5,5 @@ export interface Song {
   location: string;
   created_at?: string;
   hash?: string;
+  onLandingPage?: boolean;
 }

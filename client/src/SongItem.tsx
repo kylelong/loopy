@@ -16,7 +16,7 @@ export const Container = styled.div`
   max-width: 560px;
   height: 353px;
   max-height: 353px;
-  margin: auto;
+  margin-top: 24px;
   padding: 0 7px;
   border-radius: 12px;
 `;
@@ -33,7 +33,7 @@ export const Globe = styled.img`
   margin-right: 2px;
 `;
 
-export const SongDetails = styled.div`
+export const SongDetails = styled.div<Props>`
   display: flex;
   flex-direction: column;
   color: rgb(93, 93, 255);
@@ -41,10 +41,10 @@ export const SongDetails = styled.div`
   border: 0;
   border-radius: 5px;
   min-height: 31px;
-  height: 100%;
   width: 96vw;
   max-width: 542px;
-  margin: 10px 10px 32px 10px;
+  margin: ${(props) =>
+    props.inProfile ? "10px 10px 5px 10px" : "10px 10px 20px 10px"};
   padding: 5px 7px;
 `;
 
@@ -125,8 +125,8 @@ export const Share = styled.button`
   }
 `;
 
-export const CopyContainer = styled.div`
-  display: flex;
+export const CopyContainer = styled.div<Props>`
+  display: ${(props) => (props.inProfile ? "flex" : "none")};
   flex-direction: row;
   margin-bottom: 4px;
   margin-top: 4px;
@@ -150,29 +150,30 @@ export const CopiedMessage = styled.div`
 `;
 
 interface Props {
-  song: Song;
+  song?: Song;
+  inProfile: boolean;
 }
 
-const SongItem: React.FC<Props> = ({song}) => {
+const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
   const [timestamp, setTimeStamp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [profileLink, setProfileLink] = useState<string>("");
   const [showCopied, setShowCopied] = useState<boolean>(false);
   const timerRef = useRef(0);
 
-  const share_url = `${SITE_URL}/song/${song.hash}`;
+  const share_url = `${SITE_URL}/song/${song?.hash}`;
 
   const getUsername = useCallback(async () => {
     try {
       const response = await axios.get(
-        `${SERVER_ENDPOINT}/get_username/${song.user}`
+        `${SERVER_ENDPOINT}/get_username/${song?.user}`
       );
       setUsername(response.data);
       setProfileLink(`/${response.data}`);
     } catch (err) {
       console.error(err);
     }
-  }, [song.user]);
+  }, [song?.user]);
 
   const handleShareLink = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -200,25 +201,27 @@ const SongItem: React.FC<Props> = ({song}) => {
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy"
           style={{borderRadius: "12px"}}
-          src={song.link}
+          src={song?.link}
         ></SongContainer>
       </Container>
       <Link to={profileLink} style={linkStyle}>
-        <SongDetails>
+        <SongDetails inProfile={inProfile}>
           <Row>
-            <Username>{`@${username}`}</Username>
+            <Username>
+              {song?.onLandingPage ? song?.user : `@${username}`}
+            </Username>
             <Dot></Dot>
-            <Genre>{`${song.genre}`}</Genre>
+            <Genre>{`${song?.genre}`}</Genre>
           </Row>
 
-          {song.location && (
+          {song?.location && (
             <LocationContainer>
               <Globe src={globe} />
-              <Location>{`${song.location}`}</Location>
+              <Location>{`${song?.location}`}</Location>
             </LocationContainer>
           )}
           <Time>{timestamp}</Time>
-          <CopyContainer>
+          <CopyContainer inProfile={inProfile}>
             <CopyToClipboard text={share_url}>
               <Share onClick={handleShareLink}>share</Share>
             </CopyToClipboard>

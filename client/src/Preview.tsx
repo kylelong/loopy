@@ -301,7 +301,7 @@ function Preview() {
                   return (
                     <SongItemWrapper>
                       {" "}
-                      <SongItem song={song} key={i} />
+                      <SongItem song={song} key={i} inProfile={true} />
                     </SongItemWrapper>
                   );
                 })
@@ -309,7 +309,7 @@ function Preview() {
                   return (
                     <SongItemWrapper>
                       {" "}
-                      <SongItem song={song} key={i} />
+                      <SongItem song={song} key={i} inProfile={true} />
                     </SongItemWrapper>
                   );
                 })}

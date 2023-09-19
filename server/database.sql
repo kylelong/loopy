@@ -21,8 +21,12 @@ CREATE TABLE songs (
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
     location VARCHAR(255) NULL,
     title VARCHAR(255) NULL,
+    hash VARCHAR(255) UNIQUE NOT NULL DEFAULT substring(md5(random()::text), 0, 25),
     genre VARCHAR(255) NOT NULL,
     link VARCHAR(255) NOT NULL,
     source VARCHAR(255) NOT NULL,
     embed_url VARCHAR(255) NOT NULL
 );
+
+-- alter table songs ADD column hash varchar(255) UNIQUE NOT NULL default substring(md5(random()::text),0,25);
+-- ALTER TABLE songs ADD column caption VARCHAR(255) NULL;

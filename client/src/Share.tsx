@@ -839,7 +839,11 @@ function Share() {
 
                     <SearchBoxContainer>
                       <ReactSearchBox
-                        placeholder="What's the genre?"
+                        placeholder={
+                          songData.genre.length > 0
+                            ? songData.genre
+                            : "What's the genre?"
+                        }
                         data={genres}
                         onSelect={handleSearch}
                         onChange={handleGenreChange}

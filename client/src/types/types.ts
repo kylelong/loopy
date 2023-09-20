@@ -6,4 +6,5 @@ export interface Song {
   created_at?: string;
   hash?: string;
   onLandingPage?: boolean;
+  caption?: string;
 }

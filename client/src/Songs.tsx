@@ -47,7 +47,7 @@ export const NoSong = styled.div`
   padding: 12px;
 `;
 
-const Songs: React.FC<Props> = ({songs, username}) => {
+const Songs: React.FC<Props> = ({songs}) => {
   return (
     <>
       {songs.length > 0 ? (

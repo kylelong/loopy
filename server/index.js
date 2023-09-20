@@ -238,7 +238,7 @@ app.get("/get_user_songs/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
     const response = await pool.query(
-      "SELECT uid AS user, location, title, hash, genre, embed_url AS link, created_at FROM songs WHERE uid = $1 ORDER BY created_at DESC",
+      "SELECT uid AS user, location, title, hash, genre, embed_url AS link, created_at, caption FROM songs WHERE uid = $1 ORDER BY created_at DESC",
       [uid]
     );
     res.json(response.rows); // [] if no songs
@@ -250,10 +250,11 @@ app.get("/get_user_songs/:uid", async (req, res) => {
 // INSERT INTO songs
 app.post("/add_song", async (req, res) => {
   try {
-    const {uid, location, title, genre, link, source, embed_url} = req.body;
+    const {uid, location, title, genre, link, source, embed_url, caption} =
+      req.body;
     await pool.query(
-      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url,hash) VALUES($1, $2, $3, $4, $5, $6, $7, substring(md5(random()::text), 0, 25)) RETURNING *",
-      [uid, location, title, genre, link, source, embed_url]
+      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url,hash, caption) VALUES($1, $2, $3, $4, $5, $6, $7, substring(md5(random()::text), 0, 25), $8) RETURNING *",
+      [uid, location, title, genre, link, source, embed_url, caption]
     );
     res.json({status: 200});
   } catch (err) {
@@ -261,8 +262,21 @@ app.post("/add_song", async (req, res) => {
   }
 });
 
+// update caption
+app.put("/update_caption", async (req, res) => {
+  try {
+    const {caption, hash} = req.body;
+    await pool.query("UPDATE songs SET caption = $1 WHERE hash = $2", [
+      caption,
+      hash,
+    ]);
+    res.json({status: 200});
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.get("/get_songs", async (req, res) => {
-  // select id, uid AS user, location, title, genre, embed_url AS link, created_at FROM songs ORDER BY created_at DESC LIMIT 20 OFFSET 0;
   const {page, genres} = req.query;
   const limit = 15;
   const offset = (page - 1) * limit;
@@ -271,7 +285,7 @@ app.get("/get_songs", async (req, res) => {
       ? "genre = ANY($3::text[])"
       : "genre = $3";
     const response = await pool.query(
-      `SELECT uid AS user, hash, location, title, genre, embed_url AS link, created_at
+      `SELECT uid AS user, hash, caption, location, title, genre, embed_url AS link, created_at
       FROM songs WHERE ${genreFilter} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset, genres]
     );
@@ -287,7 +301,7 @@ app.get("/get_song/:hash", async (req, res) => {
 
   try {
     const response = await pool.query(
-      `SELECT uid AS user, hash, location, title, genre, embed_url AS link, created_at
+      `SELECT uid AS user, hash, location, title, genre, embed_url AS link, created_at, caption
       FROM songs WHERE hash = $1`,
       [hash]
     );

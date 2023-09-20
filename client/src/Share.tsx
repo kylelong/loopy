@@ -169,6 +169,23 @@ export const SearchBoxContainer = styled.div`
   font-family: "Helvetica Neue", sans-serif;
 `;
 
+export const CaptionInput = styled.input`
+  max-width: 560px;
+  width: 100%;
+  margin-top: 10px;
+  height: 40px;
+  font-family: sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1.5px solid #d1d5db;
+  border-radius: 3px;
+  padding-left: 1rem;
+  &:focus {
+    outline: none;
+    border-color: rgb(93, 93, 255);
+  }
+`;
+
 export const AddedContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -364,6 +381,7 @@ interface SongData {
   genre: string;
   spotifyLink: boolean;
   source: string;
+  caption: string;
 }
 function Share() {
   const validGenres: string[] = genres.map((d) => d.value);
@@ -393,6 +411,7 @@ function Share() {
     genre: "",
     spotifyLink: false, // is it a spotify song (diff styling)
     source: "",
+    caption: "",
   });
   const songsRef = useRef<Song[]>([]);
   const originalSongsRef = useRef<Song[]>([]);
@@ -438,6 +457,10 @@ function Share() {
 
   const handleUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSongData({...songData, url: event.target.value});
+  };
+
+  const handleCaptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSongData({...songData, caption: event.target.value});
   };
 
   const handleEnterPressed = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -590,7 +613,7 @@ function Share() {
     setAdded(true);
     setError(false);
 
-    const {title, genre, url, source, embededUrl} = songData;
+    const {title, genre, url, source, embededUrl, caption} = songData;
     try {
       await axios.post(`${SERVER_ENDPOINT}/add_song`, {
         uid: user?.uid,
@@ -600,6 +623,7 @@ function Share() {
         link: url,
         source: source,
         embed_url: embededUrl,
+        caption: caption,
       });
       await fetchSongs(validGenres, 1);
       await fetchGenres();
@@ -761,6 +785,7 @@ function Share() {
                   genre: "",
                   spotifyLink: false,
                   source: "",
+                  caption: "",
                 });
               }}
             >
@@ -814,13 +839,21 @@ function Share() {
 
                     <SearchBoxContainer>
                       <ReactSearchBox
-                        placeholder="What's the genre?"
+                        placeholder={
+                          songData.genre.length > 0
+                            ? songData.genre
+                            : "What's the genre?"
+                        }
                         data={genres}
                         onSelect={handleSearch}
                         onChange={handleGenreChange}
                         autoFocus
                       />
                     </SearchBoxContainer>
+                    <CaptionInput
+                      placeholder="Caption (optional) - describe the song, where you heard it, why you like it, etc"
+                      onChange={handleCaptionChange}
+                    />
 
                     <Dialog.Close asChild>
                       <ShareButton

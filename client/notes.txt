@@ -194,3 +194,15 @@ server:
 
     return dateB.getTime() - dateA.getTime();
   }
+
+  TIDAL:
+
+   <div className="tidal-border">
+          <iframe
+            src="https://embed.tidal.com/tracks/210295090"
+            allowFullScreen
+            frameBorder="0"
+            title="yoo"
+            className="tidal-embed-iframe"
+          ></iframe>
+        </div>

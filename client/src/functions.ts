@@ -36,6 +36,11 @@ export const validSoundCloudLink = (link: string) => {
   return regexOne.test(link) || regexTwo.test(link) || regexThree.test(link);
 };
 
+export const validTidalLink = (link: string) => {
+  const regex = /https:\/\/tidal\.com\/(track|browse\/track)\/\d+/;
+  return regex.test(link);
+};
+
 export const validYoutubeLink = (link: string) => {
   /**
    * https://youtu.be/QlJ3s9TNcuM?si=LudEkdLK59oeAK2J

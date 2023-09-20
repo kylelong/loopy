@@ -7,4 +7,5 @@ export interface Song {
   hash?: string;
   onLandingPage?: boolean;
   caption?: string;
+  source?: string;
 }

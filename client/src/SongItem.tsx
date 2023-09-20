@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useCallback, useRef} from "react";
 import styled from "styled-components";
 import globe from "./assets/globe.svg";
+import "./tidal.css";
 import * as timeago from "timeago.js";
 import {Song} from "./types/types";
 import {SERVER_ENDPOINT, SITE_URL} from "./constants";
@@ -20,6 +21,18 @@ export const Container = styled.div`
   max-height: 353px;
   margin-top: 24px;
   padding: 0 7px;
+  border-radius: 12px;
+`;
+
+export const TidalContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  max-width: 560px;
+  height: 100px;
+  max-height: 100px;
+  margin-top: 24px;
+  margin-bottom: 32px;
   border-radius: 12px;
 `;
 
@@ -285,19 +298,33 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
   }, [song, username, getUsername, song?.created_at]);
   return (
     <div>
-      <Container>
-        <SongContainer
-          title=""
-          width="560"
-          height="355"
-          frameBorder="0"
-          allowFullScreen
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          style={{borderRadius: "12px"}}
-          src={song?.link}
-        ></SongContainer>
-      </Container>
+      {song?.source === "tidal" ? (
+        <TidalContainer>
+          <div className="tidal-border">
+            <iframe
+              src={song?.link}
+              allowFullScreen
+              frameBorder="0"
+              title="tidal song"
+              className="tidal-embed-iframe"
+            ></iframe>
+          </div>
+        </TidalContainer>
+      ) : (
+        <Container>
+          <SongContainer
+            title=""
+            width="560"
+            height="355"
+            frameBorder="0"
+            allowFullScreen
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            style={{borderRadius: "12px"}}
+            src={song?.link}
+          ></SongContainer>
+        </Container>
+      )}
 
       <SongDetails inProfile={inProfile}>
         <Row>

@@ -2,6 +2,7 @@ import React, {useState, useEffect, useCallback, useRef} from "react";
 import {Link} from "react-router-dom";
 import "./App.css";
 import "./share.css";
+import "./tidal.css";
 import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
@@ -23,6 +24,7 @@ import {
   validSpotifyLink,
   validYoutubeLink,
   isShortenSpotifyLink,
+  validTidalLink,
 } from "./functions";
 import Loader from "./Loader";
 
@@ -476,7 +478,8 @@ function Share() {
     const validUrl =
       validSoundCloudLink(url) ||
       validSpotifyLink(url) ||
-      validYoutubeLink(url);
+      validYoutubeLink(url) ||
+      validTidalLink(url);
 
     if (url.length === 0) {
       hasErrors = true;
@@ -486,7 +489,7 @@ function Share() {
       hasErrors = true;
       setErrors((errors) => [
         ...errors,
-        "Please enter a valid song link from youtube, soundcloud, or spotify.",
+        "Please enter a valid song link from spotify, youtube, tidal, or soundcloud.",
       ]);
     }
 
@@ -501,6 +504,7 @@ function Share() {
         "soundcloud.app.goo.gl",
       ];
       let spotify = ["open.spotify.com", "spotify.link"];
+      let tidal = "tidal.com";
       let embedUrl = "";
 
       if (youtube.includes(hostname)) {
@@ -558,6 +562,18 @@ function Share() {
             });
           });
         setError(false);
+      } else if (hostname === tidal) {
+        let track_id = parseInt(
+          url.substring(url.lastIndexOf("/") + 1, url.length)
+        );
+        let tidalLink = `https://embed.tidal.com/tracks/${track_id}`;
+        setSongData({
+          ...songData,
+          url: url,
+          embededUrl: tidalLink,
+          spotifyLink: false,
+          source: "tidal",
+        });
       } else {
         setError(true);
       }
@@ -802,7 +818,7 @@ function Share() {
               <MusicContainer>
                 <SearchContainer>
                   <SearchBox
-                    placeholder="Enter song link... (youtube, spotify, or soundcloud)"
+                    placeholder="Enter song link... (youtube, spotify, tidal, or soundcloud)"
                     onChange={handleUrlChange}
                     onKeyDown={handleEnterPressed}
                   />
@@ -814,7 +830,7 @@ function Share() {
 
                 {songData.embededUrl && (
                   <>
-                    {songData.spotifyLink ? (
+                    {songData.spotifyLink && (
                       <Spotify
                         title=""
                         width="560"
@@ -825,6 +841,17 @@ function Share() {
                         loading="lazy"
                         src={songData.embededUrl}
                       ></Spotify>
+                    )}
+                    {songData.source === "tidal" ? (
+                      <div className="tidal-border">
+                        <iframe
+                          src={songData.embededUrl}
+                          allowFullScreen
+                          frameBorder="0"
+                          title="tidal song"
+                          className="tidal-embed-iframe"
+                        ></iframe>
+                      </div>
                     ) : (
                       <Video
                         width="560"

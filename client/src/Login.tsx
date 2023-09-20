@@ -56,6 +56,17 @@ export const InputBox = styled.input`
   }
 `;
 
+export const PasswordText = styled.div`
+  font-family: "Helvetica Neue", sans-serif;
+  color: rgb(82, 95, 127);
+  font-size: 13px;
+  margin-top: 3px;
+  margin-left: 3px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 export const LoginButton = styled.button`
   height: 45px;
   max-width: 259px;
@@ -119,6 +130,7 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errors, setErrors] = useState<string[]>([]);
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
 
   const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -195,7 +207,13 @@ const Login = () => {
 
         <InputContainer>
           <Label>Password</Label>
-          <InputBox type="password" onChange={handlePassword} />
+          <InputBox
+            type={hidePassword ? "password" : "text"}
+            onChange={handlePassword}
+          />
+          <PasswordText onClick={() => setHidePassword(!hidePassword)}>
+            {hidePassword ? "show" : "hide"}
+          </PasswordText>
         </InputContainer>
 
         {errors.length > 0 && (

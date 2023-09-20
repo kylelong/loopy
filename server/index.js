@@ -354,6 +354,32 @@ app.get("/get_spotify_link/*", async (req, res) => {
   }
 });
 
+// DASHBOARD
+app.get("/user_count", async (req, res) => {
+  try {
+    const response = await pool.query("SELECT COUNT(*) FROM users");
+    res.json(parseInt(response.rows[0].count));
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+/**
+ * SELECT username, email, CURRENT_DATE as current_date, date(created_at) as registered_date
+FROM users
+WHERE date(created_at) = CURRENT_DATE;
+ */
+
+app.get("/users_registered_today", async (req, res) => {
+  try {
+    const response = await pool.query(
+      "SELECT count(*) FROM users WHERE date(created_at) = CURRENT_DATE"
+    );
+    res.json(parseInt(response.rows[0].count));
+  } catch (err) {
+    console.error(err);
+  }
+});
 //
 app.listen(config.PORT, () => {
   console.log(`server listening on port http://${config.HOST}:${config.PORT}`);

@@ -10,6 +10,7 @@ import SongViewer from "./SongViewer";
 import AuthRoute from "./util/AuthRoute";
 import AuthRouteLoggedOut from "./util/AuthRouteLoggedOut";
 import Preview from "./Preview";
+import Dashboard from "./Dashboard";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route element={<AuthRouteLoggedOut />}>
             <Route path="/share" element={<Share />}></Route>
             <Route path="/account" element={<Account />}></Route>
+            <Route path="/dashboard" element={<Dashboard />}></Route>
           </Route>
           <Route path="/:username" element={<Profile />}></Route>
           <Route path="/preview" element={<Preview />}></Route>

@@ -364,12 +364,6 @@ app.get("/user_count", async (req, res) => {
   }
 });
 
-/**
- * SELECT username, email, CURRENT_DATE as current_date, date(created_at) as registered_date
-FROM users
-WHERE date(created_at) = CURRENT_DATE;
- */
-
 app.get("/users_registered_today", async (req, res) => {
   try {
     const response = await pool.query(
@@ -380,7 +374,23 @@ app.get("/users_registered_today", async (req, res) => {
     console.error(err);
   }
 });
-//
+
+// leaderboard
+app.get("/weekly_leaderboard", async (req, res) => {
+  try {
+    const response =
+      await pool.query(`select u.username, count(*) as song_count 
+    from users u inner join songs s  on u.uid = s.uid 
+    WHERE s.created_at >= CURRENT_DATE - INTERVAL '1 week' 
+    AND s.created_at < CURRENT_DATE 
+    GROUP BY u.username 
+    ORDER BY song_count 
+    DESC LIMIT 5`);
+    res.json(response.rows);
+  } catch (err) {
+    console.error(err);
+  }
+});
 app.listen(config.PORT, () => {
   console.log(`server listening on port http://${config.HOST}:${config.PORT}`);
 });

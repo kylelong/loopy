@@ -11,6 +11,8 @@ import {CheckCircledIcon} from "@radix-ui/react-icons";
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
+import heart from "./assets/heart.svg";
+import heartBlank from "./assets/heartBlank.svg";
 
 export const Container = styled.div`
   display: flex;
@@ -206,6 +208,12 @@ export const CopyContainer = styled.div<Props>`
   margin-top: 4px;
 `;
 
+export const ButtonRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
 export const ShowCopyContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -221,6 +229,17 @@ export const CopiedMessage = styled.div`
   font-family: sans-serif;
   top: 2px;
   position: relative;
+`;
+
+export const Heart = styled.img<Props>`
+  display: ${(props) => (props.inProfile ? "flex" : "none")};
+  width: 1.7rem;
+  margin-right: 12px;
+  position: relative;
+  top: 5px;
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 interface Props {
@@ -239,6 +258,7 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
   const [showCopied, setShowCopied] = useState<boolean>(false);
   const [caption, setCaption] = useState<string | undefined>("");
   const [editCaption, setEditCaption] = useState<boolean>(false);
+  const [like, setLike] = useState<boolean>(false);
   const timerRef = useRef(0);
   const [user] = useAuthState(auth);
   const uid = user?.uid;
@@ -288,6 +308,10 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
     timerRef.current = window.setTimeout(() => {
       setShowCopied(false);
     }, 2000);
+  };
+
+  const handleLike = () => {
+    setLike(!like);
   };
 
   useEffect(() => {
@@ -361,19 +385,30 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
           )}
         </LocationRow>
         <Time>{timestamp}</Time>
-        <CopyContainer inProfile={inProfile}>
-          <CopyToClipboard text={share_url}>
-            <Share onClick={handleShareLink}>share</Share>
-          </CopyToClipboard>
-          {showCopied && (
-            <ShowCopyContainer>
-              <CheckCircledIcon
-                style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
-              />
-              <CopiedMessage>copied to clipboard</CopiedMessage>
-            </ShowCopyContainer>
+        <ButtonRow>
+          <CopyContainer inProfile={inProfile}>
+            <CopyToClipboard text={share_url}>
+              <Share onClick={handleShareLink}>share</Share>
+            </CopyToClipboard>
+            {showCopied && (
+              <ShowCopyContainer>
+                <CheckCircledIcon
+                  style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
+                />
+                <CopiedMessage>copied to clipboard</CopiedMessage>
+              </ShowCopyContainer>
+            )}
+          </CopyContainer>
+          {like ? (
+            <Heart src={heart} onClick={handleLike} inProfile={inProfile} />
+          ) : (
+            <Heart
+              src={heartBlank}
+              onClick={handleLike}
+              inProfile={inProfile}
+            />
           )}
-        </CopyContainer>
+        </ButtonRow>
       </SongDetails>
     </div>
   );

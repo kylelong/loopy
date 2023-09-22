@@ -830,18 +830,6 @@ function Share() {
 
                 {songData.embededUrl && (
                   <>
-                    {songData.spotifyLink && (
-                      <Spotify
-                        title=""
-                        width="560"
-                        height="355"
-                        frameBorder="0"
-                        allowFullScreen
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                        src={songData.embededUrl}
-                      ></Spotify>
-                    )}
                     {songData.source === "tidal" ? (
                       <div className="tidal-border">
                         <iframe

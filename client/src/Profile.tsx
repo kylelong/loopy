@@ -361,7 +361,7 @@ export const Profile = () => {
     }
     fetchSongs();
     fetchLikedSongs();
-  }, [username, fetchUserData, fetchSongs, user, fetchLikedSongs, userData]);
+  }, [username, fetchUserData, fetchSongs, fetchLikedSongs]);
 
   return (
     <div>

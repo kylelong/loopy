@@ -378,7 +378,7 @@ const SongItem: React.FC<Props> = ({
     let postedDate = new Date(`${song?.created_at}`);
     setTimeStamp(timeago.format(postedDate));
     setCaption(song?.caption);
-  }, [song, username, getUsername, song?.created_at, user, like]);
+  }, [song, username, getUsername, song?.created_at, like, user]);
   return (
     <div>
       {song?.source === "tidal" ? (

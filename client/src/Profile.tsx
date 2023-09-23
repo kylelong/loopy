@@ -14,7 +14,7 @@ import FavoriteSongs from "./FavoriteSongs";
 import FavoriteArtist from "./FavoriteArtist";
 import Songs from "./Songs";
 import {Song} from "./types/types";
-import Carousel from "./Carousel";
+import LikedSongs from "./LikedSongs";
 
 /* invalid username / 404 styles */
 export const NotFoundContainer = styled.div`
@@ -337,7 +337,7 @@ export const Profile = () => {
     try {
       const response = await axios.get(`${SERVER_ENDPOINT}/get_user_likes`, {
         params: {
-          uid: user?.uid,
+          uid: userData.uid,
         },
       });
       const data = response.data;
@@ -437,7 +437,7 @@ export const Profile = () => {
                   display: "flex",
                 }}
               >
-                <Carousel songs={likedSongs} inProfile={true} />
+                <LikedSongs songs={likedSongs} />
               </div>
             )}
           </ProfileContainer>

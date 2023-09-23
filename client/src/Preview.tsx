@@ -309,7 +309,12 @@ function Preview() {
                   return (
                     <SongItemWrapper>
                       {" "}
-                      <SongItem song={song} key={i} inProfile={true} />
+                      <SongItem
+                        song={song}
+                        key={i}
+                        inProfile={true}
+                        showHeart={false}
+                      />
                     </SongItemWrapper>
                   );
                 })}

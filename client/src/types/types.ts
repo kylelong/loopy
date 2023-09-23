@@ -1,4 +1,5 @@
 export interface Song {
+  id?: number;
   link: string;
   genre: string;
   user: string;

@@ -4,13 +4,15 @@ import globe from "./assets/globe.svg";
 import "./tidal.css";
 import * as timeago from "timeago.js";
 import {Song} from "./types/types";
-import {SERVER_ENDPOINT, SITE_URL} from "./constants";
+import {NOTIFICATION_TYPES, SERVER_ENDPOINT, SITE_URL} from "./constants";
 import axios from "axios";
 import {Link} from "react-router-dom";
 import {CheckCircledIcon} from "@radix-ui/react-icons";
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
+import heart from "./assets/heart.svg";
+import heartBlank from "./assets/heartBlank.svg";
 
 export const Container = styled.div`
   display: flex;
@@ -80,6 +82,7 @@ export const Caption = styled.div`
   color: #525f7f;
   font-size: 15px;
   font-weight: 700;
+  margin-top: 3px;
 `;
 
 export const EditInput = styled.input`
@@ -206,6 +209,12 @@ export const CopyContainer = styled.div<Props>`
   margin-top: 4px;
 `;
 
+export const ButtonRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
 export const ShowCopyContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -223,22 +232,39 @@ export const CopiedMessage = styled.div`
   position: relative;
 `;
 
+export const Heart = styled.img<Props>`
+  display: ${(props) => (props.showHeart ? "flex" : "none")};
+  width: 1.7rem;
+  margin-right: 12px;
+  position: relative;
+  top: 5px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 interface Props {
   song?: Song;
-  inProfile: boolean;
+  inProfile?: boolean;
+  showHeart?: boolean;
 }
 
 interface StyleProps {
   editCaption: boolean;
 }
 
-const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
+const SongItem: React.FC<Props> = ({
+  song,
+  inProfile = false,
+  showHeart = true,
+}) => {
   const [timestamp, setTimeStamp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [profileLink, setProfileLink] = useState<string>("");
   const [showCopied, setShowCopied] = useState<boolean>(false);
   const [caption, setCaption] = useState<string | undefined>("");
   const [editCaption, setEditCaption] = useState<boolean>(false);
+  const [like, setLike] = useState<boolean>(false);
   const timerRef = useRef(0);
   const [user] = useAuthState(auth);
   const uid = user?.uid;
@@ -290,12 +316,73 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
     }, 2000);
   };
 
+  const handleLike = async () => {
+    // if already like
+    if (!like) {
+      // like a song
+      await axios.post(`${SERVER_ENDPOINT}/add_like`, {
+        uid: user?.uid,
+        song_id: song?.id,
+        song_hash: song?.hash,
+      });
+
+      if (user && user?.uid !== song?.user) {
+        await axios.post(`${SERVER_ENDPOINT}/send_notification`, {
+          sender_uid: user?.uid,
+          receiver_uid: song?.user,
+          type: NOTIFICATION_TYPES.LIKE,
+          content_id: song?.id,
+          content_hash: song?.hash,
+        });
+      }
+    } else {
+      // dislike a song
+      await axios.delete(`${SERVER_ENDPOINT}/remove_like`, {
+        data: {
+          uid: user?.uid,
+          song_id: song?.id,
+          song_hash: song?.hash,
+        },
+      });
+
+      if (user?.uid !== song?.user) {
+        try {
+          await axios.delete(`${SERVER_ENDPOINT}/unsend_notification`, {
+            data: {
+              sender_uid: user?.uid,
+              receiver_uid: song?.user,
+              type: NOTIFICATION_TYPES.LIKE,
+              content_id: song?.id,
+              content_hash: song?.hash,
+            },
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+    setLike(!like);
+  };
+
   useEffect(() => {
+    const getLike = async () => {
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_like`, {
+        params: {
+          uid: user?.uid,
+          song_hash: song?.hash,
+        },
+      });
+      const data = response.data;
+      setLike(data && data.id);
+    };
+    if (user) {
+      getLike();
+    }
     getUsername();
     let postedDate = new Date(`${song?.created_at}`);
     setTimeStamp(timeago.format(postedDate));
     setCaption(song?.caption);
-  }, [song, username, getUsername, song?.created_at]);
+  }, [song, username, getUsername, song?.created_at, like, user]);
   return (
     <div>
       {song?.source === "tidal" ? (
@@ -361,19 +448,30 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
           )}
         </LocationRow>
         <Time>{timestamp}</Time>
-        <CopyContainer inProfile={inProfile}>
-          <CopyToClipboard text={share_url}>
-            <Share onClick={handleShareLink}>share</Share>
-          </CopyToClipboard>
-          {showCopied && (
-            <ShowCopyContainer>
-              <CheckCircledIcon
-                style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
-              />
-              <CopiedMessage>copied to clipboard</CopiedMessage>
-            </ShowCopyContainer>
+        <ButtonRow>
+          <CopyContainer inProfile={inProfile}>
+            <CopyToClipboard text={share_url}>
+              <Share onClick={handleShareLink}>share</Share>
+            </CopyToClipboard>
+            {showCopied && (
+              <ShowCopyContainer>
+                <CheckCircledIcon
+                  style={{marginLeft: "3px", marginTop: "3px", color: "green"}}
+                />
+                <CopiedMessage>copied to clipboard</CopiedMessage>
+              </ShowCopyContainer>
+            )}
+          </CopyContainer>
+          {like ? (
+            <Heart src={heart} onClick={handleLike} showHeart={showHeart} />
+          ) : (
+            <Heart
+              src={heartBlank}
+              onClick={handleLike}
+              showHeart={showHeart}
+            />
           )}
-        </CopyContainer>
+        </ButtonRow>
       </SongDetails>
     </div>
   );

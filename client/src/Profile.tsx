@@ -13,6 +13,8 @@ import star from "./assets/star.svg";
 import FavoriteSongs from "./FavoriteSongs";
 import FavoriteArtist from "./FavoriteArtist";
 import Songs from "./Songs";
+import {Song} from "./types/types";
+import LikedSongs from "./LikedSongs";
 
 /* invalid username / 404 styles */
 export const NotFoundContainer = styled.div`
@@ -279,6 +281,11 @@ interface User {
 
 export const Profile = () => {
   const params = useParams();
+  const pathname = window.location.pathname;
+  let defaultMenuIndex = 0;
+  if (pathname.substring(pathname.lastIndexOf("/") + 1) === "likes") {
+    defaultMenuIndex = 3;
+  }
   const username = params.username || "";
   const [user] = useAuthState(auth);
   const uid = user?.uid; // LOGGED IN USER
@@ -293,9 +300,10 @@ export const Profile = () => {
     uid: "",
     username: "",
   });
-  const [menuIndex, setMenuIndex] = useState<number>(0);
+  const [menuIndex, setMenuIndex] = useState<number>(defaultMenuIndex);
   const [songs, setSongs] = useState<[]>([]);
-  const menuItems = ["Songs", "Favorite Songs", "Favorite Artist"];
+  const [likedSongs, setLikedSongs] = useState<Song[]>([]);
+  const menuItems = ["Songs", "Favorite Songs", "Favorite Artist", "Likes"];
   const logout = () => {
     auth.signOut();
     window.location.href = "/";
@@ -325,6 +333,20 @@ export const Profile = () => {
     }
   }, [userData.uid]);
 
+  const fetchLikedSongs = useCallback(async () => {
+    try {
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_user_likes`, {
+        params: {
+          uid: userData.uid,
+        },
+      });
+      const data = response.data;
+      setLikedSongs(data);
+    } catch (err) {
+      console.error(err);
+    }
+  }, [userData]);
+
   useEffect(() => {
     if (!validUsername(username)) {
       setPageNotFound(true);
@@ -338,7 +360,8 @@ export const Profile = () => {
       });
     }
     fetchSongs();
-  }, [username, fetchUserData, fetchSongs]);
+    fetchLikedSongs();
+  }, [username, fetchUserData, fetchSongs, fetchLikedSongs]);
 
   return (
     <div>
@@ -407,6 +430,15 @@ export const Profile = () => {
                 username={userData.username}
                 favorite_artist={userData.favorite_artist}
               />
+            )}
+            {menuIndex === 3 && (
+              <div
+                style={{
+                  display: "flex",
+                }}
+              >
+                <LikedSongs songs={likedSongs} />
+              </div>
             )}
           </ProfileContainer>
         </div>

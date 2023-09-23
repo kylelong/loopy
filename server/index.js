@@ -234,11 +234,12 @@ app.put("/update_current_favorite_song", async (req, res) => {
 });
 
 // SONGS
+// get songs a user posted
 app.get("/get_user_songs/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
     const response = await pool.query(
-      "SELECT uid AS user, location, title, source, hash, genre, embed_url AS link, created_at, caption FROM songs WHERE uid = $1 ORDER BY created_at DESC",
+      "SELECT id, uid AS user, location, title, source, hash, genre, embed_url AS link, created_at, caption FROM songs WHERE uid = $1 ORDER BY created_at DESC",
       [uid]
     );
     res.json(response.rows); // [] if no songs
@@ -285,7 +286,7 @@ app.get("/get_songs", async (req, res) => {
       ? "genre = ANY($3::text[])"
       : "genre = $3";
     const response = await pool.query(
-      `SELECT uid AS user, hash, source, caption, location, title, genre, embed_url AS link, created_at
+      `SELECT id, uid AS user, hash, source, caption, location, title, genre, embed_url AS link, created_at
       FROM songs WHERE ${genreFilter} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset, genres]
     );
@@ -301,7 +302,7 @@ app.get("/get_song/:hash", async (req, res) => {
 
   try {
     const response = await pool.query(
-      `SELECT uid AS user, hash, source, location, title, genre, embed_url AS link, created_at, caption
+      `SELECT id, uid AS user, hash, source, location, title, genre, embed_url AS link, created_at, caption
       FROM songs WHERE hash = $1`,
       [hash]
     );
@@ -314,7 +315,7 @@ app.get("/get_song/:hash", async (req, res) => {
 //FILTERING
 app.get("/get_genres", async (req, res) => {
   try {
-    const response = await pool.query("SELECT DISTINCT(genre) from songs");
+    const response = await pool.query("SELECT DISTINCT(genre) FROM songs");
     res.json(response.rows);
   } catch (err) {
     console.error(err);
@@ -364,12 +365,6 @@ app.get("/user_count", async (req, res) => {
   }
 });
 
-/**
- * SELECT username, email, CURRENT_DATE as current_date, date(created_at) as registered_date
-FROM users
-WHERE date(created_at) = CURRENT_DATE;
- */
-
 app.get("/users_registered_today", async (req, res) => {
   try {
     const response = await pool.query(
@@ -380,7 +375,137 @@ app.get("/users_registered_today", async (req, res) => {
     console.error(err);
   }
 });
-//
+
+// leaderboard
+app.get("/weekly_leaderboard", async (req, res) => {
+  try {
+    const response =
+      await pool.query(`select u.username, count(*) as song_count 
+    from users u inner join songs s  on u.uid = s.uid 
+    WHERE s.created_at >= CURRENT_DATE - INTERVAL '1 week' 
+    AND s.created_at < CURRENT_DATE 
+    GROUP BY u.username 
+    ORDER BY song_count 
+    DESC LIMIT 5`);
+    res.json(response.rows);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// LIKES
+app.post("/add_like", async (req, res) => {
+  try {
+    const {uid, song_id, song_hash} = req.body;
+    const response = await pool.query(
+      "INSERT INTO likes (uid, song_id, song_hash) VALUES($1, $2, $3) RETURNING *",
+      [uid, song_id, song_hash]
+    );
+    res.json({status: "OK!"});
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.delete("/remove_like", async (req, res) => {
+  try {
+    const {uid, song_id, song_hash} = req.body;
+    await pool.query(
+      "DELETE FROM likes WHERE uid = $1 AND song_id = $2 AND song_hash = $3",
+      [uid, song_id, song_hash]
+    );
+    res.json("song deleted!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.get("/get_like", async (req, res) => {
+  try {
+    const {uid, song_hash} = req.query;
+    const response = await pool.query(
+      `SELECT s.id, s.uid AS user, s.location,s.title, s.source, s.hash, s.genre, s.embed_url AS link, s.created_at, s.caption
+       FROM songs s 
+       INNER JOIN likes l 
+       ON l.song_id = s.id 
+       WHERE l.uid = $1
+       AND s.hash = $2`,
+      [uid, song_hash]
+    );
+    res.json(response.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.get("/get_user_likes", async (req, res) => {
+  try {
+    const {uid} = req.query;
+    const response = await pool.query(
+      `SELECT s.id, s.uid AS user, s.location,s.title, s.source, s.hash, s.genre, s.embed_url AS link, s.created_at, s.caption
+       FROM songs s 
+       INNER JOIN likes l 
+       ON l.song_id = s.id 
+       WHERE l.uid = $1
+       ORDER BY l.created_at DESC`,
+      [uid]
+    );
+    res.json(response.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.post("/send_notification", async (req, res) => {
+  try {
+    const {sender_uid, receiver_uid, type, content_id, content_hash} = req.body;
+    await pool.query(
+      "INSERT INTO notifications (sender_uid, receiver_uid, type, content_id, content_hash) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [sender_uid, receiver_uid, type, content_id, content_hash]
+    );
+    res.json({status: "OK"});
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+/*
+
+app.delete("/remove_like", async (req, res) => {
+  try {
+    const {uid, song_id, song_hash} = req.body;
+    await pool.query(
+      "DELETE FROM likes WHERE uid = $1 AND song_id = $2 AND song_hash = $3",
+      [uid, song_id, song_hash]
+    );
+    res.json("song deleted!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+*/
+
+app.delete("/unsend_notification", async (req, res) => {
+  try {
+    const {sender_uid, receiver_uid, type, content_id, content_hash} = req.body;
+
+    // Check if any required fields are missing in the request
+    if (!sender_uid || !receiver_uid || !type || !content_id || !content_hash) {
+      return res.status(400).json({error: "Missing required fields"});
+    }
+
+    await pool.query(
+      "DELETE FROM notifications WHERE sender_uid = $1 AND receiver_uid = $2 AND type = $3 AND content_id = $4 AND content_hash = $5",
+      [sender_uid, receiver_uid, type, content_id, content_hash]
+    );
+    res.json({status: "notification unsent"});
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({error: "Internal server error"});
+  }
+});
+
 app.listen(config.PORT, () => {
   console.log(`server listening on port http://${config.HOST}:${config.PORT}`);
 });

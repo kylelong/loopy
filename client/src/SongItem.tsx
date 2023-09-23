@@ -326,13 +326,15 @@ const SongItem: React.FC<Props> = ({
         song_hash: song?.hash,
       });
 
-      // if (user && user?.uid !== song?.user) {
-      //   await axios.post(`${SERVER_ENDPOINT}/send_notification`, {
-      //     sender_uid: user?.uid,
-      //     receiver_uid: song?.user,
-      //     type: NOTIFICATION_TYPES.LIKE,
-      //   });
-      // }
+      if (user && user?.uid !== song?.user) {
+        await axios.post(`${SERVER_ENDPOINT}/send_notification`, {
+          sender_uid: user?.uid,
+          receiver_uid: song?.user,
+          type: NOTIFICATION_TYPES.LIKE,
+          content_id: song?.id,
+          content_hash: song?.hash,
+        });
+      }
     } else {
       // dislike a song
       await axios.delete(`${SERVER_ENDPOINT}/remove_like`, {
@@ -343,15 +345,17 @@ const SongItem: React.FC<Props> = ({
         },
       });
 
-      // if (user?.uid !== song?.user) {
-      //   await axios.delete(`${SERVER_ENDPOINT}/unsend_notification`, {
-      //     data: {
-      //       sender_id: user?.uid,
-      //       receiver_id: song?.user,
-      //       type: NOTIFICATION_TYPES.LIKE,
-      //     },
-      //   });
-      // }
+      if (user?.uid !== song?.user) {
+        await axios.delete(`${SERVER_ENDPOINT}/unsend_notification`, {
+          data: {
+            sender_id: user?.uid,
+            receiver_id: song?.user,
+            type: NOTIFICATION_TYPES.LIKE,
+            content_id: song?.id,
+            content_hash: song?.hash,
+          },
+        });
+      }
     }
     setLike(!like);
   };

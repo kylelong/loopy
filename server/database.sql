@@ -43,8 +43,16 @@ CREATE TABLE notifications (
     sender_uid VARCHAR(255) NOT NULL, 
     receiver_uid VARCHAR(255) NOT NULL,
     type INT NOT NULL,
+    content_id INT NOT NULL,
+    content_hash VARCHAR(255) NOT NULL,
+    content TEXT NULL,
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
 );
+
+type -- what kind of notification (like, comment, follow, etc)
+content_id -- id it corresponds to in its respective table (the id of the comment, id of the song they like)
+content_hash -- hash it corresponds to in its respective table (the hash of the comment, hash of the song they like)
+content -- 'the comment they left'
 
 -- alter table songs ADD column hash varchar(255) UNIQUE NOT NULL default substring(md5(random()::text),0,25);
 -- ALTER TABLE songs ADD column caption VARCHAR(255) NULL;

@@ -458,10 +458,10 @@ app.get("/get_user_likes", async (req, res) => {
 
 app.post("/send_notification", async (req, res) => {
   try {
-    const {sender_uid, receiver_uid, type} = req.body;
+    const {sender_uid, receiver_uid, type, content_id, content_hash} = req.body;
     await pool.query(
-      "INSERT INTO notifications (sender_uid, receiver_uid, type) VALUES($1, $2, $3) RETURNING *",
-      [sender_uid, receiver_uid, type]
+      "INSERT INTO notifications (sender_uid, receiver_uid, type, content_id, content_hash) VALUES($1, $2, $3, $4, $5) RETURNING *",
+      [sender_uid, receiver_uid, type, content_id, content_hash]
     );
     res.json({status: "OK"});
   } catch (err) {
@@ -471,10 +471,10 @@ app.post("/send_notification", async (req, res) => {
 
 app.delete("/unsend_notification", async (req, res) => {
   try {
-    const {sender_uid, receiver_uid, type} = req.body;
+    const {sender_uid, receiver_uid, type, content_id, content_hash} = req.body;
     await pool.query(
-      "DELETE FROM notifications WHERE sender_uid = $1 AND receiver_uid = $2 AND type = $3",
-      [sender_uid, receiver_uid, type]
+      "DELETE FROM notifications WHERE sender_uid = $1 AND receiver_uid = $2 AND type = $3 AND content_id = $4 and content_hash = $5",
+      [sender_uid, receiver_uid, type, content_id, content_hash]
     );
     res.json({status: "notification unsent"});
   } catch (err) {

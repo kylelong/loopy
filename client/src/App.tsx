@@ -29,6 +29,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />}></Route>
           </Route>
           <Route path="/:username" element={<Profile />}></Route>
+          <Route path="/:username/likes" element={<Profile />}></Route>
           <Route path="/preview" element={<Preview />}></Route>
           <Route path="/song/:hash" element={<SongViewer />}></Route>
         </Routes>

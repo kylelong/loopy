@@ -27,6 +27,8 @@ CREATE TABLE songs (
     source VARCHAR(255) NOT NULL,
     embed_url VARCHAR(255) NOT NULL
 );
+
+-- TODO: tables not added to prod yet 
 -- uid - user likes a song
 CREATE TABLE likes (
     id SERIAL PRIMARY KEY,
@@ -38,8 +40,14 @@ CREATE TABLE likes (
 
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
-    song_id INT NOT NULL
-)
+    sender_uid VARCHAR(255) NOT NULL, 
+    receiver_uid VARCHAR(255) NOT NULL,
+    type INT NOT NULL,
+    created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
+);
 
 -- alter table songs ADD column hash varchar(255) UNIQUE NOT NULL default substring(md5(random()::text),0,25);
 -- ALTER TABLE songs ADD column caption VARCHAR(255) NULL;
+
+-- TODO: not added yet : 
+-- ALTER TABLE users ADD column last_time_checked_notifications TIMESTAMPTZ  NOT NULL DEFAULT NOW()

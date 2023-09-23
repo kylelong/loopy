@@ -401,7 +401,7 @@ app.post("/add_like", async (req, res) => {
       "INSERT INTO likes (uid, song_id, song_hash) VALUES($1, $2, $3) RETURNING *",
       [uid, song_id, song_hash]
     );
-    res.json(response.rows[0].id);
+    res.json({status: "OK!"});
   } catch (err) {
     console.error(err);
   }
@@ -422,15 +422,15 @@ app.delete("/remove_like", async (req, res) => {
 
 app.get("/get_like", async (req, res) => {
   try {
-    const {uid, song_id} = req.query;
+    const {uid, song_hash} = req.query;
     const response = await pool.query(
       `SELECT s.id, s.uid AS user, s.location,s.title, s.source, s.hash, s.genre, s.embed_url AS link, s.created_at, s.caption
        FROM songs s 
        INNER JOIN likes l 
        ON l.song_id = s.id 
        WHERE l.uid = $1
-       AND s.id = $2`,
-      [uid, song_id]
+       AND s.hash = $2`,
+      [uid, song_hash]
     );
     res.json(response.rows[0]);
   } catch (err) {
@@ -446,12 +446,39 @@ app.get("/get_user_likes", async (req, res) => {
        FROM songs s 
        INNER JOIN likes l 
        ON l.song_id = s.id 
-       WHERE l.uid = $1`,
+       WHERE l.uid = $1
+       ORDER BY l.created_at DESC`,
       [uid]
     );
     res.json(response.rows);
   } catch (err) {
     console.error(err.message);
+  }
+});
+
+app.post("/send_notification", async (req, res) => {
+  try {
+    const {sender_uid, receiver_uid, type} = req.body;
+    await pool.query(
+      "INSERT INTO notifications (sender_uid, receiver_uid, type) VALUES($1, $2, $3) RETURNING *",
+      [sender_uid, receiver_uid, type]
+    );
+    res.json({status: "OK"});
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.delete("/unsend_notification", async (req, res) => {
+  try {
+    const {sender_uid, receiver_uid, type} = req.body;
+    await pool.query(
+      "DELETE FROM notifications WHERE sender_uid = $1 AND receiver_uid = $2 AND type = $3",
+      [sender_uid, receiver_uid, type]
+    );
+    res.json({status: "notification unsent"});
+  } catch (err) {
+    console.error(err);
   }
 });
 

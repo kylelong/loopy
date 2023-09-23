@@ -4,7 +4,7 @@ import globe from "./assets/globe.svg";
 import "./tidal.css";
 import * as timeago from "timeago.js";
 import {Song} from "./types/types";
-import {SERVER_ENDPOINT, SITE_URL} from "./constants";
+import {NOTIFICATION_TYPES, SERVER_ENDPOINT, SITE_URL} from "./constants";
 import axios from "axios";
 import {Link} from "react-router-dom";
 import {CheckCircledIcon} from "@radix-ui/react-icons";
@@ -319,13 +319,22 @@ const SongItem: React.FC<Props> = ({
   const handleLike = async () => {
     // if already like
     if (!like) {
+      // like a song
       await axios.post(`${SERVER_ENDPOINT}/add_like`, {
         uid: user?.uid,
         song_id: song?.id,
         song_hash: song?.hash,
       });
-      // TODO call backend
+
+      // if (user && user?.uid !== song?.user) {
+      //   await axios.post(`${SERVER_ENDPOINT}/send_notification`, {
+      //     sender_uid: user?.uid,
+      //     receiver_uid: song?.user,
+      //     type: NOTIFICATION_TYPES.LIKE,
+      //   });
+      // }
     } else {
+      // dislike a song
       await axios.delete(`${SERVER_ENDPOINT}/remove_like`, {
         data: {
           uid: user?.uid,
@@ -333,6 +342,16 @@ const SongItem: React.FC<Props> = ({
           song_hash: song?.hash,
         },
       });
+
+      // if (user?.uid !== song?.user) {
+      //   await axios.delete(`${SERVER_ENDPOINT}/unsend_notification`, {
+      //     data: {
+      //       sender_id: user?.uid,
+      //       receiver_id: song?.user,
+      //       type: NOTIFICATION_TYPES.LIKE,
+      //     },
+      //   });
+      // }
     }
     setLike(!like);
   };
@@ -342,18 +361,20 @@ const SongItem: React.FC<Props> = ({
       const response = await axios.get(`${SERVER_ENDPOINT}/get_like`, {
         params: {
           uid: user?.uid,
-          song_id: song?.id,
+          song_hash: song?.hash,
         },
       });
       const data = response.data;
       setLike(data && data.id);
     };
-    getLike();
+    if (user) {
+      getLike();
+    }
     getUsername();
     let postedDate = new Date(`${song?.created_at}`);
     setTimeStamp(timeago.format(postedDate));
     setCaption(song?.caption);
-  }, [song, username, getUsername, song?.created_at]);
+  }, [song, username, getUsername, song?.created_at, user, like]);
   return (
     <div>
       {song?.source === "tidal" ? (

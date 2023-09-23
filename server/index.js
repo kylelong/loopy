@@ -469,16 +469,40 @@ app.post("/send_notification", async (req, res) => {
   }
 });
 
+/*
+
+app.delete("/remove_like", async (req, res) => {
+  try {
+    const {uid, song_id, song_hash} = req.body;
+    await pool.query(
+      "DELETE FROM likes WHERE uid = $1 AND song_id = $2 AND song_hash = $3",
+      [uid, song_id, song_hash]
+    );
+    res.json("song deleted!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+*/
+
 app.delete("/unsend_notification", async (req, res) => {
   try {
     const {sender_uid, receiver_uid, type, content_id, content_hash} = req.body;
+
+    // Check if any required fields are missing in the request
+    if (!sender_uid || !receiver_uid || !type || !content_id || !content_hash) {
+      return res.status(400).json({error: "Missing required fields"});
+    }
+
     await pool.query(
-      "DELETE FROM notifications WHERE sender_uid = $1 AND receiver_uid = $2 AND type = $3 AND content_id = $4 and content_hash = $5",
+      "DELETE FROM notifications WHERE sender_uid = $1 AND receiver_uid = $2 AND type = $3 AND content_id = $4 AND content_hash = $5",
       [sender_uid, receiver_uid, type, content_id, content_hash]
     );
     res.json({status: "notification unsent"});
   } catch (err) {
-    console.error(err);
+    console.error(err.message);
+    res.status(500).json({error: "Internal server error"});
   }
 });
 

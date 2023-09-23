@@ -346,15 +346,19 @@ const SongItem: React.FC<Props> = ({
       });
 
       if (user?.uid !== song?.user) {
-        await axios.delete(`${SERVER_ENDPOINT}/unsend_notification`, {
-          data: {
-            sender_id: user?.uid,
-            receiver_id: song?.user,
-            type: NOTIFICATION_TYPES.LIKE,
-            content_id: song?.id,
-            content_hash: song?.hash,
-          },
-        });
+        try {
+          await axios.delete(`${SERVER_ENDPOINT}/unsend_notification`, {
+            data: {
+              sender_uid: user?.uid,
+              receiver_uid: song?.user,
+              type: NOTIFICATION_TYPES.LIKE,
+              content_id: song?.id,
+              content_hash: song?.hash,
+            },
+          });
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
     setLike(!like);

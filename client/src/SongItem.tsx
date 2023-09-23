@@ -82,6 +82,7 @@ export const Caption = styled.div`
   color: #525f7f;
   font-size: 15px;
   font-weight: 700;
+  margin-top: 3px;
 `;
 
 export const EditInput = styled.input`
@@ -232,7 +233,7 @@ export const CopiedMessage = styled.div`
 `;
 
 export const Heart = styled.img<Props>`
-  display: ${(props) => (props.inProfile ? "flex" : "none")};
+  display: ${(props) => (props.showHeart ? "flex" : "none")};
   width: 1.7rem;
   margin-right: 12px;
   position: relative;
@@ -244,14 +245,19 @@ export const Heart = styled.img<Props>`
 
 interface Props {
   song?: Song;
-  inProfile: boolean;
+  inProfile?: boolean;
+  showHeart?: boolean;
 }
 
 interface StyleProps {
   editCaption: boolean;
 }
 
-const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
+const SongItem: React.FC<Props> = ({
+  song,
+  inProfile = false,
+  showHeart = true,
+}) => {
   const [timestamp, setTimeStamp] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [profileLink, setProfileLink] = useState<string>("");
@@ -310,11 +316,39 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
     }, 2000);
   };
 
-  const handleLike = () => {
+  const handleLike = async () => {
+    // if already like
+    if (!like) {
+      await axios.post(`${SERVER_ENDPOINT}/add_like`, {
+        uid: user?.uid,
+        song_id: song?.id,
+        song_hash: song?.hash,
+      });
+      // TODO call backend
+    } else {
+      await axios.delete(`${SERVER_ENDPOINT}/remove_like`, {
+        data: {
+          uid: user?.uid,
+          song_id: song?.id,
+          song_hash: song?.hash,
+        },
+      });
+    }
     setLike(!like);
   };
 
   useEffect(() => {
+    const getLike = async () => {
+      const response = await axios.get(`${SERVER_ENDPOINT}/get_like`, {
+        params: {
+          uid: user?.uid,
+          song_id: song?.id,
+        },
+      });
+      const data = response.data;
+      setLike(data && data.id);
+    };
+    getLike();
     getUsername();
     let postedDate = new Date(`${song?.created_at}`);
     setTimeStamp(timeago.format(postedDate));
@@ -400,12 +434,12 @@ const SongItem: React.FC<Props> = ({song, inProfile = false}) => {
             )}
           </CopyContainer>
           {like ? (
-            <Heart src={heart} onClick={handleLike} inProfile={inProfile} />
+            <Heart src={heart} onClick={handleLike} showHeart={showHeart} />
           ) : (
             <Heart
               src={heartBlank}
               onClick={handleLike}
-              inProfile={inProfile}
+              showHeart={showHeart}
             />
           )}
         </ButtonRow>

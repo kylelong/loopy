@@ -234,11 +234,12 @@ app.put("/update_current_favorite_song", async (req, res) => {
 });
 
 // SONGS
+// get songs a user posted
 app.get("/get_user_songs/:uid", async (req, res) => {
   try {
     const {uid} = req.params;
     const response = await pool.query(
-      "SELECT uid AS user, location, title, source, hash, genre, embed_url AS link, created_at, caption FROM songs WHERE uid = $1 ORDER BY created_at DESC",
+      "SELECT id, uid AS user, location, title, source, hash, genre, embed_url AS link, created_at, caption FROM songs WHERE uid = $1 ORDER BY created_at DESC",
       [uid]
     );
     res.json(response.rows); // [] if no songs
@@ -285,7 +286,7 @@ app.get("/get_songs", async (req, res) => {
       ? "genre = ANY($3::text[])"
       : "genre = $3";
     const response = await pool.query(
-      `SELECT uid AS user, hash, source, caption, location, title, genre, embed_url AS link, created_at
+      `SELECT id, uid AS user, hash, source, caption, location, title, genre, embed_url AS link, created_at
       FROM songs WHERE ${genreFilter} ORDER BY created_at DESC LIMIT $1 OFFSET $2`,
       [limit, offset, genres]
     );
@@ -301,7 +302,7 @@ app.get("/get_song/:hash", async (req, res) => {
 
   try {
     const response = await pool.query(
-      `SELECT uid AS user, hash, source, location, title, genre, embed_url AS link, created_at, caption
+      `SELECT id, uid AS user, hash, source, location, title, genre, embed_url AS link, created_at, caption
       FROM songs WHERE hash = $1`,
       [hash]
     );
@@ -314,7 +315,7 @@ app.get("/get_song/:hash", async (req, res) => {
 //FILTERING
 app.get("/get_genres", async (req, res) => {
   try {
-    const response = await pool.query("SELECT DISTINCT(genre) from songs");
+    const response = await pool.query("SELECT DISTINCT(genre) FROM songs");
     res.json(response.rows);
   } catch (err) {
     console.error(err);
@@ -391,6 +392,69 @@ app.get("/weekly_leaderboard", async (req, res) => {
     console.error(err);
   }
 });
+
+// LIKES
+app.post("/add_like", async (req, res) => {
+  try {
+    const {uid, song_id, song_hash} = req.body;
+    const response = await pool.query(
+      "INSERT INTO likes (uid, song_id, song_hash) VALUES($1, $2, $3) RETURNING *",
+      [uid, song_id, song_hash]
+    );
+    res.json(response.rows[0].id);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+app.delete("/remove_like", async (req, res) => {
+  try {
+    const {uid, song_id, song_hash} = req.body;
+    await pool.query(
+      "DELETE FROM likes WHERE uid = $1 AND song_id = $2 AND song_hash = $3",
+      [uid, song_id, song_hash]
+    );
+    res.json("song deleted!");
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.get("/get_like", async (req, res) => {
+  try {
+    const {uid, song_id} = req.query;
+    const response = await pool.query(
+      `SELECT s.id, s.uid AS user, s.location,s.title, s.source, s.hash, s.genre, s.embed_url AS link, s.created_at, s.caption
+       FROM songs s 
+       INNER JOIN likes l 
+       ON l.song_id = s.id 
+       WHERE l.uid = $1
+       AND s.id = $2`,
+      [uid, song_id]
+    );
+    res.json(response.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+app.get("/get_user_likes", async (req, res) => {
+  try {
+    const {uid} = req.query;
+    const response = await pool.query(
+      `SELECT s.id, s.uid AS user, s.location,s.title, s.source, s.hash, s.genre, s.embed_url AS link, s.created_at, s.caption
+       FROM songs s 
+       INNER JOIN likes l 
+       ON l.song_id = s.id 
+       WHERE l.uid = $1`,
+      [uid]
+    );
+    res.json(response.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
 app.listen(config.PORT, () => {
   console.log(`server listening on port http://${config.HOST}:${config.PORT}`);
 });

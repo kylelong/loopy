@@ -112,7 +112,11 @@ const SongViewer = () => {
           </MenuRow>
         )}
       </MenuHeader>
-      <Container>{song && <SongItem song={song} inProfile={true} />}</Container>
+      <Container>
+        {song && (
+          <SongItem song={song} inProfile={true} showHeart={user != null} />
+        )}
+      </Container>
       ;
     </div>
   );

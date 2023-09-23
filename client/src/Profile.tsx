@@ -345,7 +345,7 @@ export const Profile = () => {
     } catch (err) {
       console.error(err);
     }
-  }, [user]);
+  }, [userData]);
 
   useEffect(() => {
     if (!validUsername(username)) {
@@ -361,7 +361,7 @@ export const Profile = () => {
     }
     fetchSongs();
     fetchLikedSongs();
-  }, [username, fetchUserData, fetchSongs, user, fetchLikedSongs]);
+  }, [username, fetchUserData, fetchSongs, user, fetchLikedSongs, userData]);
 
   return (
     <div>

@@ -7,7 +7,22 @@ interface Props {
   songs: Song[];
 }
 
-export const ProfileItemContainer = styled.div`
+export const LikedSongsContainer = styled.div`
+  max-width: 560px;
+  height: 353px;
+  max-height: 353px;
+  width: 100%;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (max-width: 600px) {
+    left: unset;
+  }
+`;
+
+export const NoSongContainer = styled.div`
   border-radius: 4px;
   max-width: 560px;
   max-height: 355px;
@@ -34,11 +49,13 @@ const LikedSongs: React.FC<Props> = ({songs}) => {
   return (
     <>
       {songs && songs.length > 0 ? (
-        <Carousel songs={songs} inProfile={true} />
+        <LikedSongsContainer>
+          <Carousel songs={songs} inProfile={true} />
+        </LikedSongsContainer>
       ) : (
-        <ProfileItemContainer>
+        <NoSongContainer>
           <NoSongs>no liked songs yet</NoSongs>
-        </ProfileItemContainer>
+        </NoSongContainer>
       )}
     </>
   );

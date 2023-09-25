@@ -10,11 +10,15 @@ interface Board {
   song_count: number;
 }
 
-export const Container = styled.div`
+interface Props {
+  inModal?: boolean;
+}
+
+export const Container = styled.div<Props>`
   display: flex;
   flex-direction: column;
-  position: absolute;
-  right: 2%;
+  position: ${(props) => (props.inModal ? "relative" : "absolute")};
+  right: ${(props) => (props.inModal ? "unset" : "2%")};
   background-color: #eef2ff;
   margin: 10px 10px 5px 10px;
   padding: 15px 7px;
@@ -49,7 +53,7 @@ export const HeaderText = styled.div`
 export const List = styled.ul`
   position: relative;
   right: 20px;
-  margin-top: 4px;
+  margin-top: 8px;
 `;
 
 export const ListRow = styled.div`
@@ -111,7 +115,7 @@ export const SVG = styled.img`
   margin-right: 6px;
 `;
 
-const LeaderBoard = () => {
+const LeaderBoard: React.FC<Props> = ({inModal}) => {
   const [leaderboard, setLeaderboard] = useState<Board[]>([]);
   useEffect(() => {
     const loadLeaderboard = async () => {
@@ -129,7 +133,7 @@ const LeaderBoard = () => {
     loadLeaderboard();
   }, []);
   return (
-    <Container>
+    <Container inModal={inModal}>
       <HeadingRow>
         <SVG src={userIcon} />
         <HeaderText>Leaderboard</HeaderText>

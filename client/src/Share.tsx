@@ -1032,12 +1032,28 @@ function Share() {
                 </NoSongData>
               )}
             </GenreButtonContainer>
-            <LeaderboardButtonContainer>
-              <LeaderboardButton>
-                <Svg src={userIcon} />
-                Leaderboard
-              </LeaderboardButton>
-            </LeaderboardButtonContainer>
+            <Dialog.Root>
+              <Dialog.Trigger asChild>
+                <LeaderboardButtonContainer>
+                  <LeaderboardButton>
+                    <Svg src={userIcon} />
+                    Leaderboard
+                  </LeaderboardButton>
+                </LeaderboardButtonContainer>
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="DialogOverlay" />
+                <Dialog.Content className="DialogContentLeaderboard">
+                  <LeaderBoard inModal={true} />
+
+                  <Dialog.Close asChild>
+                    <button className="IconButton" aria-label="Close">
+                      <Cross2Icon />
+                    </button>
+                  </Dialog.Close>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
           </ButtonContainer>
           {dataFetchedRef.current && !isLoading ? (
             <InfiniteScroll

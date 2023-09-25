@@ -383,9 +383,10 @@ app.get("/weekly_leaderboard", async (req, res) => {
       await pool.query(`select u.username, count(*) as song_count 
     from users u inner join songs s  on u.uid = s.uid 
     WHERE s.created_at >= CURRENT_DATE - INTERVAL '1 week' 
-    AND s.created_at < CURRENT_DATE 
+    AND s.created_at <= CURRENT_DATE + 1
     GROUP BY u.username 
-    ORDER BY song_count 
+    HAVING COUNT(*) > 0
+    ORDER BY song_count
     DESC LIMIT 5`);
     res.json(response.rows);
   } catch (err) {
@@ -468,23 +469,6 @@ app.post("/send_notification", async (req, res) => {
     console.error(err);
   }
 });
-
-/*
-
-app.delete("/remove_like", async (req, res) => {
-  try {
-    const {uid, song_id, song_hash} = req.body;
-    await pool.query(
-      "DELETE FROM likes WHERE uid = $1 AND song_id = $2 AND song_hash = $3",
-      [uid, song_id, song_hash]
-    );
-    res.json("song deleted!");
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-*/
 
 app.delete("/unsend_notification", async (req, res) => {
   try {

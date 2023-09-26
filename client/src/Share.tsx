@@ -19,6 +19,8 @@ import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
 import star from "./assets/star.svg";
+import userIcon from "./assets/userIcon.svg";
+import LeaderBoard from "./Leaderboard";
 import {
   validSoundCloudLink,
   validSpotifyLink,
@@ -70,6 +72,18 @@ export const MenuItem = styled.div`
 
 export const ModalContainer = styled.div`
   margin: 24px;
+`;
+
+export const MainContentContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+`;
+
+export const MainContentColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 export const MusicContainer = styled.div`
@@ -304,18 +318,70 @@ export const SongItemWrapper = styled.div`
   width: 100%;
 `;
 
+export const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  @media (min-width: 375px) {
+    flex-direction: row;
+    align-items: center;
+  }
+`;
+export const LeaderboardButton = styled.button`
+  padding: 12px;
+  border-radius: 5px;
+  width: 159px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-family: "Helvetica Neue", sans-serif;
+  color: #525f7f;
+  font-weight: bold;
+  font-size: 16px;
+  opacity: 0.7;
+  border: none;
+
+  &:hover {
+    opacity: 1;
+    // color: #d1d5db;
+    // background-color: rgb(93, 93, 255);
+    cursor: pointer;
+  }
+`;
+export const LeaderboardButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  @media (min-width: 375px) {
+    margin-left: 32px;
+  }
+
+  @media (min-width: 1380px) {
+    display: none;
+  }
+`;
+
 export const GenreButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 24px;
-  @media (min-width: 561px) {
-    justify-content: center;
-    align-items: center;
-    padding: unset;
+  margin-top: 24px;
+  margin-bottom: 24px;
+  // @media (min-width: 561px) {
+  //   justify-content: center;
+  //   align-items: center;
+  //   padding: unset;
+  // }
+`;
+
+export const ShowLeaderBoardContainer = styled.div`
+  display: none;
+  @media (min-width: 1380px) {
+    display: flex;
   }
 `;
+
 export const Svg = styled.img`
   width: 1.2rem;
   margin-right: 4px;
@@ -924,73 +990,106 @@ function Share() {
           />
         </SelectContainer>
       </ModalContainer>
-      <GenreButtonContainer>
-        {favoriteGenre ? (
-          showFavoriteGenre ? (
-            <FavoriteGenreButton onClick={handleFavoriteGenre}>
-              <Svg src={star} />
-              Favorite Genre
-            </FavoriteGenreButton>
+      <MainContentContainer>
+        <MainContentColumn>
+          <ButtonContainer>
+            <GenreButtonContainer>
+              {favoriteGenre ? (
+                showFavoriteGenre ? (
+                  <FavoriteGenreButton onClick={handleFavoriteGenre}>
+                    <Svg src={star} />
+                    Favorite Genre
+                  </FavoriteGenreButton>
+                ) : (
+                  <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
+                    <Svg src={star} />
+                    Favorite Genre
+                  </FavoriteGenreButtonDisabled>
+                )
+              ) : showFavoriteGenre ? (
+                <Link to="/account" style={linkStyle}>
+                  <FavoriteGenreButton onClick={handleFavoriteGenre}>
+                    <Svg src={star} />
+                    Favorite Genre
+                  </FavoriteGenreButton>
+                </Link>
+              ) : (
+                <Link to="/account" style={linkStyle}>
+                  <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
+                    <Svg src={star} />
+                    Favorite Genre
+                  </FavoriteGenreButtonDisabled>
+                </Link>
+              )}
+              {favoriteGenre && noSongData && (
+                <NoSongData>
+                  no songs for {favoriteGenre} yet{" "}
+                  <span
+                    style={{fontSize: "18px", position: "relative", top: "2px"}}
+                  >
+                    &#128532;
+                  </span>
+                </NoSongData>
+              )}
+            </GenreButtonContainer>
+            <Dialog.Root>
+              <Dialog.Trigger asChild>
+                <LeaderboardButtonContainer>
+                  <LeaderboardButton>
+                    <Svg src={userIcon} />
+                    Leaderboard
+                  </LeaderboardButton>
+                </LeaderboardButtonContainer>
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="DialogOverlay" />
+                <Dialog.Content className="DialogContentLeaderboard">
+                  <LeaderBoard inModal={true} />
+
+                  <Dialog.Close asChild>
+                    <button className="IconButton" aria-label="Close">
+                      <Cross2Icon />
+                    </button>
+                  </Dialog.Close>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
+          </ButtonContainer>
+          {dataFetchedRef.current && !isLoading ? (
+            <InfiniteScroll
+              dataLength={songs.length}
+              next={() => handleLoadMore(page + 1)}
+              hasMore={hasMore}
+              loader={<Loader />}
+            >
+              <SongContainer>
+                {filter
+                  ? songsRef.current.map((song, i) => {
+                      return (
+                        <SongItemWrapper>
+                          {" "}
+                          <SongItem song={song} key={i} inProfile={true} />
+                        </SongItemWrapper>
+                      );
+                    })
+                  : originalSongsRef.current.map((song, i) => {
+                      return (
+                        <SongItemWrapper>
+                          {" "}
+                          <SongItem song={song} key={i} inProfile={true} />
+                        </SongItemWrapper>
+                      );
+                    })}
+              </SongContainer>
+            </InfiniteScroll>
           ) : (
-            <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
-              <Svg src={star} />
-              Favorite Genre
-            </FavoriteGenreButtonDisabled>
-          )
-        ) : showFavoriteGenre ? (
-          <Link to="/account" style={linkStyle}>
-            <FavoriteGenreButton onClick={handleFavoriteGenre}>
-              <Svg src={star} />
-              Favorite Genre
-            </FavoriteGenreButton>
-          </Link>
-        ) : (
-          <Link to="/account" style={linkStyle}>
-            <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
-              <Svg src={star} />
-              Favorite Genre
-            </FavoriteGenreButtonDisabled>
-          </Link>
-        )}
-        {favoriteGenre && noSongData && (
-          <NoSongData>
-            no songs for {favoriteGenre} yet{" "}
-            <span style={{fontSize: "18px", position: "relative", top: "2px"}}>
-              &#128532;
-            </span>
-          </NoSongData>
-        )}
-      </GenreButtonContainer>
-      {dataFetchedRef.current && !isLoading ? (
-        <InfiniteScroll
-          dataLength={songs.length}
-          next={() => handleLoadMore(page + 1)}
-          hasMore={hasMore}
-          loader={<Loader />}
-        >
-          <SongContainer>
-            {filter
-              ? songsRef.current.map((song, i) => {
-                  return (
-                    <SongItemWrapper>
-                      {" "}
-                      <SongItem song={song} key={i} inProfile={true} />
-                    </SongItemWrapper>
-                  );
-                })
-              : originalSongsRef.current.map((song, i) => {
-                  return (
-                    <SongItemWrapper>
-                      {" "}
-                      <SongItem song={song} key={i} inProfile={true} />
-                    </SongItemWrapper>
-                  );
-                })}
-          </SongContainer>
-        </InfiniteScroll>
-      ) : (
-        <Loader />
-      )}
+            <Loader />
+          )}
+        </MainContentColumn>
+        <ShowLeaderBoardContainer>
+          <LeaderBoard />
+        </ShowLeaderBoardContainer>
+      </MainContentContainer>
     </div>
   );
 }

@@ -319,7 +319,7 @@ function LandingPage() {
             </Listening>
           </div>
         </Header>
-        <Carousel inProfile={false} />
+        <Carousel inProfile={false} showHeart={false} />
         <Section>
           <SectionHeader>
             <Heart src={heart} />

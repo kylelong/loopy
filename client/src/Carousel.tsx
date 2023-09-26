@@ -224,6 +224,7 @@ export const CopiedMessage = styled.div`
 interface Props {
   songs?: Song[];
   inProfile: boolean;
+  showHeart?: boolean;
 }
 const defaultSongs: Song[] = [
   {
@@ -300,6 +301,7 @@ const defaultSongs: Song[] = [
 const Carousel: React.FC<Props> = ({
   songs = defaultSongs,
   inProfile = false,
+  showHeart,
 }) => {
   /**
    * happy house
@@ -331,7 +333,11 @@ const Carousel: React.FC<Props> = ({
     <div
       style={{display: "flex", flexDirection: "column", alignItems: "center"}}
     >
-      <SongItem song={songs[dotIndex]} inProfile={inProfile} />
+      <SongItem
+        song={songs[dotIndex]}
+        inProfile={inProfile}
+        showHeart={showHeart}
+      />
 
       <CarouselDots inProfile={inProfile}>
         {songs.map((song, index) => {

@@ -51,8 +51,6 @@ export const HeaderText = styled.div`
   letter-spacing: 0.5px;
 `;
 export const List = styled.ul`
-  position: relative;
-  right: 20px;
   margin-top: 8px;
 `;
 
@@ -134,35 +132,39 @@ const LeaderBoard: React.FC<Props> = ({inModal}) => {
   }, []);
   return (
     <Container inModal={inModal}>
-      <HeadingRow>
-        <SVG src={userIcon} />
-        <HeaderText>Leaderboard</HeaderText>
-      </HeadingRow>
+      <div
+        style={{display: "flex", alignItems: "center", flexDirection: "column"}}
+      >
+        <HeadingRow>
+          <SVG src={userIcon} />
+          <HeaderText>Leaderboard</HeaderText>
+        </HeadingRow>
 
-      <HeaderMessage>top posters this week</HeaderMessage>
-      <List>
-        {leaderboard.map((item, i) => {
-          const link = `/${item.username}`;
-          const songCountText =
-            item.song_count === 1
-              ? `${item.song_count} song`
-              : `${item.song_count} songs`;
-          return (
-            <Link to={link} style={linkStyle}>
-              <ListRow>
-                <UserRanking>{i + 1}</UserRanking>
+        <HeaderMessage>top posters this week</HeaderMessage>
+        <List>
+          {leaderboard.map((item, i) => {
+            const link = `/${item.username}`;
+            const songCountText =
+              item.song_count === 1
+                ? `${item.song_count} song`
+                : `${item.song_count} songs`;
+            return (
+              <Link to={link} style={linkStyle}>
+                <ListRow>
+                  <UserRanking>{i + 1}</UserRanking>
 
-                <ListItem key={i}>
-                  <UserContainer>
-                    <Username> {item.username}</Username>
-                    <SongCount>{songCountText}</SongCount>
-                  </UserContainer>
-                </ListItem>
-              </ListRow>
-            </Link>
-          );
-        })}
-      </List>
+                  <ListItem key={i}>
+                    <UserContainer>
+                      <Username> {item.username}</Username>
+                      <SongCount>{songCountText}</SongCount>
+                    </UserContainer>
+                  </ListItem>
+                </ListRow>
+              </Link>
+            );
+          })}
+        </List>
+      </div>
     </Container>
   );
 };

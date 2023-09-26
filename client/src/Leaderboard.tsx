@@ -52,6 +52,8 @@ export const HeaderText = styled.div`
 `;
 export const List = styled.ul`
   margin-top: 8px;
+  position: relative;
+  left: 13px;
 `;
 
 export const ListRow = styled.div`
@@ -65,6 +67,7 @@ export const UserRanking = styled.div`
   background: rgb(93, 93, 255);
   // background: #6e79d6;
   color: white;
+  font-weight: bold;
   font-size: 14px;
   width: 20px;
   height: 20px;

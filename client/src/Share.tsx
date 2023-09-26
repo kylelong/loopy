@@ -321,7 +321,7 @@ export const SongItemWrapper = styled.div`
 export const ButtonContainer = styled.div`
   display: flex;
   flex-direction: column;
-  @media (min-width: 500px) {
+  @media (min-width: 375px) {
     flex-direction: row;
     align-items: center;
   }
@@ -352,7 +352,7 @@ export const LeaderboardButtonContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
-  @media (min-width: 500px) {
+  @media (min-width: 375px) {
     margin-left: 32px;
   }
 

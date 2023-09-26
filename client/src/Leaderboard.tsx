@@ -20,7 +20,7 @@ export const Container = styled.div<Props>`
   position: ${(props) => (props.inModal ? "relative" : "absolute")};
   right: ${(props) => (props.inModal ? "unset" : "2%")};
   background-color: #eef2ff;
-  margin: 10px 10px 5px 10px;
+  margin: 10px 24px 5px 10px;
   padding: 15px 7px;
   width: 100%;
   max-height: 300px;

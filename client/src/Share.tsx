@@ -13,14 +13,18 @@ import {Cross2Icon} from "@radix-ui/react-icons";
 import genres from "./genres";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
-import {SERVER_ENDPOINT} from "./constants";
+import {SERVER_ENDPOINT, SITE_URL} from "./constants";
 import InfiniteScroll from "react-infinite-scroll-component";
 import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
 import star from "./assets/star.svg";
 import userIcon from "./assets/userIcon.svg";
+import iMessage from "./assets/iMessage.svg";
+import paperClip from "./assets/paperClip.svg";
 import LeaderBoard from "./Leaderboard";
+import bird from "./assets/twitter.png";
+import {CopyToClipboard} from "react-copy-to-clipboard";
 import {
   validSpotifyLink,
   validYoutubeLink,
@@ -440,6 +444,85 @@ export const NoSongData = styled.div`
   margin-top: 15px;
 `;
 
+export const ShareButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+`;
+
+export const CopyLinkContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-right: 6px;
+  align-items: center;
+  position: relative;
+  top: 6px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const PaperClip = styled.img`
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  border-radius: 50%;
+  background: #d1d5db;
+`;
+
+export const CopyText = styled.div`
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: sans-serif;
+`;
+export const BirdContainer = styled.div`
+  margin-right: 6px;
+`;
+export const Bird = styled.img`
+  position: relative;
+  top: 3px;
+  width: 14px;
+  right: 4px;
+`;
+
+export const Message = styled.img`
+  @media (min-width: 821px) {
+    display: none;
+  }
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+export const TweetLink = styled.a`
+  background-color: #1da1f2;
+  color: white;
+  height: 28px;
+  width: 76px;
+  border-radius: 9999px;
+  padding: 6px 12px 6px 12px;
+  border: none;
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  white-space: nowrap;
+`;
+
+export const ThankYou = styled.div`
+  color: hsl(252, 5%, 40.7%);
+  margin-top: 19px;
+  line-height: 1.5;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: sans-serif;
+  @media (max-width: 500px) {
+    margin-bottom: 12px;
+  }
+`;
+
 interface SongData {
   title: string;
   url: string;
@@ -469,6 +552,9 @@ function Share() {
   const [showFavoriteGenre, setShowFavoriteGenre] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [noSongData, setNoSongData] = useState<boolean>(false);
+  const [openShareModal, setOpenShareModal] = useState<boolean>(false);
+  const [shareUrl, setShareUrl] = useState<string>("");
+  const [tweet, setTweet] = useState<string>("");
 
   const [songData, setSongData] = useState<SongData>({
     title: "",
@@ -658,7 +744,7 @@ function Share() {
 
     const {title, genre, url, source, embededUrl, caption} = songData;
     try {
-      await axios.post(`${SERVER_ENDPOINT}/add_song`, {
+      const response = await axios.post(`${SERVER_ENDPOINT}/add_song`, {
         uid: user?.uid,
         location: location,
         title: title,
@@ -668,6 +754,12 @@ function Share() {
         embed_url: embededUrl,
         caption: caption,
       });
+      const shareLink = `${SITE_URL}/song/${response.data}`;
+      setShareUrl(shareLink);
+      setTweet(
+        "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareLink)
+      );
+      setOpenShareModal(true);
       await fetchSongs(validGenres, 1);
       await fetchGenres();
     } catch (err) {
@@ -758,6 +850,28 @@ function Share() {
     }
     setIsLoading(false);
   };
+
+  const closeShareModal = () => {
+    setOpenShareModal(false);
+  };
+
+  const share = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          url: shareUrl,
+          title: "Share song",
+        });
+      } else {
+        navigator.clipboard.writeText(shareUrl);
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      }
+    }
+    setOpenShareModal(false);
+  };
   useEffect(() => {
     // Check if data has already been fetched
     if (!dataFetchedRef.current) {
@@ -776,6 +890,7 @@ function Share() {
     filteredGenres,
     hasMore,
     validGenres,
+    shareUrl,
   ]);
 
   if (!user?.emailVerified) {
@@ -813,6 +928,53 @@ function Share() {
           <MenuItem onClick={logout}>Logout</MenuItem>
         </MenuItems>
       </MenuHeader>
+
+      <Dialog.Root open={openShareModal} onOpenChange={setOpenShareModal}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="DialogOverlay" />
+          <Dialog.Content className="DialogContent">
+            <Dialog.Title className="DialogTitle">
+              Remind your friends how great your music taste is.
+            </Dialog.Title>
+            <Dialog.Description className="DialogDescription">
+              share the link below in your group chat or on other social
+              platforms.
+            </Dialog.Description>
+
+            <ShareButtonContainer>
+              <CopyToClipboard text={shareUrl}>
+                <CopyLinkContainer>
+                  <PaperClip src={paperClip} onClick={closeShareModal} />
+                  <CopyText>Copy link</CopyText>
+                </CopyLinkContainer>
+              </CopyToClipboard>
+
+              <BirdContainer onClick={closeShareModal}>
+                <TweetLink href={tweet} data-size="large" target="_blank">
+                  <Bird src={bird} />
+                  Tweet
+                </TweetLink>
+              </BirdContainer>
+
+              <Message onClick={share} src={iMessage} />
+            </ShareButtonContainer>
+
+            <ThankYou>
+              {" "}
+              thank you for sharing your great music with us :)
+            </ThankYou>
+            <Dialog.Close asChild>
+              <button
+                className="IconButton"
+                aria-label="Close"
+                onClick={closeShareModal}
+              >
+                <Cross2Icon />
+              </button>
+            </Dialog.Close>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
 
       <ModalContainer>
         <Dialog.Root>

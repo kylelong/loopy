@@ -309,6 +309,20 @@ const SongItem: React.FC<Props> = ({
 
   const handleShareLink = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    try {
+      if (navigator.share) {
+        navigator.share({
+          url: share_url,
+          title: "Share song",
+        });
+      } else {
+        navigator.clipboard.writeText(share_url);
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      }
+    }
     window.clearTimeout(timerRef.current);
     setShowCopied(true);
     timerRef.current = window.setTimeout(() => {

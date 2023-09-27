@@ -253,11 +253,11 @@ app.post("/add_song", async (req, res) => {
   try {
     const {uid, location, title, genre, link, source, embed_url, caption} =
       req.body;
-    await pool.query(
-      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url,hash, caption) VALUES($1, $2, $3, $4, $5, $6, $7, substring(md5(random()::text), 0, 25), $8) RETURNING *",
+    const response = await pool.query(
+      "INSERT INTO songs (uid,location,title,genre,link,source,embed_url,hash, caption) VALUES($1, $2, $3, $4, $5, $6, $7, substring(md5(random()::text), 0, 25), $8) RETURNING hash",
       [uid, location, title, genre, link, source, embed_url, caption]
     );
-    res.json({status: 200});
+    res.json(response.rows[0].hash);
   } catch (err) {
     console.error(err);
   }

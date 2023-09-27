@@ -385,33 +385,19 @@ const SongItem: React.FC<Props> = ({
   }, [song, username, getUsername, song?.created_at, like, user]);
   return (
     <div>
-      {song?.source === "tidal" ? (
-        <TidalContainer>
-          <div className="tidal-border">
-            <iframe
-              src={song?.link}
-              allowFullScreen
-              frameBorder="0"
-              title="tidal song"
-              className="tidal-embed-iframe"
-            ></iframe>
-          </div>
-        </TidalContainer>
-      ) : (
-        <Container>
-          <SongContainer
-            title=""
-            width="560"
-            height="355"
-            frameBorder="0"
-            allowFullScreen
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            style={{borderRadius: "12px"}}
-            src={song?.link}
-          ></SongContainer>
-        </Container>
-      )}
+      <Container>
+        <SongContainer
+          title=""
+          width="560"
+          height="355"
+          frameBorder="0"
+          allowFullScreen
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          style={{borderRadius: "12px"}}
+          src={song?.link}
+        ></SongContainer>
+      </Container>
 
       <SongDetails inProfile={inProfile}>
         <Row>

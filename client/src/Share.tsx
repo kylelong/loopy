@@ -22,11 +22,9 @@ import star from "./assets/star.svg";
 import userIcon from "./assets/userIcon.svg";
 import LeaderBoard from "./Leaderboard";
 import {
-  validSoundCloudLink,
   validSpotifyLink,
   validYoutubeLink,
   isShortenSpotifyLink,
-  validTidalLink,
 } from "./functions";
 import Loader from "./Loader";
 
@@ -108,7 +106,7 @@ export const SearchBox = styled.input`
   font-weight: 400;
   border: 1px solid rgb(196, 196, 196);
   border-radius: 4px;
-  padding-left: 5px;
+  padding-left: 10px;
   margin-right: 5px;
   @media (max-width: 500px) {
     flex-direction: column;
@@ -541,11 +539,7 @@ function Share() {
     setErrors([]);
     let hasErrors = false;
     const {url} = songData;
-    const validUrl =
-      validSoundCloudLink(url) ||
-      validSpotifyLink(url) ||
-      validYoutubeLink(url) ||
-      validTidalLink(url);
+    const validUrl = validSpotifyLink(url) || validYoutubeLink(url);
 
     if (url.length === 0) {
       hasErrors = true;
@@ -555,7 +549,7 @@ function Share() {
       hasErrors = true;
       setErrors((errors) => [
         ...errors,
-        "Please enter a valid song link from spotify, youtube, tidal, or soundcloud.",
+        "Please enter a valid song link from spotify or youtube.",
       ]);
     }
 
@@ -564,13 +558,9 @@ function Share() {
       let hostname = link.hostname;
 
       let youtube = ["youtu.be", "www.youtube.com"];
-      let soundcloud = [
-        "soundcloud.com",
-        "on.soundcloud.com",
-        "soundcloud.app.goo.gl",
-      ];
+
       let spotify = ["open.spotify.com", "spotify.link"];
-      let tidal = "tidal.com";
+
       let embedUrl = "";
 
       if (youtube.includes(hostname)) {
@@ -584,23 +574,6 @@ function Share() {
         }
         setError(false);
         setSongData({...songData, embededUrl: embedUrl, source: "youtube"});
-      } else if (soundcloud.includes(hostname)) {
-        axios
-          .get(`https://soundcloud.com/oembed?url=${songData.url}&format=json`)
-          .then((resp) => {
-            let iframe = resp.data.html;
-            let title = resp.data.title;
-            let srcIndex = iframe.indexOf("src");
-            let last = iframe.lastIndexOf('"');
-            let soundcloudLink = iframe.substring(srcIndex + 5, last);
-            setSongData({
-              ...songData,
-              embededUrl: soundcloudLink,
-              title: title,
-              source: "soundcloud",
-            });
-          });
-        setError(false);
       } else if (spotify.includes(hostname)) {
         let song_link = songData.url;
         if (isShortenSpotifyLink(song_link)) {
@@ -628,18 +601,6 @@ function Share() {
             });
           });
         setError(false);
-      } else if (hostname === tidal) {
-        let track_id = parseInt(
-          url.substring(url.lastIndexOf("/") + 1, url.length)
-        );
-        let tidalLink = `https://embed.tidal.com/tracks/${track_id}`;
-        setSongData({
-          ...songData,
-          url: url,
-          embededUrl: tidalLink,
-          spotifyLink: false,
-          source: "tidal",
-        });
       } else {
         setError(true);
       }
@@ -879,12 +840,12 @@ function Share() {
             <Dialog.Content className="DialogContent">
               <Dialog.Title className="DialogTitle">Share a song</Dialog.Title>
               <Dialog.Description className="DialogDescription">
-                share a song that you think is great &#128522;
+                share a song that is an all-time favorite of yours &#128522;
               </Dialog.Description>
               <MusicContainer>
                 <SearchContainer>
                   <SearchBox
-                    placeholder="Enter song link... (youtube, spotify, tidal, or soundcloud)"
+                    placeholder="Enter a song link from spotify or youtube"
                     onChange={handleUrlChange}
                     onKeyDown={handleEnterPressed}
                   />
@@ -896,27 +857,15 @@ function Share() {
 
                 {songData.embededUrl && (
                   <>
-                    {songData.source === "tidal" ? (
-                      <div className="tidal-border">
-                        <iframe
-                          src={songData.embededUrl}
-                          allowFullScreen
-                          frameBorder="0"
-                          title="tidal song"
-                          className="tidal-embed-iframe"
-                        ></iframe>
-                      </div>
-                    ) : (
-                      <Video
-                        width="560"
-                        height="355"
-                        src={songData.embededUrl}
-                        title="YouTube video player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                      ></Video>
-                    )}
+                    <Video
+                      width="560"
+                      height="355"
+                      src={songData.embededUrl}
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    ></Video>
 
                     <SearchBoxContainer>
                       <ReactSearchBox
@@ -932,7 +881,7 @@ function Share() {
                       />
                     </SearchBoxContainer>
                     <CaptionInput
-                      placeholder="Caption (optional) - describe the song, where you heard it, why you like it, etc"
+                      placeholder="Caption (optional)"
                       onChange={handleCaptionChange}
                     />
 

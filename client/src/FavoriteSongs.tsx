@@ -3,7 +3,6 @@ import axios from "axios";
 import styled from "styled-components";
 import heart from "./assets/heart.svg";
 import refresh from "./assets/refresh.svg";
-import "./tidal.css";
 //{current_favorite_song : string, favorite_song: string}
 interface FavoriteSongsProps {
   current_favorite_song: string;
@@ -147,7 +146,6 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
     favorite_song_embed_url: "",
   });
   const [showCurrent, setShowCurrent] = useState<boolean>(true);
-  const tidalUrl = "https://embed.tidal.com/tracks/";
   let current_favorite_song_link = useMemo(
     () => new URL(current_favorite_song, "https://randomapi.com/"),
     [current_favorite_song]
@@ -161,12 +159,8 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
   let favorite_song_hostname = favorite_song_link.hostname;
 
   let youtube = useMemo(() => ["youtu.be", "www.youtube.com"], []);
-  let soundcloud = useMemo(
-    () => ["soundcloud.com", "on.soundcloud.com", "soundcloud.app.goo.gl"],
-    []
-  );
+
   let spotify = "open.spotify.com";
-  let tidal = "tidal.com";
   const processLink = useCallback(
     async (source: string, link: URL, hostname: string) => {
       let embedUrl = "";
@@ -180,23 +174,6 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
           embedUrl = `https://www.youtube.com/embed/${videoCode}`;
         }
         return embedUrl;
-      } else if (soundcloud.includes(hostname)) {
-        try {
-          const resp = await axios.get(
-            `https://soundcloud.com/oembed?url=${source}&format=json`
-          );
-          let iframe = resp.data.html;
-          console.log(`iframe: ${iframe}`);
-          // let title = resp.data.title;
-          let srcIndex = iframe.indexOf("src");
-          let last = iframe.lastIndexOf('"');
-          let soundcloudLink = iframe.substring(srcIndex + 5, last);
-          embedUrl = soundcloudLink;
-          console.log(`embedUrl: ${soundcloudLink}`);
-          return embedUrl;
-        } catch (err) {
-          console.error(err);
-        }
       } else if (hostname === spotify) {
         try {
           const resp = await axios.get(
@@ -213,15 +190,9 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
         } catch (err) {
           console.error(err);
         }
-      } else if (hostname === tidal) {
-        let track_id = parseInt(
-          source.substring(source.lastIndexOf("/") + 1, source.length)
-        );
-        embedUrl = `https://embed.tidal.com/tracks/${track_id}`;
-        return embedUrl;
       }
     },
-    [soundcloud, spotify, youtube, tidal]
+    [spotify, youtube]
   );
 
   useEffect(() => {
@@ -323,18 +294,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
             </NoSongContainer>
           </>
         ) : (
-          showCurrent &&
-          (urls.current_favorite_song_embed_url?.startsWith(tidalUrl) ? (
-            <div className="tidal-border">
-              <iframe
-                src={urls.current_favorite_song_embed_url}
-                allowFullScreen
-                frameBorder="0"
-                title="tidal song"
-                className="tidal-embed-iframe"
-              ></iframe>
-            </div>
-          ) : (
+          showCurrent && (
             <Video
               width="560"
               height="355"
@@ -344,7 +304,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
               allowFullScreen
               src={urls.current_favorite_song_embed_url}
             ></Video>
-          ))
+          )
         )}
         {!showCurrent &&
         favorite_song_link.origin === "https://randomapi.com" ? (
@@ -354,18 +314,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
             </NoSongContainer>
           </>
         ) : (
-          !showCurrent &&
-          (urls.favorite_song_embed_url?.startsWith(tidalUrl) ? (
-            <div className="tidal-border">
-              <iframe
-                src={urls.favorite_song_embed_url}
-                allowFullScreen
-                frameBorder="0"
-                title="tidal song"
-                className="tidal-embed-iframe"
-              ></iframe>
-            </div>
-          ) : (
+          !showCurrent && (
             <Video
               width="560"
               height="355"
@@ -375,7 +324,7 @@ const FavoriteSongs: React.FC<FavoriteSongsProps> = ({
               allowFullScreen
               src={urls.favorite_song_embed_url}
             ></Video>
-          ))
+          )
         )}
       </Container>
     </>

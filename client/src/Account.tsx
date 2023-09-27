@@ -10,10 +10,8 @@ import LoopyLogo from "./LoopyLogo";
 import genres from "./genres";
 import styled from "styled-components";
 import {
-  validSoundCloudLink,
   validSpotifyLink,
   validYoutubeLink,
-  validTidalLink,
   validUsername,
   userExists,
   isShortenSpotifyLink,
@@ -394,23 +392,18 @@ const Account = () => {
 
     //songs
     const validCurrentFavoriteSong =
-      validSoundCloudLink(current_favorite_song) ||
       validSpotifyLink(current_favorite_song) ||
-      validYoutubeLink(current_favorite_song) ||
-      validTidalLink(current_favorite_song);
+      validYoutubeLink(current_favorite_song);
 
     const validFavoriteSong =
-      validSoundCloudLink(favorite_song) ||
-      validSpotifyLink(favorite_song) ||
-      validYoutubeLink(favorite_song) ||
-      validTidalLink(favorite_song);
+      validSpotifyLink(favorite_song) || validYoutubeLink(favorite_song);
 
     if (current_favorite_song) {
       if (current_favorite_song.length > 0 && !validCurrentFavoriteSong) {
         hasErrors = true;
         setErrors((errors) => [
           ...errors,
-          "Current favorite song must be a valid link from spotify, youtube, tidal, or soundcloud.",
+          "Current favorite song must be a valid link from spotify or youtube.",
         ]);
       } else {
         let current_favorite_song_link = current_favorite_song;
@@ -435,7 +428,7 @@ const Account = () => {
         hasErrors = true;
         setErrors((errors) => [
           ...errors,
-          "Favorite song must be a valid link from youtube,soundcloud, or spotify.",
+          "Favorite song must be a valid link from spotify or youtube.",
         ]);
       } else {
         let favorite_song_link = favorite_song;

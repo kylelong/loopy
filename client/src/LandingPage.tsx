@@ -12,8 +12,6 @@ import Carousel from "./Carousel";
 import {Link} from "react-router-dom";
 import spotify from "./assets/spotify.png";
 import youtube from "./assets/youtube.jpeg";
-import soundcloud from "./assets/soundcloud.png";
-import tidal from "./assets/tidal.png";
 export const Saying = styled.div`
   font-family: "Helvetica Neue", sans-serif;
   font-size: 42px;
@@ -339,14 +337,11 @@ function LandingPage() {
             repeat for 3 days straight.
           </Description>
           <Description>
-            we currently support links from spotify, youtube, soundcloud, and
-            tidal.
+            we currently support links from spotify and youtube.
           </Description>
           <Description>
             <SongSource src={spotify} />
             <SongSource src={youtube} style={{width: "30px"}} />
-            <SongSource src={soundcloud} style={{width: "36px"}} />
-            <SongSource src={tidal} style={{width: "36px"}} />
           </Description>
         </Section>
         <Section>

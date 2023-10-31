@@ -18,11 +18,11 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
-import star from "./assets/star.svg";
 import iMessage from "./assets/iMessage.svg";
 import paperClip from "./assets/paperClip.svg";
 import bird from "./assets/twitter.png";
 import {CopyToClipboard} from "react-copy-to-clipboard";
+import FavoriteGenreSlider from "./FavoriteGenreSlider";
 import {
   validSpotifyLink,
   validYoutubeLink,
@@ -432,14 +432,6 @@ export const FavoriteGenreButton = styled.button`
     color: #525f7f;
     background-color: #f0f0f0;
   }
-`;
-
-export const NoSongData = styled.div`
-  color: #525f7f;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: sans-serif;
-  margin-top: 15px;
 `;
 
 export const ShareButtonContainer = styled.div`
@@ -1098,62 +1090,22 @@ function Share() {
             placeholder="Filter by genre"
           />
         </SelectContainer>
+        <div className="mt-6">
+          <FavoriteGenreSlider toggle={handleFavoriteGenre} />
+          {favoriteGenre && noSongData && (
+            <span className="text-base text-gray-900 mt-6">
+              no songs for {favoriteGenre} yet{" "}
+              <span
+                style={{fontSize: "18px", position: "relative", top: "2px"}}
+              >
+                &#128532;
+              </span>
+            </span>
+          )}
+        </div>
       </ModalContainer>
       <MainContentContainer>
         <MainContentColumn>
-          {/* <ButtonContainer>
-            <GenreButtonContainer>
-              {favoriteGenre ? (
-                showFavoriteGenre ? (
-                  <div
-                    className="p-3 rounded-md bg-violet-400 text-gray-300 flex flex-row items-center font-sans text-base font-bold border-none hover:bg-gray-200 hover:text-gray-600 hover:cursor-pointer"
-                    onClick={handleFavoriteGenre}
-                  >
-                    <Svg src={star} />
-                    Favorite Genre
-                  </div>
-                ) : (
-                  <div
-                    className="p-3 rounded-md bg-gray-200 hover:bg-violet-400 hover:cursor-pointer hover:opacity-100 text-gray-700 flex flex-row items-center font-sans text-md text-gray-600 font-bold opacity-70 border-none"
-                    onClick={handleFavoriteGenre}
-                  >
-                    <Svg src={star} />
-                    Favorite Genre
-                  </div>
-                )
-              ) : showFavoriteGenre ? (
-                <Link to="/account" style={linkStyle}>
-                  <div
-                    className="p-3 rounded-md bg-violet-400 text-gray-300 flex flex-row items-center font-sans text-base font-bold border-none hover:bg-gray-200 hover:text-gray-600 hover:cursor-pointer"
-                    onClick={handleFavoriteGenre}
-                  >
-                    <Svg src={star} />
-                    Favorite Genre
-                  </div>
-                </Link>
-              ) : (
-                <Link to="/account" style={linkStyle}>
-                  <div
-                    className="p-3 rounded-md bg-gray-200 hover:bg-violet-400 hover:cursor-pointer hover:opacity-100 text-gray-700 flex flex-row items-center font-sans text-md text-gray-600 font-bold opacity-70 border-none"
-                    onClick={handleFavoriteGenre}
-                  >
-                    <Svg src={star} />
-                    Favorite Genre
-                  </div>
-                </Link>
-              )}
-              {favoriteGenre && noSongData && (
-                <NoSongData>
-                  no songs for {favoriteGenre} yet{" "}
-                  <span
-                    style={{fontSize: "18px", position: "relative", top: "2px"}}
-                  >
-                    &#128532;
-                  </span>
-                </NoSongData>
-              )}
-            </GenreButtonContainer>
-          </ButtonContainer> */}
           {dataFetchedRef.current && !isLoading ? (
             <InfiniteScroll
               dataLength={songs.length}

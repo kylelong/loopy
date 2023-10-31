@@ -19,10 +19,8 @@ import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
 import star from "./assets/star.svg";
-import userIcon from "./assets/userIcon.svg";
 import iMessage from "./assets/iMessage.svg";
 import paperClip from "./assets/paperClip.svg";
-import LeaderBoard from "./Leaderboard";
 import bird from "./assets/twitter.png";
 import {CopyToClipboard} from "react-copy-to-clipboard";
 import {
@@ -1103,33 +1101,45 @@ function Share() {
       </ModalContainer>
       <MainContentContainer>
         <MainContentColumn>
-          <ButtonContainer>
+          {/* <ButtonContainer>
             <GenreButtonContainer>
               {favoriteGenre ? (
                 showFavoriteGenre ? (
-                  <FavoriteGenreButton onClick={handleFavoriteGenre}>
+                  <div
+                    className="p-3 rounded-md bg-violet-400 text-gray-300 flex flex-row items-center font-sans text-base font-bold border-none hover:bg-gray-200 hover:text-gray-600 hover:cursor-pointer"
+                    onClick={handleFavoriteGenre}
+                  >
                     <Svg src={star} />
                     Favorite Genre
-                  </FavoriteGenreButton>
+                  </div>
                 ) : (
-                  <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
+                  <div
+                    className="p-3 rounded-md bg-gray-200 hover:bg-violet-400 hover:cursor-pointer hover:opacity-100 text-gray-700 flex flex-row items-center font-sans text-md text-gray-600 font-bold opacity-70 border-none"
+                    onClick={handleFavoriteGenre}
+                  >
                     <Svg src={star} />
                     Favorite Genre
-                  </FavoriteGenreButtonDisabled>
+                  </div>
                 )
               ) : showFavoriteGenre ? (
                 <Link to="/account" style={linkStyle}>
-                  <FavoriteGenreButton onClick={handleFavoriteGenre}>
+                  <div
+                    className="p-3 rounded-md bg-violet-400 text-gray-300 flex flex-row items-center font-sans text-base font-bold border-none hover:bg-gray-200 hover:text-gray-600 hover:cursor-pointer"
+                    onClick={handleFavoriteGenre}
+                  >
                     <Svg src={star} />
                     Favorite Genre
-                  </FavoriteGenreButton>
+                  </div>
                 </Link>
               ) : (
                 <Link to="/account" style={linkStyle}>
-                  <FavoriteGenreButtonDisabled onClick={handleFavoriteGenre}>
+                  <div
+                    className="p-3 rounded-md bg-gray-200 hover:bg-violet-400 hover:cursor-pointer hover:opacity-100 text-gray-700 flex flex-row items-center font-sans text-md text-gray-600 font-bold opacity-70 border-none"
+                    onClick={handleFavoriteGenre}
+                  >
                     <Svg src={star} />
                     Favorite Genre
-                  </FavoriteGenreButtonDisabled>
+                  </div>
                 </Link>
               )}
               {favoriteGenre && noSongData && (
@@ -1143,29 +1153,7 @@ function Share() {
                 </NoSongData>
               )}
             </GenreButtonContainer>
-            <Dialog.Root>
-              <Dialog.Trigger asChild>
-                <LeaderboardButtonContainer>
-                  <LeaderboardButton>
-                    <Svg src={userIcon} />
-                    Leaderboard
-                  </LeaderboardButton>
-                </LeaderboardButtonContainer>
-              </Dialog.Trigger>
-              <Dialog.Portal>
-                <Dialog.Overlay className="DialogOverlay" />
-                <Dialog.Content className="DialogContentLeaderboard">
-                  <LeaderBoard inModal={true} />
-
-                  <Dialog.Close asChild>
-                    <button className="IconButton" aria-label="Close">
-                      <Cross2Icon />
-                    </button>
-                  </Dialog.Close>
-                </Dialog.Content>
-              </Dialog.Portal>
-            </Dialog.Root>
-          </ButtonContainer>
+          </ButtonContainer> */}
           {dataFetchedRef.current && !isLoading ? (
             <InfiniteScroll
               dataLength={songs.length}
@@ -1197,9 +1185,6 @@ function Share() {
             <Loader />
           )}
         </MainContentColumn>
-        <ShowLeaderBoardContainer>
-          <LeaderBoard />
-        </ShowLeaderBoardContainer>
       </MainContentContainer>
     </div>
   );

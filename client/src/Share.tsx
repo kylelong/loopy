@@ -141,7 +141,7 @@ export const ShareButton = styled.button`
   flex-direction: row;
   justify-content: space-evenly;
   height: 42px;
-  max-width: 186px;
+  max-width: 150px;
   width: 100%;
   border: 0px;
   border-radius: 4px;
@@ -308,7 +308,7 @@ export const SongContainer = styled.div`
 `;
 
 export const SelectContainer = styled.div`
-  max-width: 350px;
+  max-width: 186px;
   width: 100%;
   position: relative;
   top: 12px;
@@ -1082,14 +1082,14 @@ function Share() {
             </AddedContainer>
           </>
         )}
-        {/* <SelectContainer>
+        <SelectContainer>
           <Select
             options={songGenres}
             isMulti
             onChange={handleGenreFilter}
             placeholder="Filter by genre"
           />
-        </SelectContainer> */}
+        </SelectContainer>
         <div className="mt-6">
           <FavoriteGenreSlider toggle={handleFavoriteGenre} />
           {favoriteGenre && noSongData && (

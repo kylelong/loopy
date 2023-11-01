@@ -76,20 +76,25 @@ export const ModalContainer = styled.div`
 
 export const MainContentContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
+  @media (min-width: 868px) {
+    flex-direction: row;
+  }
 `;
 
 export const MainContentColumn = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 0 auto;
 `;
 
 export const MusicContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 16px;
+  m
 `;
 export const SearchContainer = styled.div`
   display: flex;
@@ -919,192 +924,198 @@ function Share() {
         </MenuItems>
       </MenuHeader>
 
-      <Dialog.Root open={openShareModal} onOpenChange={setOpenShareModal}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="DialogOverlay" />
-          <Dialog.Content className="DialogContent">
-            <Dialog.Title className="DialogTitle">
-              Remind your friends how great your music taste is.
-            </Dialog.Title>
-            <Dialog.Description className="DialogDescription">
-              share the link below in your group chat or on other social
-              platforms.
-            </Dialog.Description>
+      <MainContentContainer>
+        <div className="mt-7">
+          <Dialog.Root open={openShareModal} onOpenChange={setOpenShareModal}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="DialogOverlay" />
+              <Dialog.Content className="DialogContent">
+                <Dialog.Title className="DialogTitle">
+                  Remind your friends how great your music taste is.
+                </Dialog.Title>
+                <Dialog.Description className="DialogDescription">
+                  share the link below in your group chat or on other social
+                  platforms.
+                </Dialog.Description>
 
-            <ShareButtonContainer>
-              <CopyToClipboard text={shareUrl}>
-                <CopyLinkContainer>
-                  <PaperClip src={paperClip} onClick={closeShareModal} />
-                  <CopyText>Copy link</CopyText>
-                </CopyLinkContainer>
-              </CopyToClipboard>
+                <ShareButtonContainer>
+                  <CopyToClipboard text={shareUrl}>
+                    <CopyLinkContainer>
+                      <PaperClip src={paperClip} onClick={closeShareModal} />
+                      <CopyText>Copy link</CopyText>
+                    </CopyLinkContainer>
+                  </CopyToClipboard>
 
-              <BirdContainer onClick={closeShareModal}>
-                <TweetLink href={tweet} data-size="large" target="_blank">
-                  <Bird src={bird} />
-                  Tweet
-                </TweetLink>
-              </BirdContainer>
+                  <BirdContainer onClick={closeShareModal}>
+                    <TweetLink href={tweet} data-size="large" target="_blank">
+                      <Bird src={bird} />
+                      Tweet
+                    </TweetLink>
+                  </BirdContainer>
 
-              <Message onClick={share} src={iMessage} />
-            </ShareButtonContainer>
+                  <Message onClick={share} src={iMessage} />
+                </ShareButtonContainer>
 
-            <ThankYou>
-              {" "}
-              thank you for sharing your great music with us :)
-            </ThankYou>
-            <Dialog.Close asChild>
-              <button
-                className="IconButton"
-                aria-label="Close"
-                onClick={closeShareModal}
-              >
-                <Cross2Icon />
-              </button>
-            </Dialog.Close>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+                <ThankYou>
+                  {" "}
+                  thank you for sharing your great music with us :)
+                </ThankYou>
+                <Dialog.Close asChild>
+                  <button
+                    className="IconButton"
+                    aria-label="Close"
+                    onClick={closeShareModal}
+                  >
+                    <Cross2Icon />
+                  </button>
+                </Dialog.Close>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
 
-      <ModalContainer>
-        <Dialog.Root>
-          <Dialog.Trigger asChild>
-            <button
-              className="Button violet"
-              onClick={() => {
-                setAdded(false);
-                setSongData({
-                  title: "",
-                  url: "",
-                  embededUrl: "",
-                  genre: "",
-                  spotifyLink: false,
-                  source: "",
-                  caption: "",
-                });
-              }}
-            >
-              Share
-            </button>
-          </Dialog.Trigger>
-          <Dialog.Portal>
-            <Dialog.Overlay className="DialogOverlay" />
-            <Dialog.Content className="DialogContent">
-              <Dialog.Title className="DialogTitle">Share a song</Dialog.Title>
-              <Dialog.Description className="DialogDescription">
-                share a song that is an all-time favorite of yours &#128522;
-              </Dialog.Description>
-              <MusicContainer>
-                <SearchContainer>
-                  <SearchBox
-                    placeholder="Enter a song link from spotify or youtube"
-                    onChange={handleUrlChange}
-                    onKeyDown={handleEnterPressed}
-                  />
-                  <SearchButton onClick={processUrl}>Search</SearchButton>
-                </SearchContainer>
-                <div>
-                  {errors.length > 0 && <ErrorMsg>{errors[0]}</ErrorMsg>}
-                </div>
-
-                {songData.embededUrl && (
-                  <>
-                    <Video
-                      width="560"
-                      height="355"
-                      src={songData.embededUrl}
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    ></Video>
-
-                    <SearchBoxContainer>
-                      <ReactSearchBox
-                        placeholder={
-                          songData.genre.length > 0
-                            ? songData.genre
-                            : "What's the genre?"
-                        }
-                        data={genres}
-                        onSelect={handleSearch}
-                        onChange={handleGenreChange}
-                        autoFocus
-                      />
-                    </SearchBoxContainer>
-                    <CaptionInput
-                      placeholder="Caption (optional)"
-                      onChange={handleCaptionChange}
-                    />
-
-                    <Dialog.Close asChild>
-                      <ShareButton
-                        onClick={handleSharing}
-                        disabled={
-                          songData.genre === "" || error || errors.length > 0
-                        }
-                        style={
-                          songData.genre === "" || error
-                            ? {backgroundColor: "lightgrey"}
-                            : {backgroundColor: "rgb(93, 93, 255)"}
-                        }
-                      >
-                        Share{" "}
-                        <ShareIcon>
-                          <GlobeIcon />
-                        </ShareIcon>
-                      </ShareButton>
-                    </Dialog.Close>
-                  </>
-                )}
-              </MusicContainer>
-              <Dialog.Close asChild>
+          <ModalContainer>
+            <Dialog.Root>
+              <Dialog.Trigger asChild>
                 <button
-                  className="IconButton"
-                  aria-label="Close"
+                  className="Button violet"
                   onClick={() => {
-                    setErrors([]);
+                    setAdded(false);
+                    setSongData({
+                      title: "",
+                      url: "",
+                      embededUrl: "",
+                      genre: "",
+                      spotifyLink: false,
+                      source: "",
+                      caption: "",
+                    });
                   }}
                 >
-                  <Cross2Icon />
+                  Share
                 </button>
-              </Dialog.Close>
-            </Dialog.Content>
-          </Dialog.Portal>
-        </Dialog.Root>
-        {added && (
-          <>
-            <AddedContainer>
-              <CheckCircledIcon
-                style={{color: "green", height: "20px", width: "20px"}}
+              </Dialog.Trigger>
+              <Dialog.Portal>
+                <Dialog.Overlay className="DialogOverlay" />
+                <Dialog.Content className="DialogContent">
+                  <Dialog.Title className="DialogTitle">
+                    Share a song
+                  </Dialog.Title>
+                  <Dialog.Description className="DialogDescription">
+                    share a song that is an all-time favorite of yours &#128522;
+                  </Dialog.Description>
+                  <MusicContainer>
+                    <SearchContainer>
+                      <SearchBox
+                        placeholder="Enter a song link from spotify or youtube"
+                        onChange={handleUrlChange}
+                        onKeyDown={handleEnterPressed}
+                      />
+                      <SearchButton onClick={processUrl}>Search</SearchButton>
+                    </SearchContainer>
+                    <div>
+                      {errors.length > 0 && <ErrorMsg>{errors[0]}</ErrorMsg>}
+                    </div>
+
+                    {songData.embededUrl && (
+                      <>
+                        <Video
+                          width="560"
+                          height="355"
+                          src={songData.embededUrl}
+                          title="YouTube video player"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        ></Video>
+
+                        <SearchBoxContainer>
+                          <ReactSearchBox
+                            placeholder={
+                              songData.genre.length > 0
+                                ? songData.genre
+                                : "What's the genre?"
+                            }
+                            data={genres}
+                            onSelect={handleSearch}
+                            onChange={handleGenreChange}
+                            autoFocus
+                          />
+                        </SearchBoxContainer>
+                        <CaptionInput
+                          placeholder="Caption (optional)"
+                          onChange={handleCaptionChange}
+                        />
+
+                        <Dialog.Close asChild>
+                          <ShareButton
+                            onClick={handleSharing}
+                            disabled={
+                              songData.genre === "" ||
+                              error ||
+                              errors.length > 0
+                            }
+                            style={
+                              songData.genre === "" || error
+                                ? {backgroundColor: "lightgrey"}
+                                : {backgroundColor: "rgb(93, 93, 255)"}
+                            }
+                          >
+                            Share{" "}
+                            <ShareIcon>
+                              <GlobeIcon />
+                            </ShareIcon>
+                          </ShareButton>
+                        </Dialog.Close>
+                      </>
+                    )}
+                  </MusicContainer>
+                  <Dialog.Close asChild>
+                    <button
+                      className="IconButton"
+                      aria-label="Close"
+                      onClick={() => {
+                        setErrors([]);
+                      }}
+                    >
+                      <Cross2Icon />
+                    </button>
+                  </Dialog.Close>
+                </Dialog.Content>
+              </Dialog.Portal>
+            </Dialog.Root>
+            {added && (
+              <>
+                <AddedContainer>
+                  <CheckCircledIcon
+                    style={{color: "green", height: "20px", width: "20px"}}
+                  />
+                  <SongShared>song shared</SongShared>
+                </AddedContainer>
+              </>
+            )}
+            <SelectContainer>
+              <Select
+                options={songGenres}
+                isMulti
+                onChange={handleGenreFilter}
+                placeholder="Filter by genre"
               />
-              <SongShared>song shared</SongShared>
-            </AddedContainer>
-          </>
-        )}
-        <SelectContainer>
-          <Select
-            options={songGenres}
-            isMulti
-            onChange={handleGenreFilter}
-            placeholder="Filter by genre"
-          />
-        </SelectContainer>
-        <div className="mt-6">
-          <FavoriteGenreSlider toggle={handleFavoriteGenre} />
-          {favoriteGenre && noSongData && (
-            <span className="text-base text-gray-900 mt-6">
-              no songs for {favoriteGenre} yet{" "}
-              <span
-                style={{fontSize: "18px", position: "relative", top: "2px"}}
-              >
-                &#128532;
-              </span>
-            </span>
-          )}
+            </SelectContainer>
+            <div className="mt-6">
+              <FavoriteGenreSlider toggle={handleFavoriteGenre} />
+              {favoriteGenre && noSongData && (
+                <span className="text-base text-gray-900 mt-6">
+                  no songs for {favoriteGenre} yet{" "}
+                  <span
+                    style={{fontSize: "18px", position: "relative", top: "2px"}}
+                  >
+                    &#128532;
+                  </span>
+                </span>
+              )}
+            </div>
+          </ModalContainer>
         </div>
-      </ModalContainer>
-      <MainContentContainer>
         <MainContentColumn>
           {dataFetchedRef.current && !isLoading ? (
             <InfiniteScroll

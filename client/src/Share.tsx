@@ -18,10 +18,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import SongItem from "./SongItem";
 import Select from "react-select";
 import {Song} from "./types/types";
-import iMessage from "./assets/iMessage.svg";
-import paperClip from "./assets/paperClip.svg";
-import bird from "./assets/twitter.png";
-import {CopyToClipboard} from "react-copy-to-clipboard";
 import FavoriteGenreSlider from "./FavoriteGenreSlider";
 import {
   validSpotifyLink,
@@ -29,6 +25,7 @@ import {
   isShortenSpotifyLink,
 } from "./functions";
 import Loader from "./Loader";
+import ShareModal from "./ShareModal";
 
 export const ShareContainer = styled.div``;
 
@@ -439,73 +436,6 @@ export const FavoriteGenreButton = styled.button`
   }
 `;
 
-export const ShareButtonContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-`;
-
-export const CopyLinkContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-right: 6px;
-  align-items: center;
-  position: relative;
-  top: 6px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-export const PaperClip = styled.img`
-  width: 28px;
-  height: 28px;
-  padding: 5px;
-  border-radius: 50%;
-  background: #d1d5db;
-`;
-
-export const CopyText = styled.div`
-  color: #9ca3af;
-  font-size: 12px;
-  font-weight: 700;
-  font-family: sans-serif;
-`;
-export const BirdContainer = styled.div`
-  margin-right: 6px;
-`;
-export const Bird = styled.img`
-  position: relative;
-  top: 3px;
-  width: 14px;
-  right: 4px;
-`;
-
-export const Message = styled.img`
-  @media (min-width: 821px) {
-    display: none;
-  }
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-export const TweetLink = styled.a`
-  background-color: #1da1f2;
-  color: white;
-  height: 28px;
-  width: 76px;
-  border-radius: 9999px;
-  padding: 6px 12px 6px 12px;
-  border: none;
-  text-decoration: none;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  white-space: nowrap;
-`;
-
 export const ThankYou = styled.div`
   color: hsl(252, 5%, 40.7%);
   margin-top: 19px;
@@ -846,27 +776,6 @@ function Share() {
     setIsLoading(false);
   };
 
-  const closeShareModal = () => {
-    setOpenShareModal(false);
-  };
-
-  const share = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          url: shareUrl,
-          title: "Share song",
-        });
-      } else {
-        navigator.clipboard.writeText(shareUrl);
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        console.log(err.message);
-      }
-    }
-    setOpenShareModal(false);
-  };
   useEffect(() => {
     // Check if data has already been fetched
     if (!dataFetchedRef.current) {
@@ -886,6 +795,7 @@ function Share() {
     hasMore,
     validGenres,
     shareUrl,
+    openShareModal,
   ]);
 
   if (!user?.emailVerified) {
@@ -926,52 +836,7 @@ function Share() {
 
       <MainContentContainer>
         <div className="mt-7">
-          <Dialog.Root open={openShareModal} onOpenChange={setOpenShareModal}>
-            <Dialog.Portal>
-              <Dialog.Overlay className="DialogOverlay" />
-              <Dialog.Content className="DialogContent">
-                <Dialog.Title className="DialogTitle">
-                  Remind your friends how great your music taste is.
-                </Dialog.Title>
-                <Dialog.Description className="DialogDescription">
-                  share the link below in your group chat or on other social
-                  platforms.
-                </Dialog.Description>
-
-                <ShareButtonContainer>
-                  <CopyToClipboard text={shareUrl}>
-                    <CopyLinkContainer>
-                      <PaperClip src={paperClip} onClick={closeShareModal} />
-                      <CopyText>Copy link</CopyText>
-                    </CopyLinkContainer>
-                  </CopyToClipboard>
-
-                  <BirdContainer onClick={closeShareModal}>
-                    <TweetLink href={tweet} data-size="large" target="_blank">
-                      <Bird src={bird} />
-                      Tweet
-                    </TweetLink>
-                  </BirdContainer>
-
-                  <Message onClick={share} src={iMessage} />
-                </ShareButtonContainer>
-
-                <ThankYou>
-                  {" "}
-                  thank you for sharing your great music with us :)
-                </ThankYou>
-                <Dialog.Close asChild>
-                  <button
-                    className="IconButton"
-                    aria-label="Close"
-                    onClick={closeShareModal}
-                  >
-                    <Cross2Icon />
-                  </button>
-                </Dialog.Close>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
+          <ShareModal show={openShareModal} tweet={tweet} shareUrl={shareUrl} />
 
           <ModalContainer>
             <Dialog.Root>

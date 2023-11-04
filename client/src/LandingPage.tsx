@@ -231,6 +231,7 @@ export const Play = styled.img`
 `;
 
 export const Description = styled.div`
+  display: flex;
   font-family: "Helvetica Neue", sans-serif;
   font-weight: 380;
   margin-bottom: 6px;
@@ -328,7 +329,7 @@ function LandingPage() {
           <Description>
             upload a link to your{" "}
             <b>
-              <i>all-time</i>
+              <i> all-time </i>
             </b>{" "}
             favorite songs.
           </Description>

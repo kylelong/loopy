@@ -114,8 +114,7 @@ export const SongContainer = styled.div`
 `;
 
 export const SelectContainer = styled.div`
-  max-width: 350px;
-  width: 100%;
+  width: 350px;
   position: relative;
   top: 12px;
 `;
@@ -277,52 +276,55 @@ function Preview() {
           </MenuRow>
         )}
       </MenuHeader>
-
-      <ModalContainer>
-        <SelectContainer>
-          <Select
-            options={songGenres}
-            isMulti
-            onChange={handleGenreFilter}
-            placeholder="Filter by genre"
-          />
-        </SelectContainer>
-      </ModalContainer>
-      {dataFetchedRef.current ? (
-        <InfiniteScroll
-          dataLength={songs.length}
-          next={() => handleLoadMore(page + 1)}
-          hasMore={hasMore}
-          loader={<Loader />}
-        >
-          <SongContainer>
-            {filter
-              ? songsRef.current.map((song, i) => {
-                  return (
-                    <SongItemWrapper>
-                      {" "}
-                      <SongItem song={song} key={i} inProfile={true} />
-                    </SongItemWrapper>
-                  );
-                })
-              : originalSongsRef.current.map((song, i) => {
-                  return (
-                    <SongItemWrapper>
-                      {" "}
-                      <SongItem
-                        song={song}
-                        key={i}
-                        inProfile={true}
-                        showHeart={false}
-                      />
-                    </SongItemWrapper>
-                  );
-                })}
-          </SongContainer>
-        </InfiniteScroll>
-      ) : (
-        <Loader />
-      )}
+      <div className="flex flex-col lg:flex-row">
+        <ModalContainer>
+          <div className="w-full sm:w-96 xl:w-full">
+            <Select
+              options={songGenres}
+              isMulti
+              onChange={handleGenreFilter}
+              placeholder="Filter by genre"
+            />
+          </div>
+        </ModalContainer>
+        <div className="my-0 mx-auto items-center">
+          {dataFetchedRef.current ? (
+            <InfiniteScroll
+              dataLength={songs.length}
+              next={() => handleLoadMore(page + 1)}
+              hasMore={hasMore}
+              loader={<Loader />}
+            >
+              <SongContainer>
+                {filter
+                  ? songsRef.current.map((song, i) => {
+                      return (
+                        <SongItemWrapper>
+                          {" "}
+                          <SongItem song={song} key={i} inProfile={true} />
+                        </SongItemWrapper>
+                      );
+                    })
+                  : originalSongsRef.current.map((song, i) => {
+                      return (
+                        <SongItemWrapper>
+                          {" "}
+                          <SongItem
+                            song={song}
+                            key={i}
+                            inProfile={true}
+                            showHeart={false}
+                          />
+                        </SongItemWrapper>
+                      );
+                    })}
+              </SongContainer>
+            </InfiniteScroll>
+          ) : (
+            <Loader />
+          )}
+        </div>
+      </div>
     </div>
   );
 }

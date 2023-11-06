@@ -68,7 +68,7 @@ const ShareSongModal: React.FC<Props> = ({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <Dialog.Panel className="relative transform md:ml-20 lg:ml-0 w-full h-[630px] max-w-[560px] xl:max-w-xl p-4 bg-white rounded-lg shadow-xl transition-all sm:mx-4 sm:p-6">
+              <Dialog.Panel className="relative transform md:ml-20 lg:ml-0 w-full max-w-[560px] xl:max-w-xl p-4 bg-white rounded-lg shadow-xl transition-all sm:mx-4 sm:p-6">
                 <div className="absolute right-0 top-0 pr-4 pt-4 sm:block">
                   <button
                     type="button"

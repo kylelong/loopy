@@ -79,7 +79,7 @@ const InputSongModal: React.FC<Props> = ({
                   </button>
                 </div>
                 <div className="sm:flex relative top-2 lg:top-4 text-center flex-col items-center align-center h-96">
-                  <div className="mt-6 flex-col space-y-10 sm:ml-4 sm:text-left">
+                  <div className="mt-6 flex-col space-y-10 sm:ml-4 text-left">
                     <div>
                       <Dialog.Title
                         as="h3"

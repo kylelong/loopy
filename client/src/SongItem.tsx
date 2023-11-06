@@ -435,7 +435,12 @@ const SongItem: React.FC<Props> = ({
           <CaptionContainer editCaption={editCaption}>
             {!editCaption && <Caption>{caption}</Caption>}
             {editCaption && (
-              <EditInput onChange={handleCaption} value={caption} />
+              <input
+                type="text"
+                className="block w-full my-2 max-w-md rounded-md border-2 border-indigo-300 pl-2 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:ring-2 focus:ring-inset  sm:text-sm sm:leading-6"
+                onChange={handleCaption}
+                value={caption}
+              />
             )}
           </CaptionContainer>
         )}

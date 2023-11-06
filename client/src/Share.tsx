@@ -6,10 +6,7 @@ import "./tidal.css";
 import styled from "styled-components";
 import axios from "axios";
 import LoopyLogo from "./LoopyLogo";
-import {GlobeIcon, CheckCircledIcon} from "@radix-ui/react-icons";
-import ReactSearchBox from "react-search-box";
-import * as Dialog from "@radix-ui/react-dialog";
-import {Cross2Icon} from "@radix-ui/react-icons";
+import {CheckCircledIcon} from "@radix-ui/react-icons";
 import genres from "./genres";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "./firebase-config";
@@ -26,6 +23,8 @@ import {
 } from "./functions";
 import Loader from "./Loader";
 import ShareModal from "./ShareModal";
+import InputSongModal from "./InputSongModal";
+import ShareSongModal from "./ShareSongModal";
 
 export const ShareContainer = styled.div``;
 
@@ -478,6 +477,7 @@ function Share() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [noSongData, setNoSongData] = useState<boolean>(false);
   const [openShareModal, setOpenShareModal] = useState<boolean>(false);
+  const [openInputSongModal, setOpenInputSongModal] = useState<boolean>(false);
   const [shareUrl, setShareUrl] = useState<string>("");
   const [tweet, setTweet] = useState<string>("");
 
@@ -612,6 +612,7 @@ function Share() {
             });
           });
         setError(false);
+        setOpenInputSongModal(false); // close modal
       } else {
         setError(true);
       }
@@ -775,6 +776,9 @@ function Share() {
     }
     setIsLoading(false);
   };
+  const handleCloseInputSongModal = () => {
+    setOpenInputSongModal(false);
+  };
 
   useEffect(() => {
     // Check if data has already been fetched
@@ -796,6 +800,7 @@ function Share() {
     validGenres,
     shareUrl,
     openShareModal,
+    openInputSongModal,
   ]);
 
   if (!user?.emailVerified) {
@@ -839,7 +844,69 @@ function Share() {
           <ShareModal show={openShareModal} tweet={tweet} shareUrl={shareUrl} />
 
           <ModalContainer>
-            <Dialog.Root>
+            <button
+              className="Button violet"
+              onClick={() => {
+                setAdded(false);
+                setSongData({
+                  title: "",
+                  url: "",
+                  embededUrl: "",
+                  genre: "",
+                  spotifyLink: false,
+                  source: "",
+                  caption: "",
+                });
+                setOpenInputSongModal(true);
+              }}
+            >
+              Share
+            </button>
+            <InputSongModal
+              show={openInputSongModal}
+              onClose={handleCloseInputSongModal}
+              onChange={handleUrlChange}
+              onKeyDown={handleEnterPressed}
+              value={songData.url}
+              processUrl={processUrl}
+              errors={errors}
+            />
+            {songData.embededUrl && (
+              <>
+                <ShareSongModal
+                  show={songData.embededUrl.length > 0}
+                  embededUrl={songData.embededUrl}
+                  genres={genres}
+                  genre={songData.genre}
+                  handleSearch={handleSearch}
+                  handleGenreChange={handleGenreChange}
+                  handleCaptionChange={handleCaptionChange}
+                  handleSharing={handleSharing}
+                  error={error}
+                />
+
+                {/* <Dialog.Close asChild>
+                  <ShareButton
+                    onClick={handleSharing}
+                    disabled={
+                      songData.genre === "" || error || errors.length > 0
+                    }
+                    style={
+                      songData.genre === "" || error
+                        ? {backgroundColor: "lightgrey"}
+                        : {backgroundColor: "rgb(93, 93, 255)"}
+                    }
+                  >
+                    Share{" "}
+                    <ShareIcon>
+                      <GlobeIcon />
+                    </ShareIcon>
+                  </ShareButton>
+                </Dialog.Close> */}
+              </>
+            )}
+
+            {/* <Dialog.Root>
               <Dialog.Trigger asChild>
                 <button
                   className="Button violet"
@@ -947,7 +1014,7 @@ function Share() {
                   </Dialog.Close>
                 </Dialog.Content>
               </Dialog.Portal>
-            </Dialog.Root>
+            </Dialog.Root> */}
             {added && (
               <>
                 <AddedContainer>
@@ -993,17 +1060,17 @@ function Share() {
                 {filter
                   ? songsRef.current.map((song, i) => {
                       return (
-                        <SongItemWrapper>
+                        <SongItemWrapper key={i}>
                           {" "}
-                          <SongItem song={song} key={i} inProfile={true} />
+                          <SongItem song={song} inProfile={true} />
                         </SongItemWrapper>
                       );
                     })
                   : originalSongsRef.current.map((song, i) => {
                       return (
-                        <SongItemWrapper>
+                        <SongItemWrapper key={i}>
                           {" "}
-                          <SongItem song={song} key={i} inProfile={true} />
+                          <SongItem song={song} inProfile={true} />
                         </SongItemWrapper>
                       );
                     })}

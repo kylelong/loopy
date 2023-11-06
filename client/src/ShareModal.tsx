@@ -150,13 +150,15 @@ const ShareModal: React.FC<Props> = ({show, tweet, shareUrl}) => {
                         </CopyToClipboard>
                       </div>
                       {copied && (
-                        <div className="flex flex-row mt-2">
-                          <img
-                            alt="checkBadge"
-                            src={checkBadge}
-                            className="h-6 w-5 flex-none"
-                          />
-                          <span className="ml-0.5">copied to clipboard</span>
+                        <div className="mt-2 items-center flex flex-col">
+                          <div className="flex flex-row">
+                            <img
+                              alt="checkBadge"
+                              src={checkBadge}
+                              className="h-6 w-5 flex-none"
+                            />
+                            <span className="ml-0.5">copied to clipboard</span>
+                          </div>
                         </div>
                       )}
                       <p className="mt-2 text-sm md:text-md items-center flex flex-col font-semibold text-gray-600">
